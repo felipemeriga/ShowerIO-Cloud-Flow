@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ShowerIOCloud</string>
+    <string name="facebook_app_id">504775916669376</string>
+    <string name="fb_login_protocol_scheme">504775916669376</string>
+</resources>
