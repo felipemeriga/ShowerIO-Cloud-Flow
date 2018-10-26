@@ -18,9 +18,10 @@ public class AwsDynamoDBManager {
         final AWSCredentialsProvider awsCredentialsProvider = AWSMobileClient.getInstance().getCredentialsProvider();
         final AWSConfiguration awsConfiguration = AWSMobileClient.getInstance().getConfiguration();
 
+        final CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider = CognitoSyncClientManager.credentialsProvider;
+
         // Add code to instantiate a AmazonDynamoDBClient
-        AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient(awsCredentialsProvider);
-        CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider = (CognitoCachingCredentialsProvider) awsCredentialsProvider;
+        AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient(cognitoCachingCredentialsProvider);
 
         this.dynamoDBMapper = DynamoDBMapper.builder()
                 .dynamoDBClient(dynamoDBClient)
