@@ -7,6 +7,7 @@ import com.amazonaws.mobile.config.AWSConfiguration;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 
+//This class is designed to initialize and deal with DynamoDB connections after the user is authenticated
 public class AwsDynamoDBManager {
 
     // Declare a DynamoDBMapper object

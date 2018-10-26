@@ -1,7 +1,43 @@
 {
-    "UserAgent": "aws-amplify-cli/0.1.0",
-    "Version": "1.0",
-    "IdentityManager": {
-        "Default": {}
+  "UserAgent": "MobileHub/1.0",
+  "Version": "1.0",
+  "CredentialsProvider": {
+    "CognitoIdentity": {
+      "Default": {
+        "PoolId": "us-east-1:22260d49-5c66-4995-9a58-f77ebbb0a037",
+        "Region": "us-east-1"
+      }
     }
+  },
+  "IdentityManager": {
+    "Default": {}
+  },
+  "CognitoUserPool": {
+    "Default": {
+      "PoolId": "us-east-1_XRBV7WQaO",
+      "AppClientId": "642pqmgb8e01ig8sf6thn25021",
+      "AppClientSecret": "2hoaqgvshl84bdntdtu5trchunqb4fo4tgq0bahh3mgf9qu1jif",
+      "Region": "us-east-1"
+    }
+  },
+  "DynamoDBObjectMapper": {
+    "Default": {
+      "Region": "us-east-1"
+    }
+  },
+  "PinpointAnalytics": {
+    "Default": {
+      "AppId": "732e4ba0eb36414aab4301a75d624c13",
+      "Region": "us-east-1"
+    }
+  },
+  "PinpointTargeting": {
+    "Default": {
+      "Region": "us-east-1"
+    }
+  },
+  "FacebookSignIn": {
+    "AppId": "504775916669376",
+    "Permissions": "public_profile"
+  }
 }
