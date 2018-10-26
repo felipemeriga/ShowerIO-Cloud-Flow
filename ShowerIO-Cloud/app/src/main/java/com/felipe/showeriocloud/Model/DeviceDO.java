@@ -1,4 +1,4 @@
-package com.felipe.showeriocloud;
+package com.felipe.showeriocloud.Model;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBAttribute;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBHashKey;
