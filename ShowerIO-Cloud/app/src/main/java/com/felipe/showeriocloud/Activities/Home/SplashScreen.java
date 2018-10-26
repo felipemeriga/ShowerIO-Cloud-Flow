@@ -19,8 +19,6 @@ import com.felipe.showeriocloud.R;
 public class SplashScreen extends AppCompatActivity {
 
     private static int SPLASH_TIME_OUT = 3500;
-    private SharedPreferences sharedPreferences;
-    private final String SHOWERIO = "ShowerIO";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
