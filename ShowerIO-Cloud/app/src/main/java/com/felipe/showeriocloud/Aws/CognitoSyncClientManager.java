@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-package com.felipe.showeriocloud.aws;
+package com.felipe.showeriocloud.Aws;
 
 import android.content.Context;
 import android.util.Log;
@@ -29,20 +29,20 @@ import java.util.Map;
 
 public class CognitoSyncClientManager {
 
-    private static final String TAG = "CognitoSyncClientManager";
+    private static final String TAG = "CognitoSyncClient";
 
     /**
      * Enter here the Identity Pool associated with your app and the AWS
      * region where it belongs. Get this information from the AWS console.
      */
 
-    private static final String IDENTITY_POOL_ID = "us-east-2:256a8948-cab3-4051-8aa5-36b4d93abfbc";
-    private static final Regions REGION = Regions.US_EAST_2;
+    private static final String IDENTITY_POOL_ID = "us-east-1:22260d49-5c66-4995-9a58-f77ebbb0a037";
+    private static final Regions REGION = Regions.US_EAST_1;
 
     private static final String CUSTOMER_SPECIFIC_ENDPOINT = "agq6mvwjsctpy-ats.iot.us-east-2.amazonaws.com";
 
     private static CognitoSyncManager syncClient;
-    protected static CognitoCachingCredentialsProvider credentialsProvider = null;
+    public static CognitoCachingCredentialsProvider credentialsProvider = null;
     protected static AWSAbstractCognitoIdentityProvider developerIdentityProvider;
 
     /**

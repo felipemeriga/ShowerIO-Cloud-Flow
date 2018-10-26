@@ -5,7 +5,7 @@ android {
     defaultConfig {
         applicationId "com.felipe.showeriocloud"
         minSdkVersion 23
-        targetSdkVersion 28
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -29,6 +29,7 @@ dependencies {
 
     // Mobile Client for initializing the SDK
     implementation('com.amazonaws:aws-android-sdk-mobile-client:2.7.+@aar') { transitive = true }
+    implementation 'com.amazonaws:aws-android-sdk-core:2.4.+'
 
     //DynamoDB mapper
     implementation 'com.amazonaws:aws-android-sdk-ddb-mapper:2.7.+'
@@ -36,6 +37,7 @@ dependencies {
     // Cognito UserPools for SignIn
     implementation 'com.android.support:support-v4:26.+'
     implementation('com.amazonaws:aws-android-sdk-auth-userpools:2.7.+@aar') { transitive = true }
+    implementation 'com.amazonaws:aws-android-sdk-cognito:2.4.+'
 
     // Sign in UI Library
     implementation 'com.android.support:appcompat-v7:26.+'
@@ -44,12 +46,12 @@ dependencies {
     // Facebook SignIn
     implementation 'com.android.support:support-v4:26.+'
     implementation('com.amazonaws:aws-android-sdk-auth-facebook:2.7.+@aar') { transitive = true }
+    implementation 'com.facebook.android:facebook-android-sdk:4.+'
 
     //AWS Analytics
     implementation 'com.amazonaws:aws-android-sdk-pinpoint:2.7.+'
 
 
-    implementation 'com.facebook.android:facebook-android-sdk:4.+'
     implementation 'com.amazonaws:aws-android-sdk-core:2.4.+'
     implementation 'com.amazonaws:aws-android-sdk-cognito:2.4.+'
 

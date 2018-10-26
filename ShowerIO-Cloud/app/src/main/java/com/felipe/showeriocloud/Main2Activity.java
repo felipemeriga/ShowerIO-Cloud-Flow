@@ -2,7 +2,6 @@ package com.felipe.showeriocloud;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobile.config.AWSConfiguration;
@@ -10,7 +9,6 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.felipe.showeriocloud.aws.CognitoSyncClientManager;
 
 public class Main2Activity extends AppCompatActivity {
 

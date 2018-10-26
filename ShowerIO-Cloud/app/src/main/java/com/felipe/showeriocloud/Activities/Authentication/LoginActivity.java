@@ -13,8 +13,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
+import com.felipe.showeriocloud.MainActivity;
 import com.felipe.showeriocloud.R;
 import com.google.gson.Gson;
+
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,15 +35,11 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
-    private SharedPreferences sharedPreferences;
-    private final String SHOWERIO = "ShowerIO";
-    private static String EMAIL;
-    private static String PASSWORD;
-    public String espIpAddress;
-    private String fixedUrl = "http://";
-    private final String AUTHENTICATION_URL = "/verifyCredentials?email=";
-    private final String VERIFICATION_URL = "/verifyAccountExistance";
-    public Boolean authenticate_result = false;
+
+    private Button btnLoginFacebook;
+
+    private CallbackManager callbackManager;
+
     public String failedAuthResult;
     public Boolean existingAccount = false;
 
@@ -48,20 +56,13 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate");
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-
-        if (EMAIL != null) {
-            _emailText.setText(EMAIL);
-        }
-        if (PASSWORD != null) {
-            _passwordText.setText(PASSWORD);
-        }
-
 
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
@@ -78,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                 // Start the Signup activity
                 Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
                 startActivityForResult(intent, REQUEST_SIGNUP);
+                finish();
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
@@ -87,6 +89,85 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Autenticando...");
         _signupLink.setEnabled(false);
+        this.initializeFacebookAuth();
+    }
+
+    public void initializeFacebookAuth() {
+
+        /**
+         * Initialize Facebook SDK
+         */
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+        btnLoginFacebook = (Button) findViewById(R.id.facebook_login_button);
+
+        /**
+         * Initializes the sync client. This must be call before you can use it.
+         */
+        CognitoSyncClientManager.init(this);
+
+        //If access token is already here, set fb session
+        final AccessToken fbAccessToken = AccessToken.getCurrentAccessToken();
+        if (fbAccessToken != null) {
+            setFacebookSession(fbAccessToken);
+            btnLoginFacebook.setVisibility(View.GONE);
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        btnLoginFacebook.setEnabled(true);
+                    }
+                });
+            }
+        }).start();
+
+        btnLoginFacebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // start Facebook Login
+                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile"));
+                LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+
+                        btnLoginFacebook.setVisibility(View.GONE);
+                        setFacebookSession(loginResult.getAccessToken());
+
+                        Thread thread = new Thread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                try  {
+                                    CognitoSyncClientManager.credentialsProvider.refresh();
+                                    Log.d(TAG, "AUUUU AIII");
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+                        thread.start();
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(LoginActivity.this, "Facebook login cancelled",
+                                Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onError(FacebookException error) {
+                        Toast.makeText(LoginActivity.this, "Error in Facebook login " +
+                                error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+        btnLoginFacebook.setEnabled(getString(R.string.facebook_app_id) != "facebook_app_id");
     }
 
     public void login() {
@@ -100,6 +181,8 @@ public class LoginActivity extends AppCompatActivity {
         _loginButton.setEnabled(false);
 
     }
+
+
 
     public void onPostAuthenticate() {
 
@@ -124,15 +207,16 @@ public class LoginActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_SIGNUP) {
-            if (resultCode == RESULT_OK) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
 
-                // TODO: Implement successful signup logic here
-                // By default we just finish the Activity and log them in automatically
-                this.finish();
-            }
-        }
+    private void setFacebookSession(AccessToken accessToken) {
+        Log.i(TAG, "facebook token: " + accessToken.getToken());
+        CognitoSyncClientManager.addLogins("graph.facebook.com",
+                accessToken.getToken());
+        btnLoginFacebook.setVisibility(View.GONE);
     }
 
     @Override
