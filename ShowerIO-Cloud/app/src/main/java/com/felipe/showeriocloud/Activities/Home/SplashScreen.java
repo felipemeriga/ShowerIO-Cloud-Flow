@@ -31,6 +31,7 @@ public class SplashScreen extends AppCompatActivity {
         AWSMobileClient.getInstance().initialize(this, new AWSStartupHandler() {
             @Override
             public void onComplete(AWSStartupResult awsStartupResult) {
+
                 //Start
                 new Handler().postDelayed(new Runnable() {
                     @Override

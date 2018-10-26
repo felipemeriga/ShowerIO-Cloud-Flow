@@ -9,6 +9,8 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
+import com.felipe.showeriocloud.Model.DeviceDO;
 
 public class Main2Activity extends AppCompatActivity {
 
@@ -22,9 +24,12 @@ public class Main2Activity extends AppCompatActivity {
         final AWSCredentialsProvider awsCredentialsProvider = AWSMobileClient.getInstance().getCredentialsProvider();
         final AWSConfiguration awsConfiguration = AWSMobileClient.getInstance().getConfiguration();
 
+        final CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider = CognitoSyncClientManager.credentialsProvider;
+
+
         // Add code to instantiate a AmazonDynamoDBClient
-        AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient(awsCredentialsProvider);
-        CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider = (CognitoCachingCredentialsProvider) awsCredentialsProvider;
+        AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient(cognitoCachingCredentialsProvider);
+
         this.dynamoDBMapper = DynamoDBMapper.builder()
                 .dynamoDBClient(dynamoDBClient)
                 .awsConfiguration(awsConfiguration)
@@ -39,13 +44,13 @@ public class Main2Activity extends AppCompatActivity {
 //        deviceDO.setName("Chuveiro Banheiro");
 //        deviceDO.setStatus("ACTIVE");
 //
-//        Runnable runnable = new Runnable() {
-//            public void run() {
-//                dynamoDBMapper.save(deviceDO);
-//            }
-//        };
-//        Thread mythread = new Thread(runnable);
-//        mythread.start();
+        Runnable runnable = new Runnable() {
+            public void run() {
+              DeviceDO deviceDO =  dynamoDBMapper.load(DeviceDO.class,cognitoCachingCredentialsProvider.getCachedIdentityId(),"Chuveiro Banheiro");
+            }
+        };
+        Thread mythread = new Thread(runnable);
+        mythread.start();
 
 
 

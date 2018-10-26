@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.mobile.client.AWSMobileClient;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -21,7 +22,10 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.felipe.showeriocloud.Activities.Home.SplashScreen;
+import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
+import com.felipe.showeriocloud.Main2Activity;
 import com.felipe.showeriocloud.MainActivity;
 import com.felipe.showeriocloud.R;
 import com.google.gson.Gson;
@@ -111,6 +115,22 @@ public class LoginActivity extends AppCompatActivity {
         if (fbAccessToken != null) {
             setFacebookSession(fbAccessToken);
             btnLoginFacebook.setVisibility(View.GONE);
+            try {
+                if (CognitoSyncClientManager.credentialsProvider.getCredentials().getSessionToken().isEmpty()) {
+                    Toast.makeText(LoginActivity.this, "Error in Facebook login ", Toast.LENGTH_LONG).show();
+                    CognitoSyncClientManager.credentialsProvider.clearCredentials();
+                    CognitoSyncClientManager.credentialsProvider.clear();
+
+                } else {
+                    Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
+                    AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
+                    Intent testActivity = new Intent(LoginActivity.this, Main2Activity.class);
+                    startActivity(testActivity);
+                    finish();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         new Thread(new Runnable() {
@@ -137,20 +157,23 @@ public class LoginActivity extends AppCompatActivity {
                         btnLoginFacebook.setVisibility(View.GONE);
                         setFacebookSession(loginResult.getAccessToken());
 
-                        Thread thread = new Thread(new Runnable() {
+                        try {
+                            if (CognitoSyncClientManager.credentialsProvider.getCredentials().getSessionToken().isEmpty()) {
+                                Toast.makeText(LoginActivity.this, "Error in Facebook login ", Toast.LENGTH_LONG).show();
+                                CognitoSyncClientManager.credentialsProvider.clearCredentials();
+                                CognitoSyncClientManager.credentialsProvider.clear();
 
-                            @Override
-                            public void run() {
-                                try  {
-                                    CognitoSyncClientManager.credentialsProvider.refresh();
-                                    Log.d(TAG, "AUUUU AIII");
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                            } else {
+                                Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
+                                AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
+                                Intent testActivity = new Intent(LoginActivity.this, Main2Activity.class);
+                                startActivity(testActivity);
+                                finish();
                             }
-                        });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
-                        thread.start();
                     }
 
                     @Override
@@ -182,6 +205,13 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    public void initializeAwsServices() {
+        //Initializing DynamoDB instances
+        AwsDynamoDBManager awsDynamoDBManager = new AwsDynamoDBManager();
+        awsDynamoDBManager.initializeDynamoDb();
+
+
+    }
 
 
     public void onPostAuthenticate() {
