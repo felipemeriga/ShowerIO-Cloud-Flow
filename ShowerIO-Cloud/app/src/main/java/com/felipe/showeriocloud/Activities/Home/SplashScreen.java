@@ -7,7 +7,13 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
+
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.client.AWSStartupHandler;
+import com.amazonaws.mobile.client.AWSStartupResult;
+import com.felipe.showeriocloud.Activities.Authentication.LoginActivity;
 import com.felipe.showeriocloud.R;
+
 
 
 public class SplashScreen extends AppCompatActivity {
@@ -24,14 +30,22 @@ public class SplashScreen extends AppCompatActivity {
 
         setContentView(R.layout.activity_home);
 
-        new Handler().postDelayed(new Runnable() {
+        AWSMobileClient.getInstance().initialize(this, new AWSStartupHandler() {
             @Override
-            public void run() {
+            public void onComplete(AWSStartupResult awsStartupResult) {
+                //Start
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent loginActivity = new Intent(SplashScreen.this, LoginActivity.class);
+                        startActivity(loginActivity);
+                        finish();
+                    }
+                }, SPLASH_TIME_OUT);
 
             }
-        }, SPLASH_TIME_OUT);
+        }).execute();
 
     }
-
 
 }

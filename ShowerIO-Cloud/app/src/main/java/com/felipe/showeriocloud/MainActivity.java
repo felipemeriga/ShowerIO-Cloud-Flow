@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onComplete(AWSStartupResult awsStartupResult) {
                 //Start
+
             }
         }).execute();
 
