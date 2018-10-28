@@ -20,5 +20,10 @@
     <string name="fb_login_protocol_scheme">fb2028297084147875</string>
     <string name="title_activity_main">MainActivity</string>
 
+    <string name="wifi">Wifi</string>
+    <string name="wifiPass">Senha</string>
+    <string name="confirmWifi">Confirmar</string>
+
+
 
 </resources>
