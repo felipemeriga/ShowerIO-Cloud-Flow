@@ -11,9 +11,15 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
 
+  /*Serial.println("clear config");
+  // reset default config
+  WiFi.disconnect();
+
   // deplay for 2 sec for smartConfig
   Serial.println("2 sec before clear SmartConfig");
   delay(2000);
+*/
+
 
   // if wifi cannot connect start smartconfig
   while (WiFi.status() != WL_CONNECTED) {
