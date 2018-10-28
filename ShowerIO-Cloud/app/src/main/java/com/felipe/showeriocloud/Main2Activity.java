@@ -11,6 +11,7 @@ import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
 import com.felipe.showeriocloud.Model.DeviceDO;
+import com.felipe.showeriocloud.Model.DevicePersistance;
 
 public class Main2Activity extends AppCompatActivity {
 
@@ -52,7 +53,9 @@ public class Main2Activity extends AppCompatActivity {
         Thread mythread = new Thread(runnable);
         mythread.start();
 
+        DevicePersistance devicePersistance = new DevicePersistance();
 
+        devicePersistance.getAllDevicesFromUser();
 
 
     }

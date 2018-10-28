@@ -115,22 +115,28 @@ public class LoginActivity extends AppCompatActivity {
         if (fbAccessToken != null) {
             setFacebookSession(fbAccessToken);
             btnLoginFacebook.setVisibility(View.GONE);
-            try {
-                if (CognitoSyncClientManager.credentialsProvider.getCredentials().getSessionToken().isEmpty()) {
-                    Toast.makeText(LoginActivity.this, "Error in Facebook login ", Toast.LENGTH_LONG).show();
-                    CognitoSyncClientManager.credentialsProvider.clearCredentials();
-                    CognitoSyncClientManager.credentialsProvider.clear();
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (CognitoSyncClientManager.credentialsProvider.getCredentials().getSessionToken().isEmpty()) {
+                            Toast.makeText(LoginActivity.this, "Error in Facebook login ", Toast.LENGTH_LONG).show();
+                            CognitoSyncClientManager.credentialsProvider.clearCredentials();
+                            CognitoSyncClientManager.credentialsProvider.clear();
 
-                } else {
-                    Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
-                    AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
-                    Intent testActivity = new Intent(LoginActivity.this, Main2Activity.class);
-                    startActivity(testActivity);
-                    finish();
+                        } else {
+                            Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
+                            AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
+                            Intent testActivity = new Intent(LoginActivity.this, Main2Activity.class);
+                            startActivity(testActivity);
+                            finish();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            });
+            thread.start();
         }
 
         new Thread(new Runnable() {
@@ -157,22 +163,29 @@ public class LoginActivity extends AppCompatActivity {
                         btnLoginFacebook.setVisibility(View.GONE);
                         setFacebookSession(loginResult.getAccessToken());
 
-                        try {
-                            if (CognitoSyncClientManager.credentialsProvider.getCredentials().getSessionToken().isEmpty()) {
-                                Toast.makeText(LoginActivity.this, "Error in Facebook login ", Toast.LENGTH_LONG).show();
-                                CognitoSyncClientManager.credentialsProvider.clearCredentials();
-                                CognitoSyncClientManager.credentialsProvider.clear();
 
-                            } else {
-                                Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
-                                AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
-                                Intent testActivity = new Intent(LoginActivity.this, Main2Activity.class);
-                                startActivity(testActivity);
-                                finish();
+                        Thread thread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    if (CognitoSyncClientManager.credentialsProvider.getCredentials().getSessionToken().isEmpty()) {
+                                        Toast.makeText(LoginActivity.this, "Error in Facebook login ", Toast.LENGTH_LONG).show();
+                                        CognitoSyncClientManager.credentialsProvider.clearCredentials();
+                                        CognitoSyncClientManager.credentialsProvider.clear();
+
+                                    } else {
+                                        Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
+                                        AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
+                                        Intent testActivity = new Intent(LoginActivity.this, Main2Activity.class);
+                                        startActivity(testActivity);
+                                        finish();
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        });
+                        thread.start();
 
                     }
 
