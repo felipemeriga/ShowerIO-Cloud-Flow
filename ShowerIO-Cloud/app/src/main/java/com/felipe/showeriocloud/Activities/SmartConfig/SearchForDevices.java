@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.wifi.WifiInfo;
@@ -21,6 +20,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -29,6 +30,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +43,7 @@ import com.espressif.iot.esptouch.task.__IEsptouchTask;
 import com.espressif.iot.esptouch.util.ByteUtil;
 import com.espressif.iot.esptouch.util.EspNetUtil;
 import com.felipe.showeriocloud.R;
+import com.felipe.showeriocloud.Utils.EspUtils;
 import com.github.ybq.android.spinkit.style.WanderingCubes;
 import com.google.gson.Gson;
 
@@ -57,8 +60,12 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
     private static final String TAG = "SearchForDevices";
     private static final int REQUEST_PERMISSION = 0x01;
 
+
+    private RelativeLayout relativeLayout;
+    private AlertDialog alertHelp;
     private TextView mApSsidTV;
     private TextView mApBssidTV;
+    private TextView findDevicesTV;
     private EditText mApPasswordET;
     private EditText mDeviceCountET;
     private RadioGroup mPackageModeGroup;
@@ -120,22 +127,32 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_search_for_devices);
-
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.spin_kit);
         WanderingCubes wanderingCubes = new WanderingCubes();
         progressBar.setIndeterminateDrawable(wanderingCubes);
+        progressBar.setVisibility(View.GONE);
+
+        relativeLayout = findViewById(R.id.relative_layout);
 
         Log.d(TAG, "Tnitializing Smart Config");
 
+        findDevicesTV = findViewById(R.id.textView2);
         mApSsidTV = findViewById(R.id.WifiName);
-
+        mApBssidTV = findViewById(R.id.ap_bssid_text);
         mApPasswordET = findViewById(R.id.WifiPass);
         mDeviceCountET = findViewById(R.id.device_count_edit);
         mDeviceCountET.setText("1");
+        mPackageModeGroup = findViewById(R.id.package_mode_group);
         mMessageTV = findViewById(R.id.message);
         mConfirmBtn = findViewById(R.id.confirm_btn);
         mConfirmBtn.setEnabled(false);
         mConfirmBtn.setOnClickListener(this);
+        findDevicesTV.setVisibility(View.GONE);
+
+        //Calling help user to display a alert to help the user to search for a device
+        this.helpUser();
+        //Validation of password field, when there is nothing in the field, the confirm button is disabled
+        this.validatePasswordField();
 
         if (isSDKAtLeastP()) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -152,6 +169,8 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
         } else {
             registerBroadcastReceiver();
         }
+
+
 
 
 
@@ -225,7 +244,11 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
             String bssid = info.getBSSID();
             mApBssidTV.setText(bssid);
 
-            mConfirmBtn.setEnabled(true);
+            if(mApPasswordET.getText().toString().equals("")){
+                mConfirmBtn.setEnabled(false);
+            } else {
+                mConfirmBtn.setEnabled(true);
+            }
             mMessageTV.setText("");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 int frequence = info.getFrequency();
@@ -320,7 +343,7 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
         protected void onPreExecute() {
             Activity activity = mActivity.get();
             mProgressDialog = new ProgressDialog(activity);
-            mProgressDialog.setMessage("Esptouch is configuring, please wait for a moment...");
+            mProgressDialog.setMessage("Estamos procurando seu dispositivo, isso pode levar alguns minutos...");
             mProgressDialog.setCanceledOnTouchOutside(false);
             mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 @Override
@@ -380,7 +403,7 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
                     .create();
             mResultDialog.setCanceledOnTouchOutside(false);
             if (result == null) {
-                mResultDialog.setMessage("Create Esptouch task failed, the esptouch port could be used by other thread");
+                    mResultDialog.setMessage("Nenhum dispositivo encontrado, verifique se foi instalado corretamente, e a senha inserida corretamente");
                 mResultDialog.show();
                 return;
             }
@@ -414,7 +437,7 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
                     }
                     mResultDialog.setMessage(sb.toString());
                 } else {
-                    mResultDialog.setMessage("Esptouch fail");
+                    mResultDialog.setMessage("Nenhum dispositivo encontrado, verifique se foi instalado corretamente, e a senha inserida corretamente");
                 }
 
                 mResultDialog.show();
@@ -422,6 +445,43 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
 
             activity.mTask = null;
         }
+    }
+
+
+    private void helpUser() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setPositiveButton(android.R.string.ok, null);
+        builder.setMessage("Conecte o chuveiro ao wifi de sua casa!");
+
+        alertHelp = builder.create();
+        alertHelp.show();
+    }
+
+    private void validatePasswordField() {
+        mApPasswordET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if(mApPasswordET.getText().toString().equals("")){
+                    mConfirmBtn.setEnabled(false);
+                } else {
+                    mConfirmBtn.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.toString().equals("")){
+                    mConfirmBtn.setEnabled(false);
+                } else {
+                    mConfirmBtn.setEnabled(true);
+                }
+            }
+        });
     }
 
 

@@ -32,6 +32,8 @@
             android:value="@string/facebook_app_id" />
 
         <activity android:name=".Main2Activity"></activity>
+
+        <activity android:name=".Activities.SmartConfig.SearchForDevices"></activity>
         <activity
             android:name=".Activities.Authentication.LoginActivity"
             android:theme="@style/AppTheme.Dark" >

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/relative_layout"
     android:background="@drawable/back_def">
 
 
@@ -19,10 +20,39 @@
             style="@android:style/Widget.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="20dp"
             android:hint="@string/wifi"
-            android:inputType="textEmailAddress" />
+            android:inputType="textEmailAddress"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="24sp" />
 
     </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="@string/bssid_title"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/ap_bssid_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -35,17 +65,29 @@
             android:id="@+id/WifiPass"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="20dp"
             android:hint="@string/wifiPass"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="24sp" />
     </android.support.design.widget.TextInputLayout>
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textColor="@android:color/holo_red_dark" />
 
     <com.github.ybq.android.spinkit.SpinKitView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/spin_kit"
         style="@style/SpinKitView.Large.WanderingCubes"
         android:layout_width="128dp"
         android:layout_height="110dp"
-        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center"
+        android:layout_marginBottom="166dp"
         app:SpinKit_Color="@android:color/background_light" />
 
     <TextView
@@ -107,11 +149,15 @@
 
     <Button
         android:id="@+id/confirm_btn"
+        style="@android:style/Widget.Holo.Button.Small"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
+        android:layout_margin="20dp"
         android:layout_weight="1"
-        android:text="@string/confirmWifi" />
+        android:fontFamily="@font/abeezee"
+        android:text="@string/confirmWifi"
+        android:textSize="30sp" />
 
 </RelativeLayout>

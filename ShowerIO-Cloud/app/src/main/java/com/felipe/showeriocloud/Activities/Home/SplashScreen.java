@@ -12,6 +12,7 @@ import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.AWSStartupHandler;
 import com.amazonaws.mobile.client.AWSStartupResult;
 import com.felipe.showeriocloud.Activities.Authentication.LoginActivity;
+import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
 import com.felipe.showeriocloud.R;
 
 
@@ -36,9 +37,14 @@ public class SplashScreen extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Intent loginActivity = new Intent(SplashScreen.this, LoginActivity.class);
+                        /*Intent loginActivity = new Intent(SplashScreen.this, LoginActivity.class);
                         startActivity(loginActivity);
+                        finish();*/
+                        Intent searchForDevicesActivity = new Intent(SplashScreen.this, SearchForDevices.class);
+                        startActivity(searchForDevicesActivity);
                         finish();
+
+
                     }
                 }, SPLASH_TIME_OUT);
 

@@ -28,6 +28,7 @@
     <string name="location_disable_message">Location(GPS) is disable</string>
     <string name="package_broadcast">Broadcast</string>
     <string name="package_multicast">Multicast</string>
+    <string name="bssid_title">BSSID: </string>
 
 
 
