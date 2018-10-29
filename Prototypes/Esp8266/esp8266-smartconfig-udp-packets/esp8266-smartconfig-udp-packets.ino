@@ -9,7 +9,7 @@ void setup() {
   WiFi.mode(WIFI_STA);
 
   // put your setup code here, to run once:
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   Serial.println("clear config");
   // reset default config

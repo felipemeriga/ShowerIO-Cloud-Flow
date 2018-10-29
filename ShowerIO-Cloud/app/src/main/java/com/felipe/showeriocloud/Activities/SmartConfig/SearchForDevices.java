@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -62,15 +63,19 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
 
 
     private RelativeLayout relativeLayout;
+    private static ProgressBar progressBar;
     private AlertDialog alertHelp;
-    private TextView mApSsidTV;
+    private AlertDialog alertSuccess;
+    private static TextView mApSsidTV;
+    private static TextInputLayout ssidLayout;
+    private static TextInputLayout passwordLayout;
     private TextView mApBssidTV;
-    private TextView findDevicesTV;
-    private EditText mApPasswordET;
+    private static TextView findDevicesTV;
+    private static EditText mApPasswordET;
     private EditText mDeviceCountET;
     private RadioGroup mPackageModeGroup;
     private TextView mMessageTV;
-    private Button mConfirmBtn;
+    private static Button mConfirmBtn;
 
     private IEsptouchListener myListener = new IEsptouchListener() {
 
@@ -117,8 +122,6 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
     private boolean mDestroyed = false;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,7 +130,7 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_search_for_devices);
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.spin_kit);
+        progressBar = (ProgressBar) findViewById(R.id.spin_kit);
         WanderingCubes wanderingCubes = new WanderingCubes();
         progressBar.setIndeterminateDrawable(wanderingCubes);
         progressBar.setVisibility(View.GONE);
@@ -145,6 +148,8 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
         mPackageModeGroup = findViewById(R.id.package_mode_group);
         mMessageTV = findViewById(R.id.message);
         mConfirmBtn = findViewById(R.id.confirm_btn);
+        ssidLayout = findViewById(R.id.ssidLayout);
+        passwordLayout = findViewById(R.id.passwordLayout);
         mConfirmBtn.setEnabled(false);
         mConfirmBtn.setOnClickListener(this);
         findDevicesTV.setVisibility(View.GONE);
@@ -169,9 +174,6 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
         } else {
             registerBroadcastReceiver();
         }
-
-
-
 
 
     }
@@ -244,7 +246,7 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
             String bssid = info.getBSSID();
             mApBssidTV.setText(bssid);
 
-            if(mApPasswordET.getText().toString().equals("")){
+            if (mApPasswordET.getText().toString().equals("")) {
                 mConfirmBtn.setEnabled(false);
             } else {
                 mConfirmBtn.setEnabled(true);
@@ -282,12 +284,12 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
             byte[] ssid = mApSsidTV.getTag() == null ? ByteUtil.getBytesByString(mApSsidTV.getText().toString())
                     : (byte[]) mApSsidTV.getTag();
             byte[] password = ByteUtil.getBytesByString(mApPasswordET.getText().toString());
-            byte [] bssid = EspNetUtil.parseBssid2bytes(mApBssidTV.getText().toString());
+            byte[] bssid = EspNetUtil.parseBssid2bytes(mApBssidTV.getText().toString());
             byte[] deviceCount = mDeviceCountET.getText().toString().getBytes();
             byte[] broadcast = {(byte) (mPackageModeGroup.getCheckedRadioButtonId() == R.id.package_broadcast
                     ? 1 : 0)};
 
-            if(mTask != null) {
+            if (mTask != null) {
                 mTask.cancelEsptouch();
             }
             mTask = new EsptouchAsyncTask4(this);
@@ -395,15 +397,29 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
         }
 
         @Override
-        protected void onPostExecute(List<IEsptouchResult> result) {
+        protected void onPostExecute(final List<IEsptouchResult> result) {
             SearchForDevices activity = mActivity.get();
             mProgressDialog.dismiss();
             mResultDialog = new AlertDialog.Builder(activity)
-                    .setPositiveButton(android.R.string.ok, null)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if(result.get(0).isSuc()){
+                                mApSsidTV.setVisibility(View.GONE);
+                                mApPasswordET.setVisibility(View.GONE);
+                                mConfirmBtn.setVisibility(View.GONE);
+                                ssidLayout.setVisibility(View.GONE);
+                                passwordLayout.setVisibility(View.GONE);
+                                progressBar.setVisibility(View.VISIBLE);
+                                findDevicesTV.setVisibility(View.VISIBLE);
+
+                            }
+                        }
+                    })
                     .create();
             mResultDialog.setCanceledOnTouchOutside(false);
             if (result == null) {
-                    mResultDialog.setMessage("Nenhum dispositivo encontrado, verifique se foi instalado corretamente, e a senha inserida corretamente");
+                mResultDialog.setMessage("Nenhum dispositivo encontrado, verifique se foi instalado corretamente, e a senha inserida corretamente");
                 mResultDialog.show();
                 return;
             }
@@ -435,7 +451,7 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
                                 .append(result.size() - count)
                                 .append(" more result(s) without showing\n");
                     }
-                    mResultDialog.setMessage(sb.toString());
+                    mResultDialog.setMessage("Dispositivo conectado com sucesso!");
                 } else {
                     mResultDialog.setMessage("Nenhum dispositivo encontrado, verifique se foi instalado corretamente, e a senha inserida corretamente");
                 }
@@ -461,7 +477,7 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
         mApPasswordET.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if(mApPasswordET.getText().toString().equals("")){
+                if (mApPasswordET.getText().toString().equals("")) {
                     mConfirmBtn.setEnabled(false);
                 } else {
                     mConfirmBtn.setEnabled(true);
@@ -475,13 +491,18 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(s.toString().equals("")){
+                if (s.toString().equals("")) {
                     mConfirmBtn.setEnabled(false);
                 } else {
                     mConfirmBtn.setEnabled(true);
                 }
             }
         });
+    }
+
+    void onSearchSuccessfull(List<IEsptouchResult> result) {
+
+
     }
 
 
