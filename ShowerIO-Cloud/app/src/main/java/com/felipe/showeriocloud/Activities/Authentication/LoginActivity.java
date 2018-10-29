@@ -175,6 +175,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                     } else {
                                         Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
+                                        initializeAwsServices();
                                         AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
                                         Intent testActivity = new Intent(LoginActivity.this, Main2Activity.class);
                                         startActivity(testActivity);
@@ -222,8 +223,6 @@ public class LoginActivity extends AppCompatActivity {
         //Initializing DynamoDB instances
         AwsDynamoDBManager awsDynamoDBManager = new AwsDynamoDBManager();
         awsDynamoDBManager.initializeDynamoDb();
-
-
     }
 
 

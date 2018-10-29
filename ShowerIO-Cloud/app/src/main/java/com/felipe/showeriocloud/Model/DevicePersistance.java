@@ -6,6 +6,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.PaginatedList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
+import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
 import com.felipe.showeriocloud.Utils.ServerCallback;
 import com.felipe.showeriocloud.Utils.ServerCallbackObject;
@@ -13,10 +14,8 @@ import com.felipe.showeriocloud.Utils.ServerCallbackObjects;
 
 public class DevicePersistance {
 
-    static DynamoDBMapper dynamoDBMapper;
-
-    //Function used to get a single device
-    public void getSingleDevice(final String deviceName, final ServerCallbackObject serverCallback) {
+/*    //Function used to get a single device
+    public static void getSingleDevice(final String deviceName, final ServerCallbackObject serverCallback) {
 
         Runnable runnable = new Runnable() {
             public void run() {
@@ -43,7 +42,7 @@ public class DevicePersistance {
 
 
     //Function used to get a single device
-    public void getAllDevicesFromUser() {
+    public static void getAllDevicesFromUser() {
 
         Condition rangeKeyCondition = new Condition()
                 .withComparisonOperator(ComparisonOperator.NOT_NULL);
@@ -57,6 +56,27 @@ public class DevicePersistance {
         PaginatedList<DeviceDO> result = dynamoDBMapper.query(DeviceDO.class, queryExpression);
 
 
+    }*/
+
+    //Function used to get a single device
+    public static void insertNewDevice(final DeviceDO deviceDO, final ServerCallbackObject serverCallback) {
+        deviceDO.setUserId(CognitoSyncClientManager.credentialsProvider.getCachedIdentityId());
+        int lastPointSubnet = deviceDO.getLocalNetworkSubnet().lastIndexOf(".");
+        deviceDO.setLocalNetworkSubnet(deviceDO.getLocalNetworkSubnet().substring(0, lastPointSubnet));
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    AwsDynamoDBManager.dynamoDBMapper.save(deviceDO);
+                    serverCallback.onServerCallbackObject(true,"Success!",deviceDO);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    serverCallback.onServerCallbackObject(false,e.getMessage(),null);
+                }
+            }
+        });
+        thread.start();
     }
 
 }

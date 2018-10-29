@@ -1,4 +1,4 @@
-package com.felipe.showeriocloud.Activities.SmartConfig;
+package com.felipe.showeriocloud.Utils;
 
 import android.net.wifi.WifiInfo;
 

@@ -11,7 +11,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 public class AwsDynamoDBManager {
 
     // Declare a DynamoDBMapper object
-    static DynamoDBMapper dynamoDBMapper;
+    public static DynamoDBMapper dynamoDBMapper;
 
 
     public void initializeDynamoDb() {
