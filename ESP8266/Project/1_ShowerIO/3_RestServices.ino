@@ -3,8 +3,28 @@
 
 
 void check() {
-      DBG_OUTPUT_PORT.println("Accessed the checkpoint");
-     server.send(200, "text/plain", "TRUE");
+  
+  DBG_OUTPUT_PORT.println("Accessed the checkpoint");
+  DBG_OUTPUT_PORT.println("The ESP8266 server was discovered by an app");
+
+  String root;
+  String localNetworkIp = WiFi.localIP().toString();
+  String localNetworkSubnet = WiFi.localIP().toString();
+  String microprocessorId = (String)ESP.getChipId();
+  String deviceStatus = "ACTIVE";
+  String iotCoreEndPoint = "agq6mvwjsctpy-ats.iot.us-east-2.amazonaws.com";
+  String iotCoreARN = "AKIAJLVWZBXXZ5NVCRWA";
+
+  root = "{\"userId\": \"\"," ;
+  root = root + "\"name\": \"UNAMED\"," ;
+  root = root + "\"iotCoreARN\": \"" + iotCoreARN + "\"," ;
+  root = root + "\"iotCoreEndPoint\": \"" + iotCoreEndPoint + "\"," ;
+  root = root + "\"localNetworkIp\": \"" + localNetworkIp + "\"," ;
+  root = root + "\"localNetworkSubnet\": \"" + localNetworkSubnet + "\"," ;
+  root = root + "\"microprocessorId\": \"" + microprocessorId + "\"," ;
+  root = root + "\"status\": \"" + deviceStatus + "\"}" ;
+  server.send(200, "application/json", root );
+
 }
 
 void selectDurationTime() {
