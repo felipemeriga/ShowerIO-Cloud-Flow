@@ -26,7 +26,9 @@ void setup() {
     delay(500);
     Serial.print(".");
     if (cnt++ >= 15) {
+      Serial.print("aur");
       WiFi.beginSmartConfig();
+      Serial.print("aur");
       while (1) {
         delay(500);
         if (WiFi.smartConfigDone()) {
@@ -47,7 +49,10 @@ void setup() {
 }
 
 void loop() {
-
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
 
 }
 

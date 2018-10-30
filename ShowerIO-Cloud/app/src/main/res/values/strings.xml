@@ -23,7 +23,7 @@
     <string name="confDevices">Configurando Dispositivos...</string>
     <string name="wifi">Wifi</string>
     <string name="wifiPass">Senha</string>
-    <string name="confirmWifi">Confirmar</string>
+    <string name="confirmWifi">Conectar</string>
     <string name="device_count_title">Device Count</string>
     <string name="wifi_5g_message">Device dose not support 5G Wifi</string>
     <string name="location_disable_message">Location(GPS) is disable</string>

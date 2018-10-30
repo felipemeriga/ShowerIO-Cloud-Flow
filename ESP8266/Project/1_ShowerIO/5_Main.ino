@@ -69,6 +69,12 @@ void configureGPIO(void) {
 
 void setup(void) {
 
+  WiFi.disconnect();
+
+  // deplay for 2 sec for smartConfig
+  Serial.println("2 sec before clear SmartConfig");
+  delay(2000);
+
   DBG_OUTPUT_PORT.begin(115200);
   DBG_OUTPUT_PORT.print("\n");
   DBG_OUTPUT_PORT.setDebugOutput(true);

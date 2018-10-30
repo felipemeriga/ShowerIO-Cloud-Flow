@@ -12,9 +12,9 @@
         android:id="@+id/ssidLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/passwordLayout"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="43dp">
+        android:layout_marginBottom="-110dp">
 
         <EditText
             android:id="@+id/WifiName"
@@ -61,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="110dp">
+        android:layout_marginTop="95dp">
 
         <EditText
             android:id="@+id/WifiPass"
@@ -86,10 +86,10 @@
         style="@style/SpinKitView.Large.WanderingCubes"
         android:layout_width="128dp"
         android:layout_height="110dp"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:layout_marginBottom="166dp"
+        android:layout_marginTop="157dp"
         app:SpinKit_Color="@android:color/background_light" />
 
     <TextView
@@ -97,8 +97,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="119dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="153dp"
         android:fontFamily="@font/abeezee"
         android:text="@string/confDevices"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
