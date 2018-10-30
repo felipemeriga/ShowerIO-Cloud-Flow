@@ -67,8 +67,8 @@ public class SplashScreen extends AppCompatActivity {
                                             Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
                                             initializeAwsServices();
                                             AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
-                                            Intent testActivity = new Intent(SplashScreen.this, Main2Activity.class);
-                                            startActivity(testActivity);
+                                            Intent searchForDevices = new Intent(SplashScreen.this, SearchForDevices.class);
+                                            startActivity(searchForDevices);
                                             finish();
                                         }
                                     } catch (Exception e) {

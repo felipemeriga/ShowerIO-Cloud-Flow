@@ -93,6 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Autenticando...");
+        progressDialog.setCanceledOnTouchOutside(false);
         _signupLink.setEnabled(false);
         this.initializeFacebookAuth();
     }
@@ -136,18 +137,6 @@ public class LoginActivity extends AppCompatActivity {
             thread.start();
         }
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        btnLoginFacebook.setEnabled(true);
-                    }
-                });
-            }
-        }).start();
-
         btnLoginFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,12 +145,14 @@ public class LoginActivity extends AppCompatActivity {
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-
-                        btnLoginFacebook.setVisibility(View.GONE);
+                        initializeAwsServices();
                         setFacebookSession(loginResult.getAccessToken());
-
-
-                        Thread thread = new Thread(new Runnable() {
+                        progressDialog.dismiss();
+                        Intent searchForDevices = new Intent(LoginActivity.this, SearchForDevices.class);
+                        startActivity(searchForDevices);
+                        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                        finish();
+/*                        Thread thread = new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 try {
@@ -169,21 +160,18 @@ public class LoginActivity extends AppCompatActivity {
                                         Toast.makeText(LoginActivity.this, "Error in Facebook login ", Toast.LENGTH_LONG).show();
                                         CognitoSyncClientManager.credentialsProvider.clearCredentials();
                                         CognitoSyncClientManager.credentialsProvider.clear();
+                                        progressDialog.dismiss();
 
                                     } else {
                                         Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
-                                        initializeAwsServices();
                                         AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
-                                        Intent testActivity = new Intent(LoginActivity.this, SearchForDevices.class);
-                                        startActivity(testActivity);
-                                        finish();
                                     }
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             }
                         });
-                        thread.start();
+                        thread.start();*/
 
                     }
 
@@ -255,7 +243,7 @@ public class LoginActivity extends AppCompatActivity {
         Log.i(TAG, "facebook token: " + accessToken.getToken());
         CognitoSyncClientManager.addLogins("graph.facebook.com",
                 accessToken.getToken());
-        btnLoginFacebook.setVisibility(View.GONE);
+//        btnLoginFacebook.setVisibility(View.GONE);
     }
 
     @Override
