@@ -12,7 +12,12 @@ import com.felipe.showeriocloud.Utils.ServerCallback;
 import com.felipe.showeriocloud.Utils.ServerCallbackObject;
 import com.felipe.showeriocloud.Utils.ServerCallbackObjects;
 
+import java.util.List;
+
 public class DevicePersistance {
+
+    public static List<DeviceDO> lastUpdateUserDevices;
+    public static boolean updatedUserDevices = true;
 
 /*    //Function used to get a single device
     public static void getSingleDevice(final String deviceName, final ServerCallbackObject serverCallback) {
@@ -42,7 +47,7 @@ public class DevicePersistance {
 
 */
     //Function used to get a single device
-    public static void getAllDevicesFromUser() {
+    public static void getAllDevicesFromUser(final ServerCallbackObjects serverCallbackObjects) {
 
         DeviceDO hashKeyObject = new DeviceDO();
         hashKeyObject.setUserId(CognitoSyncClientManager.credentialsProvider.getCachedIdentityId());
@@ -60,9 +65,13 @@ public class DevicePersistance {
             @Override
             public void run() {
                 try {
-                    PaginatedList<DeviceDO> result = AwsDynamoDBManager.dynamoDBMapper.query(DeviceDO.class, queryExpression);
+                    List<DeviceDO> result = AwsDynamoDBManager.dynamoDBMapper.query(DeviceDO.class, queryExpression);
+                    lastUpdateUserDevices = result;
+                    serverCallbackObjects.onServerCallbackObject(true,"SUCCESS",(List<Object>) (List<?>) result);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    serverCallbackObjects.onServerCallbackObject(false,e.getMessage(),null);
+
 
                 }
             }

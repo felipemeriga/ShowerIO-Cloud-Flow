@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -44,6 +45,10 @@ import com.espressif.iot.esptouch.IEsptouchTask;
 import com.espressif.iot.esptouch.task.__IEsptouchTask;
 import com.espressif.iot.esptouch.util.ByteUtil;
 import com.espressif.iot.esptouch.util.EspNetUtil;
+import com.felipe.showeriocloud.Activities.Home.SplashScreen;
+import com.felipe.showeriocloud.Main2Activity;
+import com.felipe.showeriocloud.Model.DeviceDO;
+import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.Processes.RegisterNewDevices;
 import com.felipe.showeriocloud.R;
 import com.felipe.showeriocloud.Utils.EspUtils;
@@ -180,7 +185,7 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
         }
 
         requestQueue = Volley.newRequestQueue(getApplicationContext());
-        registerNewDevices =  new RegisterNewDevices();
+        registerNewDevices = new RegisterNewDevices();
     }
 
 
@@ -417,7 +422,7 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if(result.get(0).isSuc()){
+                            if (result.get(0).isSuc()) {
                                 mApSsidTV.setVisibility(View.GONE);
                                 mApPasswordET.setVisibility(View.GONE);
                                 mConfirmBtn.setVisibility(View.GONE);
@@ -425,7 +430,7 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
                                 passwordLayout.setVisibility(View.GONE);
                                 progressBar.setVisibility(View.VISIBLE);
                                 findDevicesTV.setVisibility(View.VISIBLE);
-                                serverCallbackObjects.onServerCallbackObject(true,"SUCCESS",(List<Object>) (List<?>) result );
+                                serverCallbackObjects.onServerCallbackObject(true, "SUCCESS", (List<Object>) (List<?>) result);
                             }
                         }
                     })
@@ -513,21 +518,52 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
     }
 
 
+    public void onSearchSuccessfull(final List<IEsptouchResult> results) {
+        final int countDevices = results.size();
+        DevicePersistance.getAllDevicesFromUser(new ServerCallbackObjects() {
+            @Override
+            public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
+                if (!status) {
+                    Snackbar snackbar = Snackbar
+                            .make(relativeLayout, "Erro ao contatar o servidor, tente novamente!", Snackbar.LENGTH_LONG)
+                            .setDuration(32000);
+                    snackbar.show();
+                    onServerError();
+                } else {
+                    for (final IEsptouchResult item : results) {
+                        registerNewDevices.createNewDevice(item, requestQueue, new ServerCallback() {
+                            @Override
+                            public void onServerCallback(Boolean status, String response) {
+                                if (!status) {
+                                    Snackbar snackbar = Snackbar
+                                            .make(relativeLayout, "Erro ao contatar o servidor, tente novamente!", Snackbar.LENGTH_LONG)
+                                            .setDuration(32000);
+                                    snackbar.show();
+                                    if (results.indexOf(item) == countDevices - 1) {
+                                        onServerError();
+                                    }
+                                } else {
+                                    Log.i(TAG, "onSearchSuccessfull() successfully saved the device!");
+                                    if (results.indexOf(item) == countDevices - 1) {
+                                        //CHANGE TO THE DEVICE LIST ACTIVITY
+                                    }
+                                }
 
-
-
-    public void onSearchSuccessfull(List<IEsptouchResult> results) {
-            for(IEsptouchResult item: results ) {
-                this.registerNewDevices.createNewDevice(item,requestQueue, new ServerCallback() {
-                    @Override
-                    public void onServerCallback(Boolean status, String response) {
-                        Log.i(TAG, "onSearchSuccessfull() successfully saved the device!");
-
-
+                            }
+                        });
                     }
-                });
-            }
+                }
 
+            }
+        });
+
+    }
+
+    void onServerError() {
+        Intent splashScreen = new Intent(SearchForDevices.this, SplashScreen.class);
+        startActivity(splashScreen);
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        finish();
     }
 
 }

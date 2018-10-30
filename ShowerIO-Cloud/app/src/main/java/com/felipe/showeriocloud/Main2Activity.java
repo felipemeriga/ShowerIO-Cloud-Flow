@@ -55,7 +55,7 @@ public class Main2Activity extends AppCompatActivity {
 
         DevicePersistance devicePersistance = new DevicePersistance();
 
-        devicePersistance.getAllDevicesFromUser();
+//        devicePersistance.getAllDevicesFromUser();
 
 
     }
