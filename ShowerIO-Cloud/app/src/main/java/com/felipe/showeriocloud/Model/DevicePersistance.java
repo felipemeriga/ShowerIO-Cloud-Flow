@@ -40,23 +40,37 @@ public class DevicePersistance {
 
     }
 
-
+*/
     //Function used to get a single device
     public static void getAllDevicesFromUser() {
 
-        Condition rangeKeyCondition = new Condition()
+        DeviceDO hashKeyObject = new DeviceDO();
+        hashKeyObject.setUserId(CognitoSyncClientManager.credentialsProvider.getCachedIdentityId());
+
+
+        Condition rangeAndHashKeyCondition = new Condition()
                 .withComparisonOperator(ComparisonOperator.NOT_NULL);
 
-        DynamoDBQueryExpression queryExpression = new DynamoDBQueryExpression()
-                .withHashKeyValues(CognitoSyncClientManager.credentialsProvider.getCachedIdentityId())
-                .withConsistentRead(false)
-                .withRangeKeyCondition("name",rangeKeyCondition);
+
+         final DynamoDBQueryExpression queryExpression = new DynamoDBQueryExpression()
+                .withHashKeyValues(hashKeyObject)
+                .withConsistentRead(false);
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    PaginatedList<DeviceDO> result = AwsDynamoDBManager.dynamoDBMapper.query(DeviceDO.class, queryExpression);
+                } catch (Exception e) {
+                    e.printStackTrace();
+
+                }
+            }
+        });
+        thread.start();
 
 
-        PaginatedList<DeviceDO> result = dynamoDBMapper.query(DeviceDO.class, queryExpression);
-
-
-    }*/
+    }
 
     //Function used to get a single device
     public static void insertNewDevice(final DeviceDO deviceDO, final ServerCallbackObject serverCallback) {

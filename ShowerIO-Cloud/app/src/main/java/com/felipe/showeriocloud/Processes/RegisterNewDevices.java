@@ -21,13 +21,15 @@ public class RegisterNewDevices {
     private static final String TAG = "RegisterNewDevices";
     private Gson gson;
 
+    public RegisterNewDevices() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        this.gson = gsonBuilder.create();
+    }
 
     public void createNewDevice(IEsptouchResult result, RequestQueue requestQueue, final ServerCallback callback) {
         final String ENDPOINT = "http://" + result.getInetAddress().getHostAddress() + "/check";
         //The http request will be done on the ENDPOINT in order to retrieve the private IOT params of the ESP8266
         Log.i(TAG, "createNewDevice() Doing the HTTP GET request on ENDPOINT: " + ENDPOINT);
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        this.gson = gsonBuilder.create();
         requestQueue.add(new StringRequest(Request.Method.GET, ENDPOINT, onPostsLoaded, onPostsError));
         this.callback = callback;
     }

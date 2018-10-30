@@ -6,6 +6,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBIndexHas
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBIndexRangeKey;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBRangeKey;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBTable;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 import java.util.Map;
@@ -14,13 +15,21 @@ import java.util.Set;
 @DynamoDBTable(tableName = "showerio-mobilehub-1561120802-Device")
 
 public class DeviceDO {
+    @SerializedName("userId")
     private String _userId;
+    @SerializedName("name")
     private String _name;
+    @SerializedName("iotCoreARN")
     private String _iotCoreARN;
+    @SerializedName("iotCoreEndPoint")
     private String _iotCoreEndPoint;
+    @SerializedName("localNetworkIp")
     private String _localNetworkIp;
+    @SerializedName("localNetworkSubnet")
     private String _localNetworkSubnet;
+    @SerializedName("microprocessorId")
     private Double _microprocessorId;
+    @SerializedName("status")
     private String _status;
 
     @DynamoDBHashKey(attributeName = "userId")

@@ -23,6 +23,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.felipe.showeriocloud.Activities.Home.SplashScreen;
+import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
 import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
 import com.felipe.showeriocloud.Main2Activity;
@@ -105,11 +106,6 @@ public class LoginActivity extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
         btnLoginFacebook = (Button) findViewById(R.id.facebook_login_button);
 
-        /**
-         * Initializes the sync client. This must be call before you can use it.
-         */
-        CognitoSyncClientManager.init(this);
-
         //If access token is already here, set fb session
         final AccessToken fbAccessToken = AccessToken.getCurrentAccessToken();
         if (fbAccessToken != null) {
@@ -126,8 +122,9 @@ public class LoginActivity extends AppCompatActivity {
 
                         } else {
                             Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
+                            initializeAwsServices();
                             AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
-                            Intent testActivity = new Intent(LoginActivity.this, Main2Activity.class);
+                            Intent testActivity = new Intent(LoginActivity.this, SearchForDevices.class);
                             startActivity(testActivity);
                             finish();
                         }
@@ -177,7 +174,7 @@ public class LoginActivity extends AppCompatActivity {
                                         Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
                                         initializeAwsServices();
                                         AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
-                                        Intent testActivity = new Intent(LoginActivity.this, Main2Activity.class);
+                                        Intent testActivity = new Intent(LoginActivity.this, SearchForDevices.class);
                                         startActivity(testActivity);
                                         finish();
                                     }

@@ -36,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.espressif.iot.esptouch.EsptouchTask;
 import com.espressif.iot.esptouch.IEsptouchListener;
 import com.espressif.iot.esptouch.IEsptouchResult;
@@ -43,8 +44,11 @@ import com.espressif.iot.esptouch.IEsptouchTask;
 import com.espressif.iot.esptouch.task.__IEsptouchTask;
 import com.espressif.iot.esptouch.util.ByteUtil;
 import com.espressif.iot.esptouch.util.EspNetUtil;
+import com.felipe.showeriocloud.Processes.RegisterNewDevices;
 import com.felipe.showeriocloud.R;
 import com.felipe.showeriocloud.Utils.EspUtils;
+import com.felipe.showeriocloud.Utils.ServerCallback;
+import com.felipe.showeriocloud.Utils.ServerCallbackObjects;
 import com.github.ybq.android.spinkit.style.WanderingCubes;
 import com.google.gson.Gson;
 
@@ -61,7 +65,7 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
     private static final String TAG = "SearchForDevices";
     private static final int REQUEST_PERMISSION = 0x01;
 
-
+    private RegisterNewDevices registerNewDevices;
     private RelativeLayout relativeLayout;
     private static ProgressBar progressBar;
     private AlertDialog alertHelp;
@@ -175,7 +179,8 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
             registerBroadcastReceiver();
         }
 
-
+        requestQueue = Volley.newRequestQueue(getApplicationContext());
+        registerNewDevices =  new RegisterNewDevices();
     }
 
 
@@ -292,7 +297,13 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
             if (mTask != null) {
                 mTask.cancelEsptouch();
             }
-            mTask = new EsptouchAsyncTask4(this);
+            mTask = new EsptouchAsyncTask4(this, new ServerCallbackObjects() {
+                @Override
+                public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
+                    List<IEsptouchResult> results = (List<IEsptouchResult>) (List<?>) objects;
+                    onSearchSuccessfull(results);
+                }
+            });
             mTask.execute(ssid, bssid, password, deviceCount, broadcast);
         }
     }
@@ -302,9 +313,9 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void run() {
-                String text = result.getBssid() + " is connected to the wifi";
-                Toast.makeText(SearchForDevices.this, text,
-                        Toast.LENGTH_LONG).show();
+//                String text = result.getBssid() + " is connected to the wifi";
+//                Toast.makeText(SearchForDevices.this, text,
+//                        Toast.LENGTH_LONG).show();
             }
 
         });
@@ -323,9 +334,11 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
         private ProgressDialog mProgressDialog;
         private AlertDialog mResultDialog;
         private IEsptouchTask mEsptouchTask;
+        private ServerCallbackObjects serverCallbackObjects;
 
-        EsptouchAsyncTask4(SearchForDevices activity) {
+        EsptouchAsyncTask4(SearchForDevices activity, ServerCallbackObjects serverCallbackObjects) {
             mActivity = new WeakReference<>(activity);
+            this.serverCallbackObjects = serverCallbackObjects;
         }
 
         void cancelEsptouch() {
@@ -412,7 +425,7 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
                                 passwordLayout.setVisibility(View.GONE);
                                 progressBar.setVisibility(View.VISIBLE);
                                 findDevicesTV.setVisibility(View.VISIBLE);
-
+                                serverCallbackObjects.onServerCallbackObject(true,"SUCCESS",(List<Object>) (List<?>) result );
                             }
                         }
                     })
@@ -455,7 +468,6 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
                 } else {
                     mResultDialog.setMessage("Nenhum dispositivo encontrado, verifique se foi instalado corretamente, e a senha inserida corretamente");
                 }
-
                 mResultDialog.show();
             }
 
@@ -500,10 +512,22 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
         });
     }
 
-    void onSearchSuccessfull(List<IEsptouchResult> result) {
 
+
+
+
+    public void onSearchSuccessfull(List<IEsptouchResult> results) {
+            for(IEsptouchResult item: results ) {
+                this.registerNewDevices.createNewDevice(item,requestQueue, new ServerCallback() {
+                    @Override
+                    public void onServerCallback(Boolean status, String response) {
+                        Log.i(TAG, "onSearchSuccessfull() successfully saved the device!");
+
+
+                    }
+                });
+            }
 
     }
-
 
 }
