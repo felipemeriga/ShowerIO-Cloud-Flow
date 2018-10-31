@@ -46,6 +46,7 @@ import com.espressif.iot.esptouch.task.__IEsptouchTask;
 import com.espressif.iot.esptouch.util.ByteUtil;
 import com.espressif.iot.esptouch.util.EspNetUtil;
 import com.felipe.showeriocloud.Activities.Home.SplashScreen;
+import com.felipe.showeriocloud.Activities.ShowerIO.ShowerListActivity;
 import com.felipe.showeriocloud.Main2Activity;
 import com.felipe.showeriocloud.Model.DeviceDO;
 import com.felipe.showeriocloud.Model.DevicePersistance;
@@ -545,7 +546,10 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
                                 } else {
                                     Log.i(TAG, "onSearchSuccessfull() successfully saved the device!");
                                     if (results.indexOf(item) == countDevices - 1) {
-                                        //CHANGE TO THE DEVICE LIST ACTIVITY
+                                        Intent listOfDevices = new Intent(SearchForDevices.this, ShowerListActivity.class);
+                                        startActivity(listOfDevices);
+                                        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                                        finish();
                                     }
                                 }
 

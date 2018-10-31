@@ -16,11 +16,16 @@ import com.amazonaws.mobile.client.AWSStartupHandler;
 import com.amazonaws.mobile.client.AWSStartupResult;
 import com.facebook.AccessToken;
 import com.felipe.showeriocloud.Activities.Authentication.LoginActivity;
+import com.felipe.showeriocloud.Activities.ShowerIO.ShowerListActivity;
 import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
 import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
 import com.felipe.showeriocloud.Main2Activity;
+import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
+import com.felipe.showeriocloud.Utils.ServerCallbackObjects;
+
+import java.util.List;
 
 
 public class SplashScreen extends AppCompatActivity {
@@ -67,9 +72,24 @@ public class SplashScreen extends AppCompatActivity {
                                             Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
                                             initializeAwsServices();
                                             AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
-                                            Intent searchForDevices = new Intent(SplashScreen.this, SearchForDevices.class);
-                                            startActivity(searchForDevices);
-                                            finish();
+
+                                            DevicePersistance.getAllDevicesFromUser(new ServerCallbackObjects() {
+                                                @Override
+                                                public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
+                                                    if(objects.size() > 0) {
+                                                        Intent listOfDevices = new Intent(SplashScreen.this, ShowerListActivity.class);
+                                                        startActivity(listOfDevices);
+                                                        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                                                        finish();
+
+                                                    } else{
+                                                        Intent searchForDevices = new Intent(SplashScreen.this, SearchForDevices.class);
+                                                        startActivity(searchForDevices);
+                                                        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                                                        finish();
+                                                    }
+                                                }
+                                            });
                                         }
                                     } catch (Exception e) {
                                         e.printStackTrace();

@@ -18,6 +18,7 @@ public class DevicePersistance {
 
     public static List<DeviceDO> lastUpdateUserDevices;
     public static boolean updatedUserDevices = true;
+    public static DeviceDO selectedDevice;
 
 /*    //Function used to get a single device
     public static void getSingleDevice(final String deviceName, final ServerCallbackObject serverCallback) {
