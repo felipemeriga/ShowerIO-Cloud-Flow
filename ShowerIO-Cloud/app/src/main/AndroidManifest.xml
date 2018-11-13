@@ -12,8 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-        </activity>
+        <activity android:name=".MainActivity"></activity>
         <activity
             android:name="com.facebook.FacebookActivity"
             android:exported="true">
@@ -31,23 +30,26 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity android:name=".Main2Activity"></activity>
-
-        <activity android:name=".Activities.SmartConfig.SearchForDevices"></activity>
+        <activity android:name=".Main2Activity" />
+        <activity android:name=".Activities.ShowerIO.ShowerListActivity" />
+        <activity android:name=".Activities.SmartConfig.SearchForDevices" />
         <activity
             android:name=".Activities.Authentication.LoginActivity"
-            android:theme="@style/AppTheme.Dark" >
-        </activity>
+            android:theme="@style/AppTheme.Dark"></activity>
         <activity
             android:name=".Activities.Authentication.SignupActivity"
             android:theme="@style/AppTheme.Dark" />
-
-        <activity android:name=".Activities.Home.SplashScreen" >
+        <activity android:name=".Activities.Home.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Activities.ShowerIO.ShowerBaseActivity"
+            android:label="@string/title_activity_shower_base"
+            android:theme="@style/AppTheme.Dark"></activity>
     </application>
 
 </manifest>

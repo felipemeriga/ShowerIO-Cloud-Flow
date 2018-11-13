@@ -30,7 +30,12 @@
     <string name="package_broadcast">Broadcast</string>
     <string name="package_multicast">Multicast</string>
     <string name="bssid_title">BSSID: </string>
-
+    <string name="title_activity_shower_base"></string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">ShowerIO</string>
+    <string name="nav_header_subtitle">www.showerio.com.br</string>
+    <string name="nav_header_desc">Navigation header</string>
 
 
 </resources>

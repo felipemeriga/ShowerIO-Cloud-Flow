@@ -104,7 +104,7 @@ public class ShowerListActivity extends AppCompatActivity implements RecyclerIte
 
     public void fetchDevicesInUI() {
         showerDevicesList.clear();
-        showerDevicesList = DevicePersistance.lastUpdateUserDevices;
+        showerDevicesList.addAll(DevicePersistance.lastUpdateUserDevices);
 
         if (showerDevicesList.size() == 0) {
             Log.d(TAG, "fetchDevicesInUI(): Any devices were found, calling toast to alert user");
