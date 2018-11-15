@@ -24,13 +24,12 @@
                 android:id="@+id/nav_account"
                 android:icon="@drawable/ic_person_outline_black_24dp"
                 android:title="Minha Conta" />
-        </menu>
-        <menu>
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
                 android:title="Compartilhar" />
         </menu>
+
 
 
     </item>

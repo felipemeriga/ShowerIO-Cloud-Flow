@@ -16,8 +16,8 @@ import com.amazonaws.mobile.client.AWSStartupHandler;
 import com.amazonaws.mobile.client.AWSStartupResult;
 import com.facebook.AccessToken;
 import com.felipe.showeriocloud.Activities.Authentication.LoginActivity;
-import com.felipe.showeriocloud.Activities.ShowerIO.ShowerBaseActivity;
 import com.felipe.showeriocloud.Activities.ShowerIO.ShowerListActivity;
+import com.felipe.showeriocloud.Activities.ShowerIO.ShowerNavigationDrawer;
 import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
 import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
@@ -42,14 +42,11 @@ public class SplashScreen extends AppCompatActivity {
 
         setContentView(R.layout.activity_home);
 
-        Intent test = new Intent(SplashScreen.this, ShowerBaseActivity.class);
-        startActivity(test);
-        finish();
 
         /**
          * Initializes the sync client. This must be call before you can use it.
          */
-       /* CognitoSyncClientManager.init(this);
+        CognitoSyncClientManager.init(this);
 
         AWSMobileClient.getInstance().initialize(this, new AWSStartupHandler() {
             @Override
@@ -82,7 +79,7 @@ public class SplashScreen extends AppCompatActivity {
                                                 @Override
                                                 public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
                                                     if(objects.size() > 0) {
-                                                        Intent listOfDevices = new Intent(SplashScreen.this, ShowerListActivity.class);
+                                                        Intent listOfDevices = new Intent(SplashScreen.this, ShowerNavigationDrawer.class);
                                                         startActivity(listOfDevices);
                                                         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
                                                         finish();
@@ -114,7 +111,6 @@ public class SplashScreen extends AppCompatActivity {
 
             }
         }).execute();
-*/
     }
 
     public void initializeAwsServices() {

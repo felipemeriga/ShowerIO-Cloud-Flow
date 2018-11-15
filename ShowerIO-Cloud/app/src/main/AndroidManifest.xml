@@ -47,7 +47,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activities.ShowerIO.ShowerBaseActivity"
+            android:name=".Activities.ShowerIO.ShowerNavigationDrawer"
             android:label="@string/title_activity_shower_base"
             android:theme="@style/AppTheme.Dark"></activity>
     </application>

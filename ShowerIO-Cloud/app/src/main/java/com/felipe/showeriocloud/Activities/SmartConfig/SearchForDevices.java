@@ -140,7 +140,7 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_search_for_devices);
-        progressBar = (ProgressBar) findViewById(R.id.spin_kit);
+        progressBar = (ProgressBar) findViewById(R.id.spin_kitSearch);
         WanderingCubes wanderingCubes = new WanderingCubes();
         progressBar.setIndeterminateDrawable(wanderingCubes);
         progressBar.setVisibility(View.GONE);
