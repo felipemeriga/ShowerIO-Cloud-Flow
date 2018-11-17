@@ -1,13 +1,10 @@
 package com.felipe.showeriocloud.Activities.ShowerIO;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,13 +13,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
 
-import com.felipe.showeriocloud.Activities.ShowerListFragment;
+import com.felipe.showeriocloud.Activities.Fragments.HelpFragment;
+import com.felipe.showeriocloud.Activities.Fragments.ShowerListFragment;
+import com.felipe.showeriocloud.Activities.Home.SplashScreen;
+import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
 import com.felipe.showeriocloud.R;
 
 public class ShowerNavigationDrawer extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ShowerListFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ShowerListFragment.OnFragmentInteractionListener, HelpFragment.OnFragmentInteractionListener {
+
+    protected NavigationView navigationView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,15 +32,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
         setContentView(R.layout.activity_shower_base);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-/*        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -48,27 +42,37 @@ public class ShowerNavigationDrawer extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+    }
+
+
+    private void startBaseFragment() {
+        Fragment fragment = new ShowerListFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.base, fragment).commit();
+        navigationView.getMenu().getItem(0).setChecked(true);
+        setTitle(getString(R.string.nav_list_of_devices));
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
     }
 
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-/*        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
-        }*/
-        //Inflate the base page
-        drawer.openDrawer(GravityCompat.START);
-        LayoutInflater inflater = getLayoutInflater();
-        LinearLayout container = (LinearLayout) findViewById(R.id.base);
-        inflater.inflate(R.layout.content_shower_base, container);
+        }
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.shower_base, menu);
+        startBaseFragment();
         return true;
     }
 
@@ -87,24 +91,27 @@ public class ShowerNavigationDrawer extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
         Fragment fragment = null;
         Class fragmentClass;
         fragmentClass = ShowerListFragment.class;
 
         switch (item.getItemId()) {
             case R.id.nav_find_devices:
-                fragmentClass = ShowerListFragment.class;
-                break;
+                Intent findDevices = new Intent(ShowerNavigationDrawer.this, SearchForDevices.class);
+                startActivity(findDevices);
+                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                finish();
             case R.id.nav_manage:
 //                fragmentClass = SecondFragment.class;
                 break;
             case R.id.nav_help:
-//                fragmentClass = ThirdFragment.class;
+                fragmentClass = HelpFragment.class;
                 break;
             case R.id.nav_account:
 //                fragmentClass = ThirdFragment.class;
@@ -141,6 +148,9 @@ public class ShowerNavigationDrawer extends AppCompatActivity
     public void onFragmentInteraction(Uri uri) {
 
     }
+
+
+
 
 
 

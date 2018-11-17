@@ -6,10 +6,11 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".Activities.ShowerIO.ShowerListActivity"
-    tools:showIn="@layout/activity_shower_list">
+    tools:showIn="@layout/fragment_shower_list">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerShower"
+        android:paddingTop="@dimen/device_list_margin_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="vertical" />

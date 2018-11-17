@@ -26,7 +26,7 @@
         <item name="colorAccent">@color/showerAccent</item>
 
         <item name="android:windowBackground">@drawable/back_def</item>
-        <item name="android:statusBarColor">@color/colorStatusBar</item>
+        <item name="android:statusBarColor">@color/showerPrimary</item>
 
         <item name="colorControlNormal">@color/iron</item>
         <item name="colorControlActivated">@color/white</item>

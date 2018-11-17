@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -8,7 +9,8 @@
         android:id="@+id/view_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bg_row_background">
+        android:layout_marginTop="2dp"
+        android:background="@drawable/list_online">
 
         <ImageView
             android:id="@+id/delete_icon"
@@ -35,7 +37,8 @@
         android:id="@+id/view_background_offline"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bg_row_background_offline">
+        android:layout_marginTop="2dp"
+        android:background="@drawable/list_offline">
 
         <ImageView
             android:id="@+id/scrollOfflineIcon"
@@ -59,12 +62,13 @@
     </RelativeLayout>
 
 
-
     <RelativeLayout
         android:id="@+id/view_foreground"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/list_back"
+        android:nestedScrollingEnabled="false"
         android:padding="@dimen/padd_10">
 
         <TextView

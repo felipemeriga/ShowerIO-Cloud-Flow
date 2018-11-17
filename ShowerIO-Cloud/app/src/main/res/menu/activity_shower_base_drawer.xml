@@ -5,29 +5,34 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_list_of_devices"
+            android:icon="@drawable/ic_format_list_numbered_black_24dp"
+            android:title="@string/nav_list_of_devices" />
+        <item
             android:id="@+id/nav_find_devices"
             android:icon="@drawable/ic_find_in_page_black_24dp"
-            android:title="Descobrir/Conectar dispositivos" />
+            android:title="@string/nav_find_devices" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Configurações" />
+            android:title="@string/nav_manage" />
         <item
             android:id="@+id/nav_help"
             android:icon="@drawable/ic_help_black_24dp"
-            android:title="Ajuda" />
+            android:title="@string/nav_help" />
     </group>
 
-    <item android:title="Networking">
+    <item android:title="@string/nav_network"
+        >
         <menu>
             <item
                 android:id="@+id/nav_account"
                 android:icon="@drawable/ic_person_outline_black_24dp"
-                android:title="Minha Conta" />
+                android:title="@string/nav_account" />
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Compartilhar" />
+                android:title="@string/nav_share" />
         </menu>
 
 

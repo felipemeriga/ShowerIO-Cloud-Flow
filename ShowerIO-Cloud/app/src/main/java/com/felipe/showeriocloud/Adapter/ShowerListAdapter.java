@@ -81,7 +81,7 @@ public class ShowerListAdapter extends RecyclerView.Adapter<ShowerListAdapter.My
     }
 
     //This method is called by onSwipe in ShowerListActivity that implements this method from RecyclerItemTouchHelperListener interface
-    //This method is called to delete items from RecyclerView list
+    //This method is called to delete items from RecyclerView list_back
     public void removeShowerDevice(int position) {
         showerDevices.remove(position);
         // notify the showerDevice removed by position
