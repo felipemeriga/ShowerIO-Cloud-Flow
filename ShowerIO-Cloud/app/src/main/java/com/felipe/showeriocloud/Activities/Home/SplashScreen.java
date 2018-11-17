@@ -1,7 +1,11 @@
 package com.felipe.showeriocloud.Activities.Home;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -15,17 +19,23 @@ import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.AWSStartupHandler;
 import com.amazonaws.mobile.client.AWSStartupResult;
 import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
 import com.felipe.showeriocloud.Activities.Authentication.LoginActivity;
 import com.felipe.showeriocloud.Activities.ShowerIO.ShowerListActivity;
 import com.felipe.showeriocloud.Activities.ShowerIO.ShowerNavigationDrawer;
 import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
 import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
-import com.felipe.showeriocloud.Main2Activity;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
 import com.felipe.showeriocloud.Utils.ServerCallbackObjects;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.URL;
 import java.util.List;
 
 
@@ -78,13 +88,13 @@ public class SplashScreen extends AppCompatActivity {
                                             DevicePersistance.getAllDevicesFromUser(new ServerCallbackObjects() {
                                                 @Override
                                                 public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
-                                                    if(objects.size() > 0) {
+                                                    if (objects.size() > 0) {
                                                         Intent listOfDevices = new Intent(SplashScreen.this, ShowerNavigationDrawer.class);
                                                         startActivity(listOfDevices);
                                                         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
                                                         finish();
 
-                                                    } else{
+                                                    } else {
                                                         Intent searchForDevices = new Intent(SplashScreen.this, SearchForDevices.class);
                                                         startActivity(searchForDevices);
                                                         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
@@ -104,8 +114,6 @@ public class SplashScreen extends AppCompatActivity {
                             startActivity(loginActivity);
                             finish();
                         }
-
-
                     }
                 }, SPLASH_TIME_OUT);
 
@@ -124,6 +132,5 @@ public class SplashScreen extends AppCompatActivity {
         CognitoSyncClientManager.addLogins("graph.facebook.com",
                 accessToken.getToken());
     }
-
 
 }

@@ -26,8 +26,6 @@ import com.felipe.showeriocloud.Activities.Home.SplashScreen;
 import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
 import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
-import com.felipe.showeriocloud.Main2Activity;
-import com.felipe.showeriocloud.MainActivity;
 import com.felipe.showeriocloud.R;
 import com.google.gson.Gson;
 
@@ -248,7 +246,6 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Disable going back to the MainActivity
         moveTaskToBack(true);
     }
 

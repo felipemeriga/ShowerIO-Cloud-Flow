@@ -34,7 +34,6 @@ import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -47,8 +46,6 @@ import com.espressif.iot.esptouch.util.ByteUtil;
 import com.espressif.iot.esptouch.util.EspNetUtil;
 import com.felipe.showeriocloud.Activities.Home.SplashScreen;
 import com.felipe.showeriocloud.Activities.ShowerIO.ShowerListActivity;
-import com.felipe.showeriocloud.Main2Activity;
-import com.felipe.showeriocloud.Model.DeviceDO;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.Processes.RegisterNewDevices;
 import com.felipe.showeriocloud.R;
