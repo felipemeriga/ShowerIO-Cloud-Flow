@@ -116,6 +116,8 @@ public class ShowerNavigationDrawer extends AppCompatActivity
         fragmentClass = ShowerListFragment.class;
 
         switch (item.getItemId()) {
+            case R.id.nav_list_of_devices:
+                fragmentClass = ShowerListFragment.class;
             case R.id.nav_find_devices:
                 Intent findDevices = new Intent(ShowerNavigationDrawer.this, SearchForDevices.class);
                 startActivity(findDevices);
