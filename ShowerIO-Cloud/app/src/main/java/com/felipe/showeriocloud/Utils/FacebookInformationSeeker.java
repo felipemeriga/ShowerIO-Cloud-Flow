@@ -48,7 +48,7 @@ public class FacebookInformationSeeker {
                         }
                     });
             Bundle parameters = new Bundle();
-            parameters.putString("fields", "id,email,picture.type(large)");
+            parameters.putString("fields", "name,id,email,picture.type(large)");
             request.setParameters(parameters);
             GraphResponse graphResponse = request.executeAndWait();
             try {
@@ -64,7 +64,7 @@ public class FacebookInformationSeeker {
             try {
                 String profilePicUrl = response.getJSONObject("picture").getJSONObject("data").getString("url");
                 facebookProfilePhotoUrl = profilePicUrl;
-                facebookName = response.getJSONObject("name").getString("name");
+                facebookName = response.get("name").toString();
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.d(TAG, "GetFbInformation returned with error " + e.getMessage());

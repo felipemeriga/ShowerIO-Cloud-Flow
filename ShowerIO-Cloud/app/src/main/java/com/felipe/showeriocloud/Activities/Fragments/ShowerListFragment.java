@@ -27,14 +27,6 @@ import com.github.ybq.android.spinkit.style.WanderingCubes;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ShowerListFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ShowerListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ShowerListFragment extends Fragment implements RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
     private ProgressBar progressBar;

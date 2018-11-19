@@ -69,7 +69,7 @@ public class ShowerDetailFragment extends Fragment {
         mainGrid = (GridLayout) view.findViewById(R.id.mainGrid);
         deviceTitle = view.findViewById(R.id.textGrid);
         cardViewPlay = view.findViewById(R.id.cardViewPlay);
-        scrollView = view.findViewById(R.id.scrollView);
+        scrollView = view.findViewById(R.id.scrollViewDetail);
         nameFlag = false;
         defaultColor = cardViewPlay.getCardBackgroundColor();
 
@@ -83,6 +83,7 @@ public class ShowerDetailFragment extends Fragment {
             helpUserSetName();
         } else {
             deviceTitle.setText(device.getName());
+
         }
 
         return view;

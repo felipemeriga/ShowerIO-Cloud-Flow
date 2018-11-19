@@ -18,6 +18,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.felipe.showeriocloud.Activities.Fragments.HelpFragment;
 import com.felipe.showeriocloud.Activities.Fragments.ShowerDetailFragment;
@@ -32,10 +34,12 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 public class ShowerNavigationDrawer extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, HelpFragment.OnFragmentInteractionListener, ShowerListFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, HelpFragment.OnFragmentInteractionListener, ShowerListFragment.OnFragmentInteractionListener, ShowerDetailFragment.OnFragmentInteractionListener {
 
     protected NavigationView navigationView;
     private ImageView imageView;
+    private TextView usernameTitle;
+    private LinearLayout linearLayout;
 
 
     @Override
@@ -45,8 +49,16 @@ public class ShowerNavigationDrawer extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
+        final View hView =  navigationView.getHeaderView(0);
 
-            //TODO - SET BACKGROUND AS FACEBOOK IMAGE
+
+        // TODO - FACEBOOK AND COGNITO NAME - CHANGE HERE
+        linearLayout = (LinearLayout) hView.findViewById(R.id.nav_header_linear);
+        imageView = (ImageView) hView.findViewById(R.id.imageView);
+        usernameTitle = (TextView) hView.findViewById(R.id.username);
+
+        usernameTitle.setText(FacebookInformationSeeker.facebookName);
+//        Picasso.get().load(FacebookInformationSeeker.facebookProfilePhotoUrl).into(imageView);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -116,8 +128,6 @@ public class ShowerNavigationDrawer extends AppCompatActivity
         fragmentClass = ShowerListFragment.class;
 
         switch (item.getItemId()) {
-            case R.id.nav_list_of_devices:
-                fragmentClass = ShowerListFragment.class;
             case R.id.nav_find_devices:
                 Intent findDevices = new Intent(ShowerNavigationDrawer.this, SearchForDevices.class);
                 startActivity(findDevices);
@@ -164,8 +174,11 @@ public class ShowerNavigationDrawer extends AppCompatActivity
     public void onSelectedDevice(DeviceDO deviceDO) {
         DevicePersistance.selectedDevice = deviceDO;
         Fragment detailFragment = new ShowerDetailFragment();
+
         FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().remove(fragmentManager.getFragments().get(0));
         fragmentManager.beginTransaction().replace(R.id.base, detailFragment).commit();
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
     }
