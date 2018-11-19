@@ -17,11 +17,11 @@ public class FacebookInformationSeeker {
 
     private static final String TAG = "FacebookSeeker";
     private static AccessToken accessToken;
-    private static String facebookProfilePhotoUrl;
-    private static String facebookName;
+    public static String facebookProfilePhotoUrl;
+    public static String facebookName;
 
 
-    private class GetFbInformation extends AsyncTask<Void, Void, JSONObject> {
+    public static class GetFbInformation extends AsyncTask<Void, Void, JSONObject> {
         private final AccessToken accessToken;
         private ProgressDialog dialog;
 

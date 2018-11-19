@@ -1,6 +1,9 @@
 package com.felipe.showeriocloud.Activities.ShowerIO;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,17 +16,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.felipe.showeriocloud.Activities.Fragments.HelpFragment;
+import com.felipe.showeriocloud.Activities.Fragments.ShowerDetailFragment;
 import com.felipe.showeriocloud.Activities.Fragments.ShowerListFragment;
 import com.felipe.showeriocloud.Activities.Home.SplashScreen;
 import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
+import com.felipe.showeriocloud.Model.DeviceDO;
+import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
+import com.felipe.showeriocloud.Utils.FacebookInformationSeeker;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 public class ShowerNavigationDrawer extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ShowerListFragment.OnFragmentInteractionListener, HelpFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, HelpFragment.OnFragmentInteractionListener, ShowerListFragment.OnFragmentInteractionListener {
 
     protected NavigationView navigationView;
+    private ImageView imageView;
 
 
     @Override
@@ -33,6 +45,8 @@ public class ShowerNavigationDrawer extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+            //TODO - SET BACKGROUND AS FACEBOOK IMAGE
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -145,14 +159,17 @@ public class ShowerNavigationDrawer extends AppCompatActivity
 
 
     @Override
+    public void onSelectedDevice(DeviceDO deviceDO) {
+        DevicePersistance.selectedDevice = deviceDO;
+        Fragment detailFragment = new ShowerDetailFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.base, detailFragment).commit();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+    }
+
+    @Override
     public void onFragmentInteraction(Uri uri) {
 
     }
-
-
-
-
-
-
-
 }

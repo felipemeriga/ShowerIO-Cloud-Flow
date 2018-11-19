@@ -68,9 +68,12 @@ dependencies {
     implementation 'com.github.ybq:Android-SpinKit:1.1.0'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 
-    //Forms Validation
+    //Forms Validation and BindView Annotation
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
+    //Picasso to handle with images
+    implementation 'com.squareup.picasso:picasso:2.71828'
 
 
     testImplementation 'junit:junit:4.12'

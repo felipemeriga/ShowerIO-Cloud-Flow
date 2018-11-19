@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.amazonaws.mobile.client.AWSMobileClient;
@@ -30,7 +31,9 @@ import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
+import com.felipe.showeriocloud.Utils.FacebookInformationSeeker;
 import com.felipe.showeriocloud.Utils.ServerCallbackObjects;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,6 +46,7 @@ public class SplashScreen extends AppCompatActivity {
 
     private static int SPLASH_TIME_OUT = 1000;
     private static final String TAG = "SplashScreen";
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +55,6 @@ public class SplashScreen extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_home);
-
 
         /**
          * Initializes the sync client. This must be call before you can use it.
@@ -67,6 +70,8 @@ public class SplashScreen extends AppCompatActivity {
                     @Override
                     public void run() {
                         final AccessToken fbAccessToken = AccessToken.getCurrentAccessToken();
+                        new FacebookInformationSeeker.GetFbInformation(fbAccessToken).execute();
+
                         if (fbAccessToken != null) {
                             setFacebookSession(fbAccessToken);
                             Thread thread = new Thread(new Runnable() {
