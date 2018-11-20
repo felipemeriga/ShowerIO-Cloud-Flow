@@ -23,6 +23,9 @@ import com.felipe.showeriocloud.Model.DeviceDO;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -33,16 +36,40 @@ import com.felipe.showeriocloud.R;
  */
 public class ShowerDetailFragment extends Fragment {
 
+    @BindView(R.id.mainGrid)
+    public GridLayout mainGrid;
 
-    private GridLayout mainGrid;
+    @BindView(R.id.textGrid)
+    public TextView deviceTitle;
+
     private DeviceDO device;
-    private TextView deviceTitle;
     public static String selectedShower;
     private SharedPreferences sharedPreferences;
     private final String SHOWERIO = "ShowerIO";
-    private CardView cardViewPlay;
+
+    @BindView(R.id.cardViewPlay)
+    public CardView cardViewPlay;
+
+    @BindView(R.id.cardViewName)
+    public CardView cardViewName;
+
+    @BindView(R.id.cardViewReset)
+    public CardView cardViewReset;
+
+    @BindView(R.id.cardViewExit)
+    public CardView cardViewExit;
+
+    @BindView(R.id.cardStatistics)
+    public CardView cardStatistics;
+
+    @BindView(R.id.cardInfo)
+    public CardView cardInfo;
+
     private Boolean nameFlag;
-    private ScrollView scrollView;
+
+    @BindView(R.id.scrollViewDetail)
+    public ScrollView scrollView;
+
     private ColorStateList defaultColor;
 
     private OnFragmentInteractionListener mListener;
@@ -50,7 +77,6 @@ public class ShowerDetailFragment extends Fragment {
     public ShowerDetailFragment() {
         // Required empty public constructor
     }
-
 
 
     @Override
@@ -66,13 +92,10 @@ public class ShowerDetailFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_shower_detail, container, false);
 
-        mainGrid = (GridLayout) view.findViewById(R.id.mainGrid);
-        deviceTitle = view.findViewById(R.id.textGrid);
-        cardViewPlay = view.findViewById(R.id.cardViewPlay);
-        scrollView = view.findViewById(R.id.scrollViewDetail);
+        ButterKnife.bind(this, view);
+
         nameFlag = false;
         defaultColor = cardViewPlay.getCardBackgroundColor();
-
         setSingleEvent(mainGrid);
 
         device = DevicePersistance.selectedDevice;
@@ -82,6 +105,7 @@ public class ShowerDetailFragment extends Fragment {
             nameFlag = true;
             helpUserSetName();
         } else {
+            enableAllFeatures();
             deviceTitle.setText(device.getName());
 
         }
@@ -89,7 +113,16 @@ public class ShowerDetailFragment extends Fragment {
         return view;
 
 
+    }
 
+    void enableAllFeatures() {
+        cardViewPlay.setCardBackgroundColor(Color.WHITE);
+        cardViewName.setCardBackgroundColor(Color.WHITE);
+        cardViewReset.setCardBackgroundColor(Color.WHITE);
+        cardViewExit.setCardBackgroundColor(Color.WHITE);
+        cardStatistics.setCardBackgroundColor(Color.WHITE);
+        cardInfo.setCardBackgroundColor(Color.WHITE);
+        nameFlag = false;
     }
 
 
@@ -106,31 +139,24 @@ public class ShowerDetailFragment extends Fragment {
                     switch (finalI) {
                         case 0:
                             if (!nameFlag) {
-//                                Log.i("ShowerDetailActivity", "case 1, opening ShowerIOActivity");
-//                                Intent showerIO = new Intent(ShowerDetailActivity.this, ShowerIO.class);
-//                                showerIO.putExtra("device", ShowerDetailActivity.selectedShower);
-//                                startActivity(showerIO);
-//                                finish();
-//                                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                                Log.i("ShowerDetailActivity", "case 0, opening ShowerIOActivity");
                             }
                             break;
                         case 1:
-//                            Log.i("ShowerDetailActivity", "case 2, opening NameDeviceActivity");
-//                            Intent nameDeviceActivity = new Intent(ShowerDetailActivity.this, NameDeviceActivity.class);
-//                            nameDeviceActivity.putExtra("device", ShowerDetailActivity.selectedShower);
-//                            startActivity(nameDeviceActivity);
-//                            finish();
-//                            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                            Log.i("ShowerDetailActivity", "case 1, opening ShowerIOActivity");
                             break;
                         case 2:
-//                            Log.i("ShowerDetailActivity", "case 2, opening LoginActivity");
-//                            Intent loginActivity = new Intent(ShowerDetailActivity.this, LoginActivity.class);
-//                            loginActivity.putExtra("device", ShowerDetailActivity.selectedShower);
-//                            startActivity(loginActivity);
-//                            finish();
-//                            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                            Log.i("ShowerDetailActivity", "case 2, opening ShowerIOActivity");
                             break;
-
+                        case 3:
+                            Log.i("ShowerDetailActivity", "case 3, opening ShowerIOActivity");
+                            break;
+                        case 4:
+                            Log.i("ShowerDetailActivity", "case 4, opening ShowerIOActivity");
+                            break;
+                        case 5:
+                            Log.i("ShowerDetailActivity", "case 5, opening ShowerIOActivity");
+                            break;
                     }
                 }
             });

@@ -14,6 +14,8 @@
     <string name="password">Senha </string>
     <string name="reset">Resetar </string>
     <string name="restart">Reiniciar </string>
+    <string name="info">Info </string>
+    <string name="statistics">Estatísticas </string>
     <string name="quit">Sair </string>
     <string name="noName">Dispositivo sem Nome </string>
     <string name="facebook_app_id">504775916669376</string>

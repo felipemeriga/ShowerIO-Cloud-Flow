@@ -178,7 +178,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().remove(fragmentManager.getFragments().get(0));
         fragmentManager.beginTransaction().replace(R.id.base, detailFragment).commit();
-
+        navigationView.getMenu().getItem(0).setChecked(false);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
     }
