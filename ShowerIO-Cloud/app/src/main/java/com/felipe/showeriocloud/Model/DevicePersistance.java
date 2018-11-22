@@ -103,4 +103,22 @@ public class DevicePersistance {
         thread.start();
     }
 
+
+    public static void updateDevice(final DeviceDO device, final ServerCallback serverCallback) {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    AwsDynamoDBManager.dynamoDBMapper.save(device);
+                    serverCallback.onServerCallback(true,"Name saved!");
+                } catch (Exception e) {
+                    serverCallback.onServerCallback(false,e.getMessage());
+                }
+            }
+        }).start();
+    }
+
+
+
 }
