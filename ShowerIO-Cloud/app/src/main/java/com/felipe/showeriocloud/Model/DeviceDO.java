@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@DynamoDBTable(tableName = "showerio-mobilehub-1561120802-Device")
+@DynamoDBTable(tableName = "Devices")
 
 public class DeviceDO implements Serializable {
     @SerializedName("userId")
@@ -38,64 +38,63 @@ public class DeviceDO implements Serializable {
     public String getUserId() {
         return _userId;
     }
-
     public void setUserId(final String _userId) {
         this._userId = _userId;
     }
-    @DynamoDBRangeKey(attributeName = "name")
+
     @DynamoDBAttribute(attributeName = "name")
     public String getName() {
         return _name;
     }
-
     public void setName(final String _name) {
         this._name = _name;
     }
+
     @DynamoDBAttribute(attributeName = "iotCoreARN")
     public String getIotCoreARN() {
         return _iotCoreARN;
     }
-
     public void setIotCoreARN(final String _iotCoreARN) {
         this._iotCoreARN = _iotCoreARN;
     }
+
     @DynamoDBAttribute(attributeName = "iotCoreEndPoint")
     public String getIotCoreEndPoint() {
         return _iotCoreEndPoint;
     }
-
     public void setIotCoreEndPoint(final String _iotCoreEndPoint) {
         this._iotCoreEndPoint = _iotCoreEndPoint;
     }
+
     @DynamoDBAttribute(attributeName = "localNetworkIp")
     public String getLocalNetworkIp() {
         return _localNetworkIp;
     }
-
     public void setLocalNetworkIp(final String _localNetworkIp) {
         this._localNetworkIp = _localNetworkIp;
     }
+
     @DynamoDBAttribute(attributeName = "localNetworkSubnet")
     public String getLocalNetworkSubnet() {
         return _localNetworkSubnet;
     }
-
     public void setLocalNetworkSubnet(final String _localNetworkSubnet) {
         this._localNetworkSubnet = _localNetworkSubnet;
     }
+
+    @DynamoDBRangeKey(attributeName = "microprocessorId")
     @DynamoDBAttribute(attributeName = "microprocessorId")
     public Double getMicroprocessorId() {
         return _microprocessorId;
     }
-
     public void setMicroprocessorId(final Double _microprocessorId) {
         this._microprocessorId = _microprocessorId;
     }
+
     @DynamoDBAttribute(attributeName = "status")
     public String getStatus() {
         return _status;
     }
-
     public void setStatus(final String _status) {
         this._status = _status;
     }
