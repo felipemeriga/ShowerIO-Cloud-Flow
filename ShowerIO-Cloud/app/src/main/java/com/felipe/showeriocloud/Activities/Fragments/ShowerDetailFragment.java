@@ -15,8 +15,10 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.felipe.showeriocloud.Activities.Authentication.LoginActivity;
+import com.felipe.showeriocloud.Adapter.SpinnerHandler;
 import com.felipe.showeriocloud.Model.DeviceDO;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
@@ -229,16 +232,33 @@ public class ShowerDetailFragment extends Fragment {
         View mView = getLayoutInflater().inflate(R.layout.dialog_control_device, null);
         Spinner mSpinnerBathTime = (Spinner) mView.findViewById(R.id.spinnerBathTime);
         Spinner mSpinnerBathPosTime = (Spinner) mView.findViewById(R.id.spinnerBathPosTime);
+        Spinner mSpinnerBathDuringTime = (Spinner) mView.findViewById(R.id.spinnerBathDuringTime);
 
-        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.times));
-        myAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        mSpinnerBathTime.setAdapter(myAdapter);
+        mSpinnerBathTime.setAdapter(mAdapter);
+        mSpinnerBathPosTime.setAdapter(mAdapter);
+        mSpinnerBathDuringTime.setAdapter(mAdapter);
+
+        mSpinnerBathTime.setPrompt("B1");
+        mSpinnerBathPosTime.setPrompt("B2");
+        mSpinnerBathDuringTime.setPrompt("B3");
+
+        SpinnerHandler listener = new SpinnerHandler();
+
+        mSpinnerBathTime.setOnTouchListener(listener);
+        mSpinnerBathTime.setOnItemSelectedListener(listener);
+        mSpinnerBathPosTime.setOnTouchListener(listener);
+        mSpinnerBathPosTime.setOnItemSelectedListener(listener);
+        mSpinnerBathDuringTime.setOnTouchListener(listener);
+        mSpinnerBathDuringTime.setOnItemSelectedListener(listener);
 
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
         dialog.show();
+
     }
 
     private void onSetNamePressed() {
@@ -285,7 +305,6 @@ public class ShowerDetailFragment extends Fragment {
                             mProgressDialog.dismiss();
                             deviceTitle.setText(name);
                             nameFlag = false;
-                            afterUpdateName();
                         } else {
                             mProgressDialog.dismiss();
                             Toast.makeText(fragmentContext,
@@ -294,17 +313,14 @@ public class ShowerDetailFragment extends Fragment {
                             deviceTitle.setText(oldName);
                             device.setName(oldName);
                         }
+                        enableAllFeatures();
                     }
                 });
             }
         });
     }
 
-
-
-    void afterUpdateName() {
-        deviceTitle.setText(device.getName());
-        nameFlag = false;
-        enableAllFeatures();
-    }
 }
+
+
+

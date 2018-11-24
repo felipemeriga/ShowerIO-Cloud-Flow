@@ -65,8 +65,6 @@
     <string name="control_bath_wait_pos_time">Tempo de espera pós banho</string>
     <string name="control_bath_wait_during_time">Tempo de espera durante banho</string>
 
-
-
     <string-array name="times">
         <item>Selecionar tempo</item>
         <item>1 min</item>
