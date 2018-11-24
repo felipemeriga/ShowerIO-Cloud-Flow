@@ -2,7 +2,7 @@ package com.felipe.showeriocloud.Utils;
 
 public interface ServerCallback {
 
-    void onServerCallback(Boolean status, String response);
+    void onServerCallback(final boolean status, String response);
 
 
 }

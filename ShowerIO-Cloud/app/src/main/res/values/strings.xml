@@ -5,7 +5,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_about">Sobre</string>
     <string name="iniciar">Iniciar!</string>
     <string name="status_label">Status: </string>
     <string name="list_showers">Lista de Dispositivos </string>
@@ -17,14 +17,14 @@
     <string name="info">Info </string>
     <string name="statistics">Estatísticas </string>
     <string name="quit">Sair </string>
-    <string name="noName">Dispositivo sem Nome </string>
+    <string name="noName">Sem Nome</string>
     <string name="facebook_app_id">504775916669376</string>
     <string name="fb_login_protocol_scheme">fb2028297084147875</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="dialog_name">Nome</string>
     <string name="dialog_name_hint">Escolha um nome para o dispositivo</string>
     <string name="dialog_save">Salvar</string>
-    <string name="dialog_set_name_success">Nome atribuido com sucesso</string>
+    <string name="dialog_help_user_name">Insira um nome antes de começar!</string>
     <string name="dialog_set_name_fail">Erro ao atribuir o nome!</string>
     <string name="cancel">Cancelar </string>
 
@@ -58,6 +58,24 @@
     <string name="nav_network">Network</string>
     <string name="nav_account">Minha Conta</string>
     <string name="nav_share">Compartilhar</string>
+
+
+    <!--Controll the shower-->
+    <string name="control_bath_time">Tempo de Banho</string>
+    <string name="control_bath_wait_pos_time">Tempo de espera pós banho</string>
+    <string name="control_bath_wait_during_time">Tempo de espera durante banho</string>
+
+
+
+    <string-array name="times">
+        <item>Selecionar tempo</item>
+        <item>1 min</item>
+        <item>3 min</item>
+        <item>5 min</item>
+        <item>7 min</item>
+        <item>10 min</item>
+        <item>15 min</item>
+    </string-array>
 
 
 </resources>

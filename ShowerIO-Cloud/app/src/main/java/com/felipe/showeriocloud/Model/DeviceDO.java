@@ -29,7 +29,7 @@ public class DeviceDO implements Serializable {
     @SerializedName("localNetworkSubnet")
     private String _localNetworkSubnet;
     @SerializedName("microprocessorId")
-    private Double _microprocessorId;
+    private String _microprocessorId;
     @SerializedName("status")
     private String _status;
 
@@ -84,10 +84,10 @@ public class DeviceDO implements Serializable {
 
     @DynamoDBRangeKey(attributeName = "microprocessorId")
     @DynamoDBAttribute(attributeName = "microprocessorId")
-    public Double getMicroprocessorId() {
+    public String getMicroprocessorId() {
         return _microprocessorId;
     }
-    public void setMicroprocessorId(final Double _microprocessorId) {
+    public void setMicroprocessorId(final String _microprocessorId) {
         this._microprocessorId = _microprocessorId;
     }
 

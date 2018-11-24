@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -16,10 +17,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -112,28 +115,29 @@ public class ShowerDetailFragment extends Fragment {
         device = DevicePersistance.selectedDevice;
         if (device.getName().isEmpty() || device.getName().equals("UNAMED")) {
             deviceTitle.setText(R.string.noName);
-            cardViewPlay.setCardBackgroundColor(Color.GRAY);
             nameFlag = true;
             helpUserSetName();
         } else {
-            enableAllFeatures();
             deviceTitle.setText(device.getName());
 
         }
-
+        enableAllFeatures();
         return view;
 
 
     }
 
     void enableAllFeatures() {
-        cardViewPlay.setCardBackgroundColor(Color.WHITE);
-        cardViewName.setCardBackgroundColor(Color.WHITE);
-        cardViewReset.setCardBackgroundColor(Color.WHITE);
-        cardViewExit.setCardBackgroundColor(Color.WHITE);
-        cardStatistics.setCardBackgroundColor(Color.WHITE);
-        cardInfo.setCardBackgroundColor(Color.WHITE);
-        nameFlag = false;
+        if (nameFlag) {
+            cardViewName.setCardBackgroundColor(Color.WHITE);
+        } else {
+            cardViewPlay.setCardBackgroundColor(Color.WHITE);
+            cardViewName.setCardBackgroundColor(Color.WHITE);
+            cardViewReset.setCardBackgroundColor(Color.WHITE);
+            cardViewExit.setCardBackgroundColor(Color.WHITE);
+            cardStatistics.setCardBackgroundColor(Color.WHITE);
+            cardInfo.setCardBackgroundColor(Color.WHITE);
+        }
     }
 
 
@@ -151,6 +155,7 @@ public class ShowerDetailFragment extends Fragment {
                         case 0:
                             if (!nameFlag) {
                                 Log.i("ShowerDetailActivity", "case 0, opening ShowerIOActivity");
+                                onStartPressed();
                             }
                             break;
                         case 1:
@@ -158,16 +163,24 @@ public class ShowerDetailFragment extends Fragment {
                             onSetNamePressed();
                             break;
                         case 2:
-                            Log.i("ShowerDetailActivity", "case 2, opening ShowerIOActivity");
+                            if (!nameFlag) {
+                                Log.i("ShowerDetailActivity", "case 2, opening ShowerIOActivity");
+                            }
                             break;
                         case 3:
-                            Log.i("ShowerDetailActivity", "case 3, opening ShowerIOActivity");
+                            if (!nameFlag) {
+                                Log.i("ShowerDetailActivity", "case 3, opening ShowerIOActivity");
+                            }
                             break;
                         case 4:
-                            Log.i("ShowerDetailActivity", "case 4, opening ShowerIOActivity");
+                            if (!nameFlag) {
+                                Log.i("ShowerDetailActivity", "case 4, opening ShowerIOActivity");
+                            }
                             break;
                         case 5:
-                            Log.i("ShowerDetailActivity", "case 5, opening ShowerIOActivity");
+                            if (!nameFlag) {
+                                Log.i("ShowerDetailActivity", "case 5, opening ShowerIOActivity");
+                            }
                             break;
                     }
                 }
@@ -204,11 +217,28 @@ public class ShowerDetailFragment extends Fragment {
 
 
     private void helpUserSetName() {
-        // showing snack bar to help user to use the application
-        Snackbar snackbar = Snackbar
-                .make(scrollView, "Nomeie seu dispositivo antes de comerçar!", Snackbar.LENGTH_LONG)
-                .setDuration(5000);
-        snackbar.show();
+        // showing toast to help user to use the application
+        Toast toast = new Toast(getContext());
+        toast.setText(R.string.dialog_name_hint);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.show();
+    }
+
+    private void onStartPressed() {
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(this.getContext());
+        View mView = getLayoutInflater().inflate(R.layout.dialog_control_device, null);
+        Spinner mSpinnerBathTime = (Spinner) mView.findViewById(R.id.spinnerBathTime);
+        Spinner mSpinnerBathPosTime = (Spinner) mView.findViewById(R.id.spinnerBathPosTime);
+
+        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.times));
+        myAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        mSpinnerBathTime.setAdapter(myAdapter);
+
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+        dialog.show();
     }
 
     private void onSetNamePressed() {
@@ -224,10 +254,10 @@ public class ShowerDetailFragment extends Fragment {
         mSetName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!mName.getText().toString().isEmpty()){
+                if (!mName.getText().toString().isEmpty()) {
                     dialog.dismiss();
                     setNewNameCall(mName.getText().toString());
-                }else{
+                } else {
                     Toast.makeText(fragmentContext,
                             R.string.dialog_set_name_fail,
                             Toast.LENGTH_SHORT).show();
@@ -247,22 +277,34 @@ public class ShowerDetailFragment extends Fragment {
 
         DevicePersistance.updateDevice(device, new ServerCallback() {
             @Override
-            public void onServerCallback(Boolean status, String response) {
-                if(status){
-                    mProgressDialog.dismiss();
-                    Toast.makeText(fragmentContext,
-                            R.string.dialog_set_name_success,
-                            Toast.LENGTH_SHORT).show();
-                    deviceTitle.setText(name);
-                } else {
-                    mProgressDialog.dismiss();
-                    Toast.makeText(fragmentContext,
-                            R.string.dialog_set_name_fail,
-                            Toast.LENGTH_SHORT).show();
-                }
+            public void onServerCallback(final boolean status, String response) {
+
+                getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        if (status) {
+                            mProgressDialog.dismiss();
+                            deviceTitle.setText(name);
+                            nameFlag = false;
+                            afterUpdateName();
+                        } else {
+                            mProgressDialog.dismiss();
+                            Toast.makeText(fragmentContext,
+                                    R.string.dialog_set_name_fail,
+                                    Toast.LENGTH_SHORT).show();
+                            deviceTitle.setText(oldName);
+                            device.setName(oldName);
+                        }
+                    }
+                });
             }
         });
+    }
 
 
+
+    void afterUpdateName() {
+        deviceTitle.setText(device.getName());
+        nameFlag = false;
+        enableAllFeatures();
     }
 }

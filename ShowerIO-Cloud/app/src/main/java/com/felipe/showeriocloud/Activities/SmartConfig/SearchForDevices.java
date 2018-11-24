@@ -531,7 +531,7 @@ public class SearchForDevices extends AppCompatActivity implements View.OnClickL
                     for (final IEsptouchResult item : results) {
                         registerNewDevices.createNewDevice(item, requestQueue, new ServerCallback() {
                             @Override
-                            public void onServerCallback(Boolean status, String response) {
+                            public void onServerCallback(final boolean status, String response) {
                                 if (!status) {
                                     Snackbar snackbar = Snackbar
                                             .make(relativeLayout, "Erro ao contatar o servidor, tente novamente!", Snackbar.LENGTH_LONG)

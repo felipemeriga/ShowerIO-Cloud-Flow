@@ -1,5 +1,9 @@
 package com.felipe.showeriocloud.Model;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
+
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBQueryExpression;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.PaginatedList;

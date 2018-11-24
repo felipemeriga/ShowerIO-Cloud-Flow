@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/bathTimeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:text="@string/control_bath_time"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:paddingBottom="20dp"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginEnd="3dp"
+        android:layout_weight=".28"
+        android:background="@drawable/spinner_border"
+        android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/spinnerBathTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:layout_marginStart="5dp"
+            android:spinnerMode="dropdown" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_keyboard_arrow_down_black_24dp"
+            android:contentDescription="dropdown icon" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/bathWaitTimeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:text="@string/control_bath_wait_pos_time"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:paddingBottom="20dp"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginEnd="3dp"
+        android:layout_weight=".28"
+        android:background="@drawable/spinner_border"
+        android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/spinnerBathPosTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:layout_marginStart="5dp"
+            android:spinnerMode="dropdown" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_keyboard_arrow_down_black_24dp"
+            android:contentDescription="dropdown icon" />
+
+    </RelativeLayout>
+
+</LinearLayout>
