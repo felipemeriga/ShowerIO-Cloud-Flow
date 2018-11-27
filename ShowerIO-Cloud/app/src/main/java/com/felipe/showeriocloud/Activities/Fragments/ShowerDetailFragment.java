@@ -44,8 +44,13 @@ import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
 import com.felipe.showeriocloud.Model.DeviceDO;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
+import com.felipe.showeriocloud.Utils.ConvertIntegerToOption;
 import com.felipe.showeriocloud.Utils.ServerCallback;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Condition;
 
 import butterknife.BindView;
@@ -59,9 +64,10 @@ import butterknife.ButterKnife;
  * Use the {@link ShowerDetailFragment} factory method to
  * create an instance of this fragment.
  */
-public class ShowerDetailFragment extends Fragment {
+public class ShowerDetailFragment extends Fragment implements ConvertIntegerToOption {
 
     private static final String TAG = "ShowerDetailFragment";
+    private Map<String, Integer> convertPositions;
 
     private ProgressDialog mProgressDialog;
     private String oldName;
@@ -110,6 +116,7 @@ public class ShowerDetailFragment extends Fragment {
     public ShowerDetailFragment() {
         // Required empty public constructor
         awsIotCoreManager = new AwsIotCoreManager();
+        convertPositions = new HashMap<String, Integer>();
     }
 
 
@@ -143,6 +150,7 @@ public class ShowerDetailFragment extends Fragment {
         }
         enableAllFeatures();
         connectToMQTTclient();
+        convertPositions = fillPositionsMap();
         return view;
 
 
@@ -289,6 +297,7 @@ public class ShowerDetailFragment extends Fragment {
         mSpinnerBathPosTime.setAdapter(mAdapter);
         mSpinnerBathDuringTime.setAdapter(mAdapter);
 
+
         mSpinnerBathTime.setPrompt("B1");
         mSpinnerBathPosTime.setPrompt("B2");
         mSpinnerBathDuringTime.setPrompt("B3");
@@ -367,6 +376,24 @@ public class ShowerDetailFragment extends Fragment {
         });
     }
 
+    @Override
+    public  Map<String,Integer> fillPositionsMap() {
+        Map<String,Integer> convertPositionsMap = new HashMap<>();
+        List<String> timesArray = Arrays.asList(getResources().getStringArray(R.array.times));
+        int position = 0;
+        for(String option: timesArray){
+            convertPositionsMap.put(option,position);
+            position++;
+        }
+        return convertPositionsMap;
+    }
+
+    @Override
+    public int convert(int time) {
+
+
+        return 0;
+    }
 }
 
 

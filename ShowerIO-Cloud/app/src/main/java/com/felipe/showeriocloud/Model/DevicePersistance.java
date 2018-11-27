@@ -89,9 +89,9 @@ public class DevicePersistance {
         deviceDO.setUserId(CognitoSyncClientManager.credentialsProvider.getCachedIdentityId());
         int lastPointSubnet = deviceDO.getLocalNetworkSubnet().lastIndexOf(".");
         deviceDO.setLocalNetworkSubnet(deviceDO.getLocalNetworkSubnet().substring(0, lastPointSubnet));
-        deviceDO.setBathTime(10);
-        deviceDO.setWaitTime(3);
-        deviceDO.setStoppedTime(3);
+        deviceDO.setBathTime(0);
+        deviceDO.setWaitTime(0);
+        deviceDO.setStoppedTime(0);
 
         Thread thread = new Thread(new Runnable() {
             @Override
