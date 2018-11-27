@@ -28,8 +28,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.config.AWSConfiguration;
+import com.amazonaws.mobileconnectors.iot.AWSIotMqttClientStatusCallback;
+import com.amazonaws.mobileconnectors.iot.AWSIotMqttManager;
 import com.felipe.showeriocloud.Activities.Authentication.LoginActivity;
 import com.felipe.showeriocloud.Adapter.SpinnerHandler;
+import com.felipe.showeriocloud.Aws.AwsIotCoreManager;
+import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
 import com.felipe.showeriocloud.Model.DeviceDO;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
@@ -49,6 +57,8 @@ import butterknife.ButterKnife;
  * create an instance of this fragment.
  */
 public class ShowerDetailFragment extends Fragment {
+
+    private static final String TAG = "ShowerDetailFragment";
 
     private ProgressDialog mProgressDialog;
     private String oldName;
@@ -91,8 +101,11 @@ public class ShowerDetailFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    private AwsIotCoreManager awsIotCoreManager;
+
     public ShowerDetailFragment() {
         // Required empty public constructor
+        awsIotCoreManager = new AwsIotCoreManager();
     }
 
 
@@ -125,6 +138,7 @@ public class ShowerDetailFragment extends Fragment {
 
         }
         enableAllFeatures();
+        connectToMQTTclient();
         return view;
 
 
@@ -141,6 +155,19 @@ public class ShowerDetailFragment extends Fragment {
             cardStatistics.setCardBackgroundColor(Color.WHITE);
             cardInfo.setCardBackgroundColor(Color.WHITE);
         }
+    }
+
+    void connectToMQTTclient() {
+        awsIotCoreManager.initializeIotCore(device.getUserId(), device.getIotCoreEndPoint(), getActivity(), new ServerCallback() {
+            @Override
+            public void onServerCallback(boolean status, String response) {
+                if(status) {
+                    nameFlag = true;
+                } else{
+                    nameFlag = false;
+                }
+            }
+        });
     }
 
 

@@ -82,8 +82,6 @@ public class DevicePersistance {
             }
         });
         thread.start();
-
-
     }
 
     //Function used to get a single device
