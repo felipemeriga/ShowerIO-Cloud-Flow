@@ -35,6 +35,9 @@ import com.amazonaws.mobile.config.AWSConfiguration;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttClientStatusCallback;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttManager;
 import com.felipe.showeriocloud.Activities.Authentication.LoginActivity;
+import com.felipe.showeriocloud.Activities.Home.SplashScreen;
+import com.felipe.showeriocloud.Activities.ShowerIO.ShowerNavigationDrawer;
+import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
 import com.felipe.showeriocloud.Adapter.SpinnerHandler;
 import com.felipe.showeriocloud.Aws.AwsIotCoreManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
@@ -62,6 +65,7 @@ public class ShowerDetailFragment extends Fragment {
 
     private ProgressDialog mProgressDialog;
     private String oldName;
+    private ProgressDialog mqttProgressDialog;
 
     @BindView(R.id.mainGrid)
     public GridLayout mainGrid;
@@ -158,18 +162,34 @@ public class ShowerDetailFragment extends Fragment {
     }
 
     void connectToMQTTclient() {
+        mqttProgressDialog = new ProgressDialog(getActivity());
+        mqttProgressDialog.setMessage("Carregando...");
+        mqttProgressDialog.setCanceledOnTouchOutside(false);
+        mqttProgressDialog.show();
         awsIotCoreManager.initializeIotCore(device.getUserId(), device.getIotCoreEndPoint(), getActivity(), new ServerCallback() {
             @Override
-            public void onServerCallback(boolean status, String response) {
-                if(status) {
-                    nameFlag = true;
-                } else{
-                    nameFlag = false;
-                }
+            public void onServerCallback(final boolean status, String response) {
+                getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        if (status) {
+                            mqttProgressDialog.dismiss();
+                        } else {
+                            mqttProgressDialog.dismiss();
+                            Toast toast = new Toast(getContext());
+                            toast.setText(R.string.mqtt_conection_failed);
+                            toast.setDuration(Toast.LENGTH_LONG);
+                            toast.show();
+                            Intent listOfDevices = new Intent(getContext(), ShowerNavigationDrawer.class);
+                            startActivity(listOfDevices);
+                            getActivity().overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                            getActivity().finish();
+                        }
+
+                    }
+                });
             }
         });
     }
-
 
     private void setSingleEvent(GridLayout mainGrid) {
         //Loop all child item of Main Grid

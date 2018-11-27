@@ -51,11 +51,6 @@ public class ShowerListActivity extends AppCompatActivity implements RecyclerIte
 
         setContentView(R.layout.fragment_shower_list);
 
-        //Instanciating progressBar when a user selects an device
-        progressBar = (ProgressBar) findViewById(R.id.spin_kit);
-        WanderingCubes wanderingCubes = new WanderingCubes();
-        progressBar.setIndeterminateDrawable(wanderingCubes);
-        progressBar.setVisibility(View.GONE);
         toolbar = findViewById(R.id.toolbar);
 
         Log.d(TAG, "onCreate(): Defining and setting Toolbar title and configurations");

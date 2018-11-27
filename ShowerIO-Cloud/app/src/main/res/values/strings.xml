@@ -23,6 +23,7 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="dialog_name">Nome</string>
     <string name="dialog_name_hint">Escolha um nome para o dispositivo</string>
+    <string name="mqtt_conection_failed">Erro em estabelecer a conexão, tente mais tarde</string>
     <string name="dialog_save">Salvar</string>
     <string name="dialog_help_user_name">Insira um nome antes de começar!</string>
     <string name="dialog_set_name_fail">Erro ao atribuir o nome!</string>

@@ -19,7 +19,6 @@ public class AwsIotCoreManager {
 
     private static final String TAG = "AwsIotCoreManager";
 
-    ProgressDialog mProgressDialog;
     CognitoCachingCredentialsProvider credentialsProvider;
 
     private static final String CUSTOMER_SPECIFIC_ENDPOINT = "agq6mvwjsctpy-ats.iot.us-east-2.amazonaws.com";
@@ -30,11 +29,13 @@ public class AwsIotCoreManager {
     // Region of AWS IoT
     private static final Regions MY_REGION = Regions.US_EAST_1;
 
+    static AWSIotMqttManager mqttManager;
+
     public AwsIotCoreManager() {
 
     }
 
-    AWSIotMqttManager mqttManager;
+
 
     public void initializeIotCore(final String clientId, final String endpoint, final Activity activity, final ServerCallback serverCallback) {
 
@@ -42,6 +43,7 @@ public class AwsIotCoreManager {
             @Override
             public void run() {
                 try {
+
                     final AWSCredentialsProvider awsCredentialsProvider = AWSMobileClient.getInstance().getCredentialsProvider();
                     final AWSConfiguration awsConfiguration = AWSMobileClient.getInstance().getConfiguration();
 
@@ -66,29 +68,30 @@ public class AwsIotCoreManager {
                                 if (status == AWSIotMqttClientStatus.Connecting) {
 
                                 } else if (status == AWSIotMqttClientStatus.Connected) {
-
+                                    serverCallback.onServerCallback(true,status.toString());
 
                                 } else if (status == AWSIotMqttClientStatus.Reconnecting) {
-
                                     if (throwable != null) {
                                         Log.e(TAG, "Connection error.", throwable);
+                                        serverCallback.onServerCallback(false,status.toString());
                                     }
                                 } else if (status == AWSIotMqttClientStatus.ConnectionLost) {
-
                                     if (throwable != null) {
                                         Log.e(TAG, "Connection error.", throwable);
                                         throwable.printStackTrace();
+                                        serverCallback.onServerCallback(false,status.toString());
                                     }
                                 } else {
                                     Log.e(TAG, "error matching the status");
+                                    serverCallback.onServerCallback(false,"error matching the status");
                                 }
 
                             }
                         });
                     } catch (final Exception e) {
                         Log.e(TAG, "Connection error.", e);
+                        serverCallback.onServerCallback(false,e.getMessage());
                     }
-                    serverCallback.onServerCallback(true, "Name saved!");
                 } catch (Exception e) {
                     serverCallback.onServerCallback(false, e.getMessage());
                 }
