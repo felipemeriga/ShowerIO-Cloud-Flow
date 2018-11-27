@@ -32,6 +32,12 @@ public class DeviceDO implements Serializable {
     private String _microprocessorId;
     @SerializedName("status")
     private String _status;
+    @SerializedName("bathTime")
+    private Integer _bathTime;
+    @SerializedName("waitTime")
+    private Integer _waitTime;
+    @SerializedName("stoppedTime")
+    private Integer _stoppedTime;
 
     @DynamoDBHashKey(attributeName = "userId")
     @DynamoDBAttribute(attributeName = "userId")
@@ -99,4 +105,27 @@ public class DeviceDO implements Serializable {
         this._status = _status;
     }
 
+    @DynamoDBAttribute(attributeName = "bathTime")
+    public Integer getBathTime() {
+        return _bathTime;
+    }
+    public void setBathTime(Integer _bathTime) {
+        this._bathTime = _bathTime;
+    }
+
+    @DynamoDBAttribute(attributeName = "waitTime")
+    public Integer getWaitTime() {
+        return _waitTime;
+    }
+    public void setWaitTime(Integer _waitTime) {
+        this._waitTime = _waitTime;
+    }
+
+    @DynamoDBAttribute(attributeName = "stoppedTime")
+    public Integer getStoppedTime() {
+        return _stoppedTime;
+    }
+    public void setStoppedTime(Integer _stoppedTime) {
+        this._stoppedTime = _stoppedTime;
+    }
 }
