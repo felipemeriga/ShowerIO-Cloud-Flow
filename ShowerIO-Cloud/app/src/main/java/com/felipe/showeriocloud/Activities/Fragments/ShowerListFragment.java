@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.felipe.showeriocloud.Adapter.ShowerListAdapter;
@@ -29,7 +28,6 @@ import java.util.List;
 
 public class ShowerListFragment extends Fragment implements RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
-    private ProgressBar progressBar;
     private RecyclerView recyclerView;
     private static final String TAG = "ShowerListActivity";
     private CoordinatorLayout coordinatorLayout;
@@ -57,10 +55,8 @@ public class ShowerListFragment extends Fragment implements RecyclerItemTouchHel
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_shower_list, container, false);
-        progressBar = (ProgressBar) view.findViewById(R.id.spin_kit);
         WanderingCubes wanderingCubes = new WanderingCubes();
-        progressBar.setIndeterminateDrawable(wanderingCubes);
-        progressBar.setVisibility(View.GONE);
+
 
         Log.d(TAG, "onCreate(): Referencing recyclerView and coordinatorLayout by their xml layout id's");
         recyclerView = view.findViewById(R.id.recyclerShower);
@@ -136,7 +132,6 @@ public class ShowerListFragment extends Fragment implements RecyclerItemTouchHel
             String name = showerDevicesList.get(viewHolder.getAdapterPosition()).getName();
 
             if (selectedDevice.getStatus().equals("ONLINE")) {
-                progressBar.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.GONE);
                 onlineDeviceSelected(selectedDevice);
 
