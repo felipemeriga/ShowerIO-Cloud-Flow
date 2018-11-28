@@ -11,7 +11,9 @@ import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.config.AWSConfiguration;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttClientStatusCallback;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttManager;
+import com.amazonaws.mobileconnectors.iot.AWSIotMqttQos;
 import com.amazonaws.regions.Regions;
+import com.felipe.showeriocloud.Model.DeviceDO;
 import com.felipe.showeriocloud.Utils.ServerCallback;
 
 // Initialize and handle IotCore web service to use MQTT protocols
@@ -98,5 +100,21 @@ public class AwsIotCoreManager {
             }
         }).start();
 
+    }
+
+    public void subscribeAndPublish(int bathTime, int waitTime, int stoppedTime, DeviceDO device, ServerCallback serverCallback) {
+        final String topic = "times";
+        final String msg = bathTime + "-" + waitTime + "-" + stoppedTime;
+
+        try {
+            mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
+            device.setBathTime(bathTime);
+            device.setWaitTime(waitTime);
+            device.setStoppedTime(waitTime);
+            serverCallback.onServerCallback(true,"successful");
+        } catch (Exception e) {
+            Log.e(TAG, "Publish error.", e);
+            serverCallback.onServerCallback(false, e.getMessage());
+        }
     }
 }

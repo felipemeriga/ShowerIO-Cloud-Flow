@@ -64,14 +64,14 @@ import butterknife.ButterKnife;
  * Use the {@link ShowerDetailFragment} factory method to
  * create an instance of this fragment.
  */
-public class ShowerDetailFragment extends Fragment implements ConvertIntegerToOption {
+public class ShowerDetailFragment extends Fragment {
 
     private static final String TAG = "ShowerDetailFragment";
-    private Map<String, Integer> convertPositions;
 
     private ProgressDialog mProgressDialog;
     private String oldName;
     private ProgressDialog mqttProgressDialog;
+    private ProgressDialog publishProgressDialog;
 
     @BindView(R.id.mainGrid)
     public GridLayout mainGrid;
@@ -116,7 +116,6 @@ public class ShowerDetailFragment extends Fragment implements ConvertIntegerToOp
     public ShowerDetailFragment() {
         // Required empty public constructor
         awsIotCoreManager = new AwsIotCoreManager();
-        convertPositions = new HashMap<String, Integer>();
     }
 
 
@@ -150,7 +149,6 @@ public class ShowerDetailFragment extends Fragment implements ConvertIntegerToOp
         }
         enableAllFeatures();
         connectToMQTTclient();
-        convertPositions = fillPositionsMap();
         return view;
 
 
@@ -285,9 +283,10 @@ public class ShowerDetailFragment extends Fragment implements ConvertIntegerToOp
     private void onStartPressed() {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(this.getContext());
         View mView = getLayoutInflater().inflate(R.layout.dialog_control_device, null);
-        Spinner mSpinnerBathTime = (Spinner) mView.findViewById(R.id.spinnerBathTime);
-        Spinner mSpinnerBathPosTime = (Spinner) mView.findViewById(R.id.spinnerBathPosTime);
-        Spinner mSpinnerBathDuringTime = (Spinner) mView.findViewById(R.id.spinnerBathDuringTime);
+        final Spinner mSpinnerBathTime = (Spinner) mView.findViewById(R.id.spinnerBathTime);
+        final Spinner mSpinnerBathPosTime = (Spinner) mView.findViewById(R.id.spinnerBathPosTime);
+        final Spinner mSpinnerBathDuringTime = (Spinner) mView.findViewById(R.id.spinnerBathDuringTime);
+        Button mSetTimes = (Button) mView.findViewById(R.id.btnApplyTimes);
 
         ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.times));
@@ -297,23 +296,56 @@ public class ShowerDetailFragment extends Fragment implements ConvertIntegerToOp
         mSpinnerBathPosTime.setAdapter(mAdapter);
         mSpinnerBathDuringTime.setAdapter(mAdapter);
 
-
         mSpinnerBathTime.setPrompt("B1");
         mSpinnerBathPosTime.setPrompt("B2");
         mSpinnerBathDuringTime.setPrompt("B3");
-
-        SpinnerHandler listener = new SpinnerHandler();
-
-        mSpinnerBathTime.setOnTouchListener(listener);
-        mSpinnerBathTime.setOnItemSelectedListener(listener);
-        mSpinnerBathPosTime.setOnTouchListener(listener);
-        mSpinnerBathPosTime.setOnItemSelectedListener(listener);
-        mSpinnerBathDuringTime.setOnTouchListener(listener);
-        mSpinnerBathDuringTime.setOnItemSelectedListener(listener);
+        mSpinnerBathTime.setSelection(returnHardCoddedPosition(device.getBathTime()));
+        mSpinnerBathPosTime.setSelection(returnHardCoddedPosition(device.getWaitTime()));
+        mSpinnerBathDuringTime.setSelection(returnHardCoddedPosition(device.getStoppedTime()));
 
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
         dialog.show();
+        mSetTimes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                publishProgressDialog = new ProgressDialog(getActivity());
+                publishProgressDialog.setMessage("Aplicando...");
+                publishProgressDialog.setCanceledOnTouchOutside(false);
+                publishProgressDialog.show();
+
+                awsIotCoreManager.subscribeAndPublish(returnHardCoddedMinutes(mSpinnerBathTime.getSelectedItemPosition())
+                        , returnHardCoddedMinutes(mSpinnerBathPosTime.getSelectedItemPosition())
+                        , returnHardCoddedMinutes(mSpinnerBathDuringTime.getSelectedItemPosition())
+                        , device
+                        , new ServerCallback() {
+                            @Override
+                            public void onServerCallback(boolean status, String response) {
+                                publishProgressDialog.dismiss();
+                                Toast.makeText(getContext(),
+                                        R.string.dialog_set_time_success,
+                                        Toast.LENGTH_SHORT).show();
+                                if (status) {
+                                    // TODO - Set log that the MQTT Message was successful delivered
+                                    DevicePersistance.updateDevice(device, new ServerCallback() {
+                                        @Override
+                                        public void onServerCallback(boolean status, String response) {
+                                            // TODO - Handle the database times update
+                                            if(status) {
+
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(getContext(),
+                                            R.string.dialog_set_time_fail,
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+            }
+        });
 
     }
 
@@ -376,24 +408,27 @@ public class ShowerDetailFragment extends Fragment implements ConvertIntegerToOp
         });
     }
 
-    @Override
-    public  Map<String,Integer> fillPositionsMap() {
-        Map<String,Integer> convertPositionsMap = new HashMap<>();
-        List<String> timesArray = Arrays.asList(getResources().getStringArray(R.array.times));
-        int position = 0;
-        for(String option: timesArray){
-            convertPositionsMap.put(option,position);
-            position++;
+    // TODO - That is a hard codded array of values in slider, change this for dynamic values from database
+    int returnHardCoddedPosition(int minutes) {
+        if (minutes == 25) {
+            return 21;
+        } else if (minutes > 25) {
+            return 22;
+        } else {
+            return minutes;
         }
-        return convertPositionsMap;
     }
 
-    @Override
-    public int convert(int time) {
-
-
-        return 0;
+    int returnHardCoddedMinutes(int position) {
+        if (position == 21) {
+            return 25;
+        } else if (position == 22) {
+            return 99;
+        } else {
+            return position;
+        }
     }
+
 }
 
 

@@ -129,4 +129,13 @@
 
     </RelativeLayout>
 
+    <Button
+        android:id="@+id/btnApplyTimes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/list_online"
+        android:text="@string/dialog_save"
+        android:textColor="@android:color/white" />
+
 </LinearLayout>
