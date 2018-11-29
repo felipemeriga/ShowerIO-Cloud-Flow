@@ -224,14 +224,11 @@ public class ShowerDetailFragment extends Fragment {
                             }
                             break;
                         case 3:
-                            if (!nameFlag) {
-                                Log.i("ShowerDetailActivity", "case 3, opening ShowerIOActivity");
-                            }
+                            Log.i("ShowerDetailActivity", "case 3, opening ShowerIOActivity");
+                            mListener.onFragmentInteraction("ShowerDetailFragment");
                             break;
                         case 4:
-                            if (!nameFlag) {
-                                Log.i("ShowerDetailActivity", "case 4, opening ShowerIOActivity");
-                            }
+                            Log.i("ShowerDetailActivity", "case 4, closing app");
                             break;
                         case 5:
                             if (!nameFlag) {
@@ -246,7 +243,6 @@ public class ShowerDetailFragment extends Fragment {
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
         }
     }
 
@@ -265,10 +261,11 @@ public class ShowerDetailFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+
     }
 
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(String fragmentName);
     }
 
 
@@ -327,16 +324,7 @@ public class ShowerDetailFragment extends Fragment {
                                         R.string.dialog_set_time_success,
                                         Toast.LENGTH_SHORT).show();
                                 if (status) {
-                                    // TODO - Set log that the MQTT Message was successful delivered
-                                    DevicePersistance.updateDevice(device, new ServerCallback() {
-                                        @Override
-                                        public void onServerCallback(boolean status, String response) {
-                                            // TODO - Handle the database times update
-                                            if(status) {
-
-                                            }
-                                        }
-                                    });
+                                    DevicePersistance.fastUpdateDevice(device);
                                 } else {
                                     Toast.makeText(getContext(),
                                             R.string.dialog_set_time_fail,
@@ -419,6 +407,7 @@ public class ShowerDetailFragment extends Fragment {
         }
     }
 
+    // TODO - That is a hard codded array of values in slider, change this for dynamic values from database
     int returnHardCoddedMinutes(int position) {
         if (position == 21) {
             return 25;

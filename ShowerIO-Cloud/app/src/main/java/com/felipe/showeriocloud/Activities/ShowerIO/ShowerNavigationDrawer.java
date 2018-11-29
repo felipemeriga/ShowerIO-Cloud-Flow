@@ -1,5 +1,6 @@
 package com.felipe.showeriocloud.Activities.ShowerIO;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.felipe.showeriocloud.Activities.Fragments.HelpFragment;
 import com.felipe.showeriocloud.Activities.Fragments.ShowerDetailFragment;
@@ -30,6 +32,7 @@ import com.felipe.showeriocloud.Model.DeviceDO;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
 import com.felipe.showeriocloud.Utils.FacebookInformationSeeker;
+import com.felipe.showeriocloud.Utils.ServerCallback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -40,6 +43,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
     private ImageView imageView;
     private TextView usernameTitle;
     private LinearLayout linearLayout;
+    private ProgressDialog listDevicesProgressDialog;
 
 
     @Override
@@ -49,7 +53,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
-        final View hView =  navigationView.getHeaderView(0);
+        final View hView = navigationView.getHeaderView(0);
 
 
         // TODO - FACEBOOK AND COGNITO NAME - CHANGE HERE
@@ -93,7 +97,6 @@ public class ShowerNavigationDrawer extends AppCompatActivity
     }
 
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -118,13 +121,13 @@ public class ShowerNavigationDrawer extends AppCompatActivity
     }
 
 
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(final MenuItem item) {
         // Handle navigation view item clicks here.
         Fragment fragment = null;
         Class fragmentClass;
+        boolean loadDevices = false;
         fragmentClass = ShowerListFragment.class;
 
         switch (item.getItemId()) {
@@ -142,31 +145,56 @@ public class ShowerNavigationDrawer extends AppCompatActivity
             case R.id.nav_account:
 //                fragmentClass = ThirdFragment.class;
                 break;
+            case R.id.nav_list_of_devices:
+                loadDevices = true;
+                listDevicesProgressDialog = new ProgressDialog(this);
+                listDevicesProgressDialog.setMessage("Buscando Lista...");
+                listDevicesProgressDialog.setCanceledOnTouchOutside(false);
+                listDevicesProgressDialog.show();
+
+                DevicePersistance.fastGetAllDevicesFromUser(new ServerCallback() {
+                    @Override
+                    public void onServerCallback(boolean status, String response) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                listDevicesProgressDialog.dismiss();
+                                Class showerListFragment = ShowerListFragment.class;
+                                fragmentChanger(item, showerListFragment);
+                            }
+                        });
+                    }
+                });
+                break;
             case R.id.nav_share:
 //                fragmentClass = ThirdFragment.class;
                 break;
             default:
-                fragmentClass = ShowerListFragment.class;
+                fragmentClass = HelpFragment.class;
         }
 
+        if (!loadDevices) {
+            fragmentChanger(item, fragmentClass);
+        }
 
+        return true;
+    }
+
+    void fragmentChanger(MenuItem item, Class fragmentClass) {
+        Fragment fragment = null;
         try {
             fragment = (Fragment) fragmentClass.newInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.base, fragment).commit();
 
         item.setChecked(true);
-
         setTitle(item.getTitle());
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
 
@@ -183,6 +211,12 @@ public class ShowerNavigationDrawer extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
     }
 
+    @Override
+    public void onFragmentInteraction(String fragmentName) {
+        if(fragmentName.equals("ShowerDetailFragment")){
+            fragmentChanger(navigationView.getMenu().getItem(0), ShowerListFragment.class);
+        }
+    }
     @Override
     public void onFragmentInteraction(Uri uri) {
 
