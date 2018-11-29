@@ -110,7 +110,7 @@ public class AwsIotCoreManager {
             mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
             device.setBathTime(bathTime);
             device.setWaitTime(waitTime);
-            device.setStoppedTime(waitTime);
+            device.setStoppedTime(stoppedTime);
             serverCallback.onServerCallback(true,"successful");
         } catch (Exception e) {
             Log.e(TAG, "Publish error.", e);
