@@ -2,6 +2,7 @@ package com.felipe.showeriocloud.Activities.Fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -210,30 +211,29 @@ public class ShowerDetailFragment extends Fragment {
                     switch (finalI) {
                         case 0:
                             if (!nameFlag) {
-                                Log.i("ShowerDetailActivity", "case 0, opening ShowerIOActivity");
+                                Log.i("ShowerDetailFragment", "case 0, opening dialog to set bath parms");
                                 onStartPressed();
                             }
                             break;
                         case 1:
-                            Log.i("ShowerDetailActivity", "case 1, opening ShowerIOActivity");
+                            Log.i("ShowerDetailFragment", "case 1, opening form to change name");
                             onSetNamePressed();
                             break;
                         case 2:
-                            if (!nameFlag) {
-                                Log.i("ShowerDetailActivity", "case 2, opening ShowerIOActivity");
-                            }
+                            Log.i("ShowerDetailFragment", "case 2, opening confirmation dialog to reset");
+                            onResetPressed();
+
                             break;
                         case 3:
-                            Log.i("ShowerDetailActivity", "case 3, opening ShowerIOActivity");
+                            Log.i("ShowerDetailFragment", "case 3, going back to ShowerNavigationDrawer");
                             mListener.onFragmentInteraction("ShowerDetailFragment");
                             break;
                         case 4:
-                            Log.i("ShowerDetailActivity", "case 4, closing app");
+                            Log.i("ShowerDetailFragment", "case 4, closing app");
                             break;
                         case 5:
-                            if (!nameFlag) {
-                                Log.i("ShowerDetailActivity", "case 5, opening ShowerIOActivity");
-                            }
+                            Log.i("ShowerDetailFragment", "case 5, opening confirmation dialog to delete");
+                            onDeletePressed();
                             break;
                     }
                 }
@@ -271,10 +271,9 @@ public class ShowerDetailFragment extends Fragment {
 
     private void helpUserSetName() {
         // showing toast to help user to use the application
-        Toast toast = new Toast(getContext());
-        toast.setText(R.string.dialog_name_hint);
-        toast.setDuration(Toast.LENGTH_LONG);
-        toast.show();
+        Toast.makeText(getContext(),
+                R.string.dialog_name_hint,
+                Toast.LENGTH_SHORT).show();
     }
 
     private void onStartPressed() {
@@ -312,7 +311,7 @@ public class ShowerDetailFragment extends Fragment {
                 publishProgressDialog.setCanceledOnTouchOutside(false);
                 publishProgressDialog.show();
 
-                awsIotCoreManager.subscribeAndPublish(returnHardCoddedMinutes(mSpinnerBathTime.getSelectedItemPosition())
+                awsIotCoreManager.publishBathParams(returnHardCoddedMinutes(mSpinnerBathTime.getSelectedItemPosition())
                         , returnHardCoddedMinutes(mSpinnerBathPosTime.getSelectedItemPosition())
                         , returnHardCoddedMinutes(mSpinnerBathDuringTime.getSelectedItemPosition())
                         , device
@@ -335,6 +334,72 @@ public class ShowerDetailFragment extends Fragment {
             }
         });
 
+    }
+
+    private void onResetPressed() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(R.string.reset_title);
+        builder.setMessage(R.string.reset_text);
+        builder.setCancelable(false);
+        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                awsIotCoreManager.publishReset(device, new ServerCallback() {
+                    @Override
+                    public void onServerCallback(boolean status, String response) {
+                        if (status) {
+                            DevicePersistance.fastUpdateDevice(device);
+                            mListener.onFragmentInteraction("ShowerDetailFragment");
+                        } else {
+                            Toast.makeText(getContext(), R.string.reset_fail, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+
+        builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+
+    }
+
+    private void onDeletePressed() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(R.string.delete_title);
+        builder.setMessage(R.string.delete_text);
+        builder.setCancelable(false);
+        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                awsIotCoreManager.publishDelete(new ServerCallback() {
+                    @Override
+                    public void onServerCallback(boolean status, String response) {
+                        if (status) {
+                            DevicePersistance.deleteDevice(device);
+                            // TODO - Delete all Statistics
+                            mListener.onFragmentInteraction("ShowerDetailFragment");
+                        } else {
+                            Toast.makeText(getContext(), R.string.delete_fail, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+
+        builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     private void onSetNamePressed() {

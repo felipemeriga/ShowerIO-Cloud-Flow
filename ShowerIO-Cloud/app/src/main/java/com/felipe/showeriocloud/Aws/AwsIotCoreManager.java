@@ -102,7 +102,7 @@ public class AwsIotCoreManager {
 
     }
 
-    public void subscribeAndPublish(int bathTime, int waitTime, int stoppedTime, DeviceDO device, ServerCallback serverCallback) {
+    public void publishBathParams(int bathTime, int waitTime, int stoppedTime, DeviceDO device, ServerCallback serverCallback) {
         final String topic = "times";
         final String msg = bathTime + "-" + waitTime + "-" + stoppedTime;
 
@@ -117,4 +117,31 @@ public class AwsIotCoreManager {
             serverCallback.onServerCallback(false, e.getMessage());
         }
     }
+
+    public void publishReset(DeviceDO device, ServerCallback serverCallback){
+        final String topic = "reset";
+        final String msg = "reset";
+        try {
+            mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
+            device.setStatus("OFFLINE");
+            serverCallback.onServerCallback(true,"successful");
+        } catch (Exception e) {
+            Log.e(TAG, "Publish error.", e);
+            serverCallback.onServerCallback(false, e.getMessage());
+        }
+    }
+
+    public void publishDelete(ServerCallback serverCallback){
+        final String topic = "delete";
+        final String msg = "delete";
+        try {
+            mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
+            serverCallback.onServerCallback(true,"successful");
+        } catch (Exception e) {
+            Log.e(TAG, "Publish error.", e);
+            serverCallback.onServerCallback(false, e.getMessage());
+        }
+    }
+
+
 }

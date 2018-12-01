@@ -122,6 +122,7 @@ public class DevicePersistance {
         deviceDO.setWaitTime(0);
         deviceDO.setStoppedTime(0);
 
+
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -163,5 +164,16 @@ public class DevicePersistance {
         }).start();
     }
 
+
+
+    public static void deleteDevice(final DeviceDO device) {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                AwsDynamoDBManager.dynamoDBMapper.delete(device);
+            }
+        }).start();
+    }
 
 }
