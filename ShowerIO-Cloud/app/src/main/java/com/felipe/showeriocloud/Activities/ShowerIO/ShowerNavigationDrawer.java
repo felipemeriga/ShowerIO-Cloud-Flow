@@ -77,13 +77,24 @@ public class ShowerNavigationDrawer extends AppCompatActivity
 
 
     private void startBaseFragment() {
-        Fragment fragment = new ShowerListFragment();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.base, fragment).commit();
-        navigationView.getMenu().getItem(0).setChecked(true);
-        setTitle(getString(R.string.nav_list_of_devices));
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+
+        listDevicesProgressDialog = new ProgressDialog(this);
+        listDevicesProgressDialog.setMessage("Buscando Lista...");
+        listDevicesProgressDialog.setCanceledOnTouchOutside(false);
+        listDevicesProgressDialog.show();
+
+        DevicePersistance.fastGetAllDevicesFromUser(new ServerCallback() {
+            @Override
+            public void onServerCallback(boolean status, String response) {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        listDevicesProgressDialog.dismiss();
+                        Class showerListFragment = ShowerListFragment.class;
+                        fragmentChanger(navigationView.getMenu().getItem(0), ShowerListFragment.class);
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -214,7 +225,24 @@ public class ShowerNavigationDrawer extends AppCompatActivity
     @Override
     public void onFragmentInteraction(String fragmentName) {
         if(fragmentName.equals("ShowerDetailFragment")){
-            fragmentChanger(navigationView.getMenu().getItem(0), ShowerListFragment.class);
+
+            listDevicesProgressDialog = new ProgressDialog(this);
+            listDevicesProgressDialog.setMessage("Buscando Lista...");
+            listDevicesProgressDialog.setCanceledOnTouchOutside(false);
+            listDevicesProgressDialog.show();
+
+            DevicePersistance.fastGetAllDevicesFromUser(new ServerCallback() {
+                @Override
+                public void onServerCallback(boolean status, String response) {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            listDevicesProgressDialog.dismiss();
+                            Class showerListFragment = ShowerListFragment.class;
+                            fragmentChanger(navigationView.getMenu().getItem(0), ShowerListFragment.class);
+                        }
+                    });
+                }
+            });
         }
     }
     @Override
