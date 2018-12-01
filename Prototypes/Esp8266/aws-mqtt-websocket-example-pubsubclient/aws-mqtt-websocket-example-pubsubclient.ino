@@ -26,13 +26,13 @@ extern "C" {
 }
 
 //AWS IOT config, change these:
-char wifi_ssid[]       = "Json";
+char wifi_ssid[]       = "Valar Morghulis";
 char wifi_password[]   = "0061171880";
 char aws_endpoint[]    = "agq6mvwjsctpy-ats.iot.us-east-2.amazonaws.com";
-char aws_key[]         = "AKIAJLVWZBXXZ5NVCRWA";
-char aws_secret[]      = "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";
+char aws_key[]         = "AKIAILQOI2X6CSXLOZKA";
+char aws_secret[]      = "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";
 char aws_region[]      = "us-east-2";
-const char* aws_topic  = "Sensor";
+const char* aws_topic  = "times";
 int port = 443;
 
 //MQTT config

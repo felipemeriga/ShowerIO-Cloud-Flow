@@ -11,10 +11,52 @@
 #include <ESP8266mDNS.h>
 #include <ArduinoJson.h>
 #include <WiFiUdp.h>
+#include <Stream.h>
+//AWS
+#include "sha256.h"
+#include "Utils.h"
+
+
+//WEBSockets
+#include <Hash.h>
+#include <WebSocketsClient.h>
+
+//MQTT PUBSUBCLIENT LIB 
+#include <PubSubClient.h>
+
+//AWS MQTT Websocket
+#include "Client.h"
+#include "AWSWebSocketClient.h"
+#include "CircularByteBuffer.h"
+
+extern "C" {
+  #include "user_interface.h"
+}
 
 #define buttonPin D2  // the number of the pushbutton pin
 #define rele D1      // the number of the LED pin
 #define Led_Aviso D0
+
+char aws_endpoint[]    = "agq6mvwjsctpy-ats.iot.us-east-2.amazonaws.com";
+char aws_key[]         = "AKIAILQOI2X6CSXLOZKA";
+char aws_secret[]      = "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";
+char aws_region[]      = "us-east-2";
+const char* aws_topic  = "times";
+int port = 443;
+
+//MQTT config
+const int maxMQTTpackageSize = 512;
+const int maxMQTTMessageHandlers = 1;
+
+AWSWebSocketClient awsWSclient(1000);
+
+PubSubClient client(awsWSclient);
+
+//# of connections
+long connection = 0;
+
+//count messages arrived
+int arrivedcount = 0;
 
 Ticker botao;
 Ticker tyme;

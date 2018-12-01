@@ -11,7 +11,7 @@ void check() {
   String localNetworkIp = WiFi.localIP().toString();
   String localNetworkSubnet = WiFi.localIP().toString();
   String microprocessorId = (String)ESP.getChipId();
-  String deviceStatus = "ACTIVE";
+  String deviceStatus = "ONLINE";
   String iotCoreEndPoint = "agq6mvwjsctpy-ats.iot.us-east-2.amazonaws.com";
   String iotCoreARN = "AKIAJLVWZBXXZ5NVCRWA";
 
