@@ -41,16 +41,31 @@ public class RegisterNewDevices {
             Log.i(TAG, "onPostsLoaded() The HTTP request was done successfully, getting the parameters from the response");
 //            callback.onServerCallback(true, response);
             DeviceDO deviceDO = gson.fromJson(response.toString(), DeviceDO.class);
-            DevicePersistance.insertNewDevice(deviceDO, new ServerCallbackObject() {
-                @Override
-                public void onServerCallbackObject(Boolean status, String response, Object object) {
-                    if(status){
-                        callback.onServerCallback(true, "SUCCESS");
-                    } else{
-                        callback.onServerCallback(false, response);
+            boolean alreadyExists = false;
+            if (DevicePersistance.lastUpdateUserDevices.size() > 0) {
+                for (DeviceDO device : DevicePersistance.lastUpdateUserDevices) {
+                    if (device.getStatus().equals("OFFLINE")) {
+                        if (device.getMicroprocessorId().equals(deviceDO.getMicroprocessorId())) {
+                            alreadyExists= true;
+                            device.setStatus("ONLINE");
+                            DevicePersistance.fastUpdateDevice(device);
+                            callback.onServerCallback(true, "SUCCESS");
+                        }
                     }
                 }
-            });
+            }
+            if(!alreadyExists){
+                DevicePersistance.insertNewDevice(deviceDO, new ServerCallbackObject() {
+                    @Override
+                    public void onServerCallbackObject(Boolean status, String response, Object object) {
+                        if (status) {
+                            callback.onServerCallback(true, "SUCCESS");
+                        } else {
+                            callback.onServerCallback(false, response);
+                        }
+                    }
+                });
+            }
         }
     };
 
