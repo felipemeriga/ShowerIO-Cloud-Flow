@@ -14,7 +14,7 @@
     <string name="password">Senha </string>
     <string name="reset">Resetar </string>
     <string name="restart">Reiniciar </string>
-    <string name="info">Info </string>
+    <string name="delete">Deletar </string>
     <string name="statistics">Estatísticas </string>
     <string name="quit">Sair </string>
     <string name="noName">Sem Nome</string>
@@ -67,6 +67,16 @@
     <string name="control_bath_time">Tempo de Banho</string>
     <string name="control_bath_wait_pos_time">Tempo de espera pós banho</string>
     <string name="control_bath_wait_during_time">Tempo de espera durante banho</string>
+
+    <!--Reset the shower-->
+    <string name="reset_title">Resetar o dispositivo</string>
+    <string name="reset_text">Resetar irá desconectar seu ShowerIO de sua rede wifi atual, você realmente deseja resetar?</string>
+    <string name="reset_fail">Não foi possível resetar o dispositivo</string>
+
+    <!--Delete the shower-->
+    <string name="delete_title">Deletar o dispositivo</string>
+    <string name="delete_text">Deletar faz com que o dispositivo seja excluido de sua lista, e apaga todos os registros existentes, deseja mesmo deletar?</string>
+    <string name="delete_fail">Não foi possível deletar o dispositivo</string>
 
     <string-array name="times">
         <item>Selecionar tempo</item>

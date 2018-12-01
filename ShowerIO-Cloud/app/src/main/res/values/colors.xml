@@ -3,11 +3,11 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorStatusBar">#5a6bc9</color>
     <color name="colorPrimaryDark">#0f82d2</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#bc1a20</color>
 
     <color name="showerPrimary">#0F82D2</color>
     <color name="showerPrimaryDark">#0f82d2</color>
-    <color name="showerAccent">#FF4081</color>
+    <color name="showerAccent">#bc1a20</color>
 
     <color name="bg_row_background">#317efa</color>
     <color name="bg_row_background_offline">#fa3138</color>
