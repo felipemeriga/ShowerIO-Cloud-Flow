@@ -119,7 +119,7 @@ public class AwsIotCoreManager {
     }
 
     public void publishReset(DeviceDO device, ServerCallback serverCallback){
-        final String topic = "reset";
+        final String topic = "configuration";
         final String msg = "reset";
         try {
             mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
@@ -132,7 +132,7 @@ public class AwsIotCoreManager {
     }
 
     public void publishDelete(ServerCallback serverCallback){
-        final String topic = "delete";
+        final String topic = "configuration";
         final String msg = "delete";
         try {
             mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);

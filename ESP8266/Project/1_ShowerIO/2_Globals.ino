@@ -38,10 +38,11 @@ extern "C" {
 #define Led_Aviso D0
 
 char aws_endpoint[]    = "agq6mvwjsctpy-ats.iot.us-east-2.amazonaws.com";
-char aws_key[]         = "AKIAILQOI2X6CSXLOZKA";
-char aws_secret[]      = "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";
+char aws_key[]         = "AKIAIVGZI4JZINOAKH4A";
+char aws_secret[]      = "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";
 char aws_region[]      = "us-east-2";
-const char* aws_topic  = "times";
+const char* aws_topic_times  = "times";
+const char* aws_topic_conf  = "configuration";
 int port = 443;
 
 //MQTT config
