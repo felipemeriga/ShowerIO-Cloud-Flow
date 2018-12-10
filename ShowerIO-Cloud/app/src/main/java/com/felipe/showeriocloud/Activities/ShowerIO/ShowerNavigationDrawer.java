@@ -99,12 +99,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        this.startBaseFragment();
     }
 
 
@@ -224,7 +219,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(String fragmentName) {
-        if(fragmentName.equals("ShowerDetailFragment")){
+        if (fragmentName.equals("ShowerDetailFragment")) {
 
             listDevicesProgressDialog = new ProgressDialog(this);
             listDevicesProgressDialog.setMessage("Buscando Lista...");
@@ -245,6 +240,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
             });
         }
     }
+
     @Override
     public void onFragmentInteraction(Uri uri) {
 
