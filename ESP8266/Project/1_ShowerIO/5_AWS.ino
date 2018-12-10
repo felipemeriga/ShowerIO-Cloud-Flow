@@ -18,14 +18,14 @@ void callback(char* topic, byte* payload, unsigned int length) {
   char charList[20];
   String topicString = (String) topic;
   int messageLength;
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
+  DBG_OUTPUT_PORT.print("Message arrived [");
+  DBG_OUTPUT_PORT.print(topic);
+  DBG_OUTPUT_PORT.print("] ");
   for (int i = 0; i < length; i++) {
-    Serial.print((char)payload[i]);
+    DBG_OUTPUT_PORT.print((char)payload[i]);
     message = message + (char)payload[i];
   }
-  Serial.println();
+  DBG_OUTPUT_PORT.println();
   if (topicString.equals("times")) {
     messageLength = message.length();
     message.toCharArray(charList, messageLength);
@@ -44,14 +44,20 @@ void callback(char* topic, byte* payload, unsigned int length) {
         lastPoint = j + 1;
       }
     }
-    Serial.println();
-    Serial.print(bathTime);
-    Serial.println();
-    Serial.print(waitTime);
-    Serial.println();
-    Serial.print(stoppedTime);
+    setBathTime(bathTime);
+    setWaitTime(waitTime);
+    setStoppedTime(stoppedTime);
+    DBG_OUTPUT_PORT.println();
+    DBG_OUTPUT_PORT.print(bathTime);
+    DBG_OUTPUT_PORT.println();
+    DBG_OUTPUT_PORT.print(waitTime);
+    DBG_OUTPUT_PORT.println();
+    DBG_OUTPUT_PORT.print(stoppedTime);
   }
-  Serial.println();
+  if (topicString.equals("configuration")) {
+    WiFi.disconnect();
+  }
+  DBG_OUTPUT_PORT.println();
 }
 
 //connects to websocket layer and mqtt layer
@@ -64,12 +70,12 @@ bool connect () {
   }
   //delay is not necessary... it just help us to get a "trustful" heap space value
   delay (1000);
-  Serial.print (millis ());
-  Serial.print (" - conn: ");
-  Serial.print (++connection);
-  Serial.print (" - (");
-  Serial.print (ESP.getFreeHeap ());
-  Serial.println (")");
+  DBG_OUTPUT_PORT.print (millis ());
+  DBG_OUTPUT_PORT.print (" - conn: ");
+  DBG_OUTPUT_PORT.print (++connection);
+  DBG_OUTPUT_PORT.print (" - (");
+  DBG_OUTPUT_PORT.print (ESP.getFreeHeap ());
+  DBG_OUTPUT_PORT.println (")");
 
 
   //creating random client id
@@ -77,11 +83,11 @@ bool connect () {
 
   client.setServer(aws_endpoint, port);
   if (client.connect(clientID)) {
-    Serial.println("connected");
+    DBG_OUTPUT_PORT.println("connected");
     return true;
   } else {
-    Serial.print("failed, rc=");
-    Serial.print(client.state());
+    DBG_OUTPUT_PORT.print("failed, rc=");
+    DBG_OUTPUT_PORT.print(client.state());
     return false;
   }
 
@@ -94,7 +100,7 @@ void subscribe () {
   client.subscribe(aws_topic_times);
   client.subscribe(aws_topic_conf);
   //subscript to a topic
-  Serial.println("MQTT subscribed");
+  DBG_OUTPUT_PORT.println("MQTT subscribed");
 }
 
 

@@ -62,6 +62,11 @@
     <string name="nav_account">Minha Conta</string>
     <string name="nav_share">Compartilhar</string>
 
+    <!--Shower is offline-->
+    <string name="offline_title">Dispositivo Offline</string>
+    <string name="offline_text">Seu dispositivo para estar desconectado, deseja conectar ele a sua rede antiga ou uma nova?</string>
+    <string name="offline_fail">Não foi possível conectar o dispositivo</string>
+
 
     <!--Controll the shower-->
     <string name="control_bath_time">Tempo de Banho</string>

@@ -2,19 +2,6 @@
 
 void configureServer() {
 
-  server.on ( "/selectDurationTime", selectDurationTime);
-  server.on ( "/setActualShowerTimePlus", setActualShowerTimePlus);
-  server.on ( "/setActualShowerTimeLess", setActualShowerTimeLess);
-  server.on ( "/selectOffTime", selectOffTime);
-  server.on ( "/setActualOffTimePlus", setActualOffTimePlus);
-  server.on ( "/setActualOffTimeLess", setActualOffTimeLess);
-  server.on ( "/selectPausedTime", selectPausedTime);
-  server.on ( "/setActualPausedTimePlus", setActualPausedTimePlus);
-  server.on ( "/setActualPausedTimeLess", setActualPausedTimeLess);
-  server.on ( "/setActualPausedTimeLess", setActualPausedTimeLess);
-  server.on ( "/getDurationTime", getDurationTime);
-  server.on ( "/getOffTime", getOffTime);
-  server.on ( "/getPausedTime", getPausedTime);
   server.on ( "/check", check);
 
   server.begin();
