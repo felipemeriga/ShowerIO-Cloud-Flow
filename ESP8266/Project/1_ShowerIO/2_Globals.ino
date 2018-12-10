@@ -38,8 +38,6 @@ extern "C" {
 #define Led_Aviso D0
 
 char aws_endpoint[]    = "agq6mvwjsctpy-ats.iot.us-east-2.amazonaws.com";
-char aws_key[]         = "xxx";
-char aws_secret[]      = "xxx";
 char aws_region[]      = "us-east-2";
 const char* aws_topic_times  = "times";
 const char* aws_topic_conf  = "configuration";
