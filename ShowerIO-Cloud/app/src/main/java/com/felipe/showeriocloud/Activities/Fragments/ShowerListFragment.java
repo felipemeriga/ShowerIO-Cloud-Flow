@@ -1,10 +1,13 @@
 package com.felipe.showeriocloud.Activities.Fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,11 +19,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.felipe.showeriocloud.Activities.Authentication.LoginActivity;
+import com.felipe.showeriocloud.Activities.Home.SplashScreen;
+import com.felipe.showeriocloud.Activities.ShowerIO.ShowerNavigationDrawer;
+import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
 import com.felipe.showeriocloud.Adapter.ShowerListAdapter;
 import com.felipe.showeriocloud.Helper.RecyclerItemTouchHelper;
 import com.felipe.showeriocloud.Model.DeviceDO;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
+import com.felipe.showeriocloud.Utils.ServerCallback;
 import com.github.ybq.android.spinkit.style.WanderingCubes;
 
 import java.util.ArrayList;
@@ -134,12 +142,38 @@ public class ShowerListFragment extends Fragment implements RecyclerItemTouchHel
             if (selectedDevice.getStatus().equals("ONLINE")) {
                 recyclerView.setVisibility(View.GONE);
                 onlineDeviceSelected(selectedDevice);
-
             } else {
-                // TODO - Handle when the device is OFFLINE but some reason
-
+                handleOfflineDevice();
             }
         }
+    }
+
+    void handleOfflineDevice() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(R.string.offline_title);
+        builder.setMessage(R.string.offline_text);
+        builder.setCancelable(false);
+        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                Intent loginActivity = new Intent(getActivity(), SearchForDevices.class);
+                startActivity(loginActivity);
+                getActivity().finish();
+            }
+        });
+
+        builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                Intent navegationDrawer = new Intent(getActivity(), ShowerNavigationDrawer.class);
+                startActivity(navegationDrawer);
+                getActivity().finish();
+            }
+        });
+        builder.show();
+
     }
 
     @Override
