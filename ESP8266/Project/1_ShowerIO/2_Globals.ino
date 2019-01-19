@@ -6,7 +6,7 @@
 #include <FS.h>
 #include <DNSServer.h>
 #include <EEPROM.h>
-#include <Ticker.h> 
+#include <Ticker.h>
 #include <WiFiManager.h>
 #include <ESP8266mDNS.h>
 #include <ArduinoJson.h>
@@ -21,7 +21,7 @@
 #include <Hash.h>
 #include <WebSocketsClient.h>
 
-//MQTT PUBSUBCLIENT LIB 
+//MQTT PUBSUBCLIENT LIB
 #include <PubSubClient.h>
 
 //AWS MQTT Websocket
@@ -30,12 +30,12 @@
 #include "CircularByteBuffer.h"
 
 extern "C" {
-  #include "user_interface.h"
+#include "user_interface.h"
 }
 
-#define buttonPin D2  // the number of the pushbutton pin
 #define rele D1      // the number of the LED pin
 #define Led_Aviso D0
+#define FLOW_SENSOR_PIN 5 // Sensor Input
 
 char aws_endpoint[]    = "agq6mvwjsctpy-ats.iot.us-east-2.amazonaws.com";
 char aws_region[]      = "us-east-2";
@@ -57,35 +57,10 @@ long connection = 0;
 //count messages arrived
 int arrivedcount = 0;
 
-Ticker botao;
-Ticker tyme;
-
 bool shouldSaveConfig = false;
-
-// Variables will change:
-int releState = LOW;         // the current state of the output pin
-int buttonState;             // the current reading from the input pin
-int lastButtonState = LOW;   // the previous reading from the input pin
-int led_S = LOW;
 
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
 unsigned long debounceDelay = 25;    // the debounce time; increase if the output flickers
-
-enum Estado_Botao {
-  desligado,
-  iniciar_banho,
-  pausar_banho,
-  continuar_banho
-};
-
-
-enum Estado_Banho {
-  habilitado,
-  desabilitado
-};
-
-Estado_Botao Estado_Bot = desligado;
-Estado_Banho Banho = habilitado;
 
 //positions to save variables on the EEPROM
 int address_tempo = 0;
@@ -109,7 +84,7 @@ int tempo_de_pausa = (int)minutos_pausa * 60;
 
 ESP8266WebServer server(80);
 
-// TODO - Verify if all these functions will be used 
+// TODO - Verify if all these functions will be used
 //API REST Mapping Functions
 bool handleFileRead(String path);
 void selectDurationTime();
@@ -122,7 +97,15 @@ void selectPausedTime();
 void setActualPausedTimePlus();
 void setActualPausedTimeLess();
 
-//Shower Logic Functions
-void logica_botao();
-void logica_tempo();
+// Shower logic variables
 
+volatile int flow_frequency; // Measures flow sensor pulses
+unsigned int l_hour; // Calculated litres/hour
+unsigned long currentTime;
+unsigned long cloopTime;
+boolean bathRunning;
+boolean showerIsOn;
+boolean waiting;
+unsigned long bathTime;
+unsigned long stoppedTime;
+unsigned long waitingTime;

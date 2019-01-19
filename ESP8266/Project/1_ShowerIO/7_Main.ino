@@ -3,22 +3,17 @@
 void configureServer() {
 
   server.on ( "/check", check);
-
   server.begin();
   DBG_OUTPUT_PORT.println("HTTP server started");
 }
 
 void configureGPIO(void) {
 
-  pinMode(buttonPin, INPUT);
   pinMode(rele, OUTPUT);
   pinMode(Led_Aviso, OUTPUT);
 
   digitalWrite(rele, LOW);
   digitalWrite(Led_Aviso, LOW);
-
-  botao.attach(0.2, logica_botao);
-  tyme.attach(1, logica_tempo);
 
   //EEPROM Start Function
   EEPROM.begin(512);
@@ -67,6 +62,7 @@ void setup(void) {
   DBG_OUTPUT_PORT.setDebugOutput(true);
   configureGPIO();
   configureServer();
+  initBathConfiguration();
   int cnt = 0;
 
   // set for STA mode
@@ -94,7 +90,7 @@ void setup(void) {
 
   // Print the IP address
   DBG_OUTPUT_PORT.println(WiFi.localIP());
-  
+
   //fill AWS parameters
   awsWSclient.setAWSRegion(aws_region);
   awsWSclient.setAWSDomain(aws_endpoint);
@@ -102,27 +98,25 @@ void setup(void) {
   awsWSclient.setAWSSecretKey(aws_secret);
   awsWSclient.setUseSSL(true);
 
-   if (connect ()){
-      subscribe ();
-    }
-
-
-
+  if (connect ()) {
+    subscribe ();
+  }
 }
 
 void loop(void) {
   server.handleClient();
+  bathProcess();
 
   //keep the mqtt up and running
- if (awsWSclient.connected ()) {    
-      client.loop ();
+  if (awsWSclient.connected ()) {
+    client.loop ();
   } else {
     //handle reconnection
-    if (connect ()){
-      subscribe ();      
+    if (connect ()) {
+      subscribe ();
     }
   }
- 
+
 }
 
 
