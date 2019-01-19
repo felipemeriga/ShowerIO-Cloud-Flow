@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.felipe.showeriocloud.Activities.Fragments.HelpFragment;
+import com.felipe.showeriocloud.Activities.Fragments.SearchForDevicesFragment;
 import com.felipe.showeriocloud.Activities.Fragments.ShowerDetailFragment;
 import com.felipe.showeriocloud.Activities.Fragments.ShowerListFragment;
 import com.felipe.showeriocloud.Activities.Home.SplashScreen;
@@ -37,7 +38,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 public class ShowerNavigationDrawer extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, HelpFragment.OnFragmentInteractionListener, ShowerListFragment.OnFragmentInteractionListener, ShowerDetailFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, HelpFragment.OnFragmentInteractionListener, ShowerListFragment.OnFragmentInteractionListener, ShowerDetailFragment.OnFragmentInteractionListener, SearchForDevicesFragment.OnFragmentInteractionListener {
 
     protected NavigationView navigationView;
     private ImageView imageView;
@@ -138,10 +139,11 @@ public class ShowerNavigationDrawer extends AppCompatActivity
 
         switch (item.getItemId()) {
             case R.id.nav_find_devices:
-                Intent findDevices = new Intent(ShowerNavigationDrawer.this, SearchForDevices.class);
+                fragmentClass = SearchForDevicesFragment.class;
+              /*  Intent findDevices = new Intent(ShowerNavigationDrawer.this, SearchForDevices.class);
                 startActivity(findDevices);
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-                finish();
+                finish();*/
             case R.id.nav_manage:
 //                fragmentClass = SecondFragment.class;
                 break;

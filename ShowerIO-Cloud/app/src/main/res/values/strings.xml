@@ -30,6 +30,7 @@
     <string name="dialog_set_time_fail">Falha em comunicação com o dispositivo!</string>
     <string name="dialog_set_time_success">Valores Atualizados!</string>
     <string name="cancel">Cancelar </string>
+    <string name="find_devices_help">Conecte o chuveiro ao wifi de sua casa!</string>
 
 
     <string name="confDevices">  Configurando Dispositivos...</string>

@@ -1,4 +1,4 @@
-package com.felipe.showeriocloud.Processes;
+package com.felipe.showeriocloud.Activities.Fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;

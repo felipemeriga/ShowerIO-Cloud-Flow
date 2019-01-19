@@ -7,7 +7,7 @@
     android:id="@+id/relative_layout"
     android:background="@drawable/back_def">
 
-
+<!--
     <android.support.design.widget.TextInputLayout
         android:id="@+id/ssidLayout"
         android:layout_width="match_parent"
@@ -160,6 +160,6 @@
         android:layout_weight="1"
         android:fontFamily="@font/abeezee"
         android:text="@string/confirmWifi"
-        android:textSize="30sp" />
+        android:textSize="30sp" />-->
 
 </RelativeLayout>
