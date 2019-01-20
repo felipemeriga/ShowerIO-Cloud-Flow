@@ -110,5 +110,11 @@
         <item>sem tempo</item>
     </string-array>
 
+    <!--Statistics of the shower-->
+    <string name="daily_statistics">Estatísticas Diárias</string>
+    <string name="statsType">Tipo de Estatísticas</string>
+    <string name="daily">Diária </string>
+    <string name="monthly">Mensal </string>
+
 
 </resources>

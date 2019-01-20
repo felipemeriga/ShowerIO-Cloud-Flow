@@ -222,14 +222,14 @@ public class ShowerDetailFragment extends Fragment {
                         case 2:
                             Log.i("ShowerDetailFragment", "case 2, opening confirmation dialog to reset");
                             onResetPressed();
-
                             break;
                         case 3:
                             Log.i("ShowerDetailFragment", "case 3, going back to ShowerNavigationDrawer");
-                            mListener.onFragmentInteraction("ShowerDetailFragment");
+                            mListener.onFragmentInteraction("ShowerListFragment");
                             break;
                         case 4:
-                            Log.i("ShowerDetailFragment", "case 4, closing app");
+                            Log.i("ShowerDetailFragment", "case 4, opening statistics fragment");
+                            mListener.onFragmentInteraction("StatisicsDetailFragment");
                             break;
                         case 5:
                             Log.i("ShowerDetailFragment", "case 5, opening confirmation dialog to delete");
@@ -350,7 +350,7 @@ public class ShowerDetailFragment extends Fragment {
                     public void onServerCallback(boolean status, String response) {
                         if (status) {
                             DevicePersistance.fastUpdateDevice(device);
-                            mListener.onFragmentInteraction("ShowerDetailFragment");
+                            mListener.onFragmentInteraction("ShowerListFragment");
                         } else {
                             Toast.makeText(getContext(), R.string.reset_fail, Toast.LENGTH_SHORT).show();
                         }
@@ -384,7 +384,7 @@ public class ShowerDetailFragment extends Fragment {
                         if (status) {
                             DevicePersistance.deleteDevice(device);
                             // TODO - Delete all Statistics
-                            mListener.onFragmentInteraction("ShowerDetailFragment");
+                            mListener.onFragmentInteraction("ShowerListFragment");
                         } else {
                             Toast.makeText(getContext(), R.string.delete_fail, Toast.LENGTH_SHORT).show();
                         }

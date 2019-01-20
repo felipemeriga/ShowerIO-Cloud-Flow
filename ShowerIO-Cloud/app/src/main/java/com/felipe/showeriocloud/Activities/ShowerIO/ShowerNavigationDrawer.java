@@ -27,6 +27,8 @@ import com.felipe.showeriocloud.Activities.Fragments.HelpFragment;
 import com.felipe.showeriocloud.Activities.Fragments.SearchForDevicesFragment;
 import com.felipe.showeriocloud.Activities.Fragments.ShowerDetailFragment;
 import com.felipe.showeriocloud.Activities.Fragments.ShowerListFragment;
+import com.felipe.showeriocloud.Activities.Fragments.StatisticsDetailDailyFragment;
+import com.felipe.showeriocloud.Activities.Fragments.StatisticsDetailFragment;
 import com.felipe.showeriocloud.Activities.Home.SplashScreen;
 import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
 import com.felipe.showeriocloud.Model.DeviceDO;
@@ -38,7 +40,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 public class ShowerNavigationDrawer extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, HelpFragment.OnFragmentInteractionListener, ShowerListFragment.OnFragmentInteractionListener, ShowerDetailFragment.OnFragmentInteractionListener, SearchForDevicesFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, HelpFragment.OnFragmentInteractionListener, ShowerListFragment.OnFragmentInteractionListener, ShowerDetailFragment.OnFragmentInteractionListener, SearchForDevicesFragment.OnFragmentInteractionListener, StatisticsDetailFragment.OnFragmentInteractionListener {
 
     protected NavigationView navigationView;
     private ImageView imageView;
@@ -219,9 +221,25 @@ public class ShowerNavigationDrawer extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
     }
 
+
+
+
+
+    @Override
+    public void  onDailyStatisticsSelected(Uri uri) {
+        Fragment statisticsFragment  = new StatisticsDetailDailyFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().remove(fragmentManager.getFragments().get(0));
+        fragmentManager.beginTransaction().replace(R.id.base, statisticsFragment).commit();
+        navigationView.getMenu().getItem(0).setChecked(false);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+    }
+
+
     @Override
     public void onFragmentInteraction(String fragmentName) {
-        if (fragmentName.equals("ShowerDetailFragment")) {
+        if (fragmentName.equals("ShowerListFragment")) {
 
             listDevicesProgressDialog = new ProgressDialog(this);
             listDevicesProgressDialog.setMessage("Buscando Lista...");
@@ -240,7 +258,17 @@ public class ShowerNavigationDrawer extends AppCompatActivity
                     });
                 }
             });
+        } else if(fragmentName.equals("StatisicsDetailFragment")) {
+            Fragment detailFragment = new StatisticsDetailFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().remove(fragmentManager.getFragments().get(0));
+            fragmentManager.beginTransaction().replace(R.id.base, detailFragment).commit();
+            navigationView.getMenu().getItem(0).setChecked(false);
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+
         }
+
     }
 
     @Override
