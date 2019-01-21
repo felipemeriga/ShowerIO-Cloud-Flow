@@ -1,10 +1,12 @@
 package com.felipe.showeriocloud.Activities.Fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,13 +69,17 @@ public class StatisticsDetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_statistics_detail, container, false);
         ButterKnife.bind(this, view);
         device = DevicePersistance.selectedDevice;
+
+        cardViewDaily.setCardBackgroundColor(Color.WHITE);
+        cardViewMonthly.setCardBackgroundColor(Color.WHITE);
+        this.setSingleEvent(this.mainGridStats);
         return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onDailyStatisticsSelected(uri);
+            mListener.onDailyStatisticsSelected();
         }
     }
 
@@ -94,6 +100,31 @@ public class StatisticsDetailFragment extends Fragment {
         mListener = null;
     }
 
+
+    private void setSingleEvent(GridLayout mainGrid) {
+        //Loop all child item of Main Grid
+        for (int i = 0; i < mainGrid.getChildCount(); i++) {
+            //You can see , all child item is CardView , so we just cast object to CardView
+            CardView cardView = (CardView) mainGrid.getChildAt(i);
+            final int finalI = i;
+
+            cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    switch (finalI) {
+                        case 0:
+                            Log.i("StatisticsDetail", "case 0, opening daily statistics");
+                            mListener.onDailyStatisticsSelected();
+                            break;
+                        case 1:
+                            Log.i("StatisticsDetail", "case 1, opening monthly statistics");
+                            break;
+                    }
+                }
+            });
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -105,6 +136,6 @@ public class StatisticsDetailFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        void onDailyStatisticsSelected(Uri uri);
+        void onDailyStatisticsSelected();
     }
 }

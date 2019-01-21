@@ -66,7 +66,7 @@ void bathProcess ()
       showerIsOn = false;
       computeBathStopped();
     }
-
+    // TODO - Implement the alert LED that the bath is finishing
 
     //verify the bath time
     if (bathTime == EEPROM.read(address_tempo) * 60 && bathRunning == true) {

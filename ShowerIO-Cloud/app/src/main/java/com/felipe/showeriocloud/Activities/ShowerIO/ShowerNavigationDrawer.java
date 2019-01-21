@@ -40,7 +40,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 public class ShowerNavigationDrawer extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, HelpFragment.OnFragmentInteractionListener, ShowerListFragment.OnFragmentInteractionListener, ShowerDetailFragment.OnFragmentInteractionListener, SearchForDevicesFragment.OnFragmentInteractionListener, StatisticsDetailFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, HelpFragment.OnFragmentInteractionListener, ShowerListFragment.OnFragmentInteractionListener, ShowerDetailFragment.OnFragmentInteractionListener, SearchForDevicesFragment.OnFragmentInteractionListener, StatisticsDetailFragment.OnFragmentInteractionListener, StatisticsDetailDailyFragment.OnFragmentInteractionListener {
 
     protected NavigationView navigationView;
     private ImageView imageView;
@@ -212,7 +212,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
     public void onSelectedDevice(DeviceDO deviceDO) {
         DevicePersistance.selectedDevice = deviceDO;
         Fragment detailFragment = new ShowerDetailFragment();
-
+        this.setTitle("Chuveiro");
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().remove(fragmentManager.getFragments().get(0));
         fragmentManager.beginTransaction().replace(R.id.base, detailFragment).commit();
@@ -226,7 +226,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
 
 
     @Override
-    public void  onDailyStatisticsSelected(Uri uri) {
+    public void  onDailyStatisticsSelected() {
         Fragment statisticsFragment  = new StatisticsDetailDailyFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().remove(fragmentManager.getFragments().get(0));
@@ -266,6 +266,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
             navigationView.getMenu().getItem(0).setChecked(false);
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
+            this.setTitle("Estatísticas");
 
         }
 

@@ -1,5 +1,6 @@
 package com.felipe.showeriocloud.Activities.Fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,7 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+import com.felipe.showeriocloud.Model.BathStatisticsDailyDO;
+import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
+import com.felipe.showeriocloud.Utils.ServerCallbackObjects;
+import com.felipe.showeriocloud.Utils.StatisticsUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,35 +29,22 @@ import com.felipe.showeriocloud.R;
  * create an instance of this fragment.
  */
 public class StatisticsDetailDailyFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    private StatisticsUtils statisticsUtils;
     private OnFragmentInteractionListener mListener;
+    private List<BathStatisticsDailyDO> bathStatisticsDaily;
+    private ProgressDialog loadingStatisProgressDialog;
+    public RequestQueue requestQueue;
 
     public StatisticsDetailDailyFragment() {
         // Required empty public constructor
+        this.statisticsUtils = new StatisticsUtils();
+        this.bathStatisticsDaily = new ArrayList<>();
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment StatisticsDetail.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static StatisticsDetailDailyFragment newInstance(String param1, String param2) {
+    public static StatisticsDetailDailyFragment newInstance() {
         StatisticsDetailDailyFragment fragment = new StatisticsDetailDailyFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,20 +52,19 @@ public class StatisticsDetailDailyFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_statistics_detail_daily, container, false);
+        View view = inflater.inflate(R.layout.fragment_statistics_detail_daily, container, false);
+        // TODO - Bind calendar and UI Elements
+        this.fetchStatistics();
+
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -90,6 +86,21 @@ public class StatisticsDetailDailyFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+
+    public void fetchStatistics() {
+        this.requestQueue = Volley.newRequestQueue(this.getContext());
+        loadingStatisProgressDialog = new ProgressDialog(getActivity());
+        loadingStatisProgressDialog.setMessage("Buscando últimas estatísticas...");
+        loadingStatisProgressDialog.setCanceledOnTouchOutside(false);
+        loadingStatisProgressDialog.show();
+        statisticsUtils.getDailyStatistics(DevicePersistance.selectedDevice, this.requestQueue, new ServerCallbackObjects() {
+            @Override
+            public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
+
+            }
+        });
     }
 
     /**
