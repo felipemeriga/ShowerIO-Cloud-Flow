@@ -12,9 +12,17 @@ import com.felipe.showeriocloud.Model.DeviceDO;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
+import java.io.FileReader;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class StatisticsUtils {
@@ -23,6 +31,7 @@ public class StatisticsUtils {
     public ServerCallback callback;
     public ServerCallbackObjects callbackObjects;
     private Gson gson;
+    private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 
     public StatisticsUtils() {
@@ -34,7 +43,6 @@ public class StatisticsUtils {
     public void getDailyStatistics(DeviceDO deviceDO, RequestQueue requestQueue, final ServerCallbackObjects serverCallbackObjects) {
         String ENDPOINT = "https://sn62jy992i.execute-api.us-east-1.amazonaws.com/tst?";
         ENDPOINT = ENDPOINT + "microprocessorId=" + deviceDO.getMicroprocessorId() + "&userId=" + deviceDO.getUserId();
-
         Log.i(TAG, "getMonthlyStatistics() Doing the HTTP GET request on ENDPOINT: " + ENDPOINT);
         requestQueue.add(new StringRequest(Request.Method.GET, ENDPOINT, onDailySuccessful, onDailyError));
         this.callbackObjects = serverCallbackObjects;
@@ -47,7 +55,25 @@ public class StatisticsUtils {
         public void onResponse(String response) {
             Log.i(TAG, "onPostsLoaded() The HTTP request was done successfully, getting the parameters from the response");
             List<BathStatisticsDailyDO> statistics = new ArrayList<>();
-            statistics = Arrays.asList(new Gson().fromJson(response.toString(), BathStatisticsDailyDO[].class));
+
+            JsonParser jsonParser = new JsonParser();
+            JsonObject json = (JsonObject) jsonParser.parse(response.toString());
+            JsonArray jsonArray = (JsonArray) json.get("body");
+            SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+
+            for (int i = 0; i < jsonArray.size(); i++) {
+                BathStatisticsDailyDO bathStatisticsDailyDO = gson.fromJson(jsonArray.get(i).toString(), BathStatisticsDailyDO.class);
+                try {
+                    Date parsedDate = dateFormat.parse(jsonArray.get(i).getAsJsonObject().get("bathDateTime").getAsString());
+                    Timestamp timestamp = new Timestamp(parsedDate.getTime());
+                    bathStatisticsDailyDO.setBathTimestamp(timestamp);
+                    statistics.add(bathStatisticsDailyDO);
+                } catch (Exception e) {
+                    Log.e(TAG, "Date format error", e);
+                    callbackObjects.onServerCallbackObject(false, e.getMessage(), null);
+                }
+            }
+
             callbackObjects.onServerCallbackObject(true, "SUCCESS", (List<Object>) (List<?>) statistics);
 
         }
@@ -57,7 +83,7 @@ public class StatisticsUtils {
         @Override
         public void onErrorResponse(VolleyError error) {
             Log.i(TAG, "onPostsError() Something wrong happened with the request. Error: " + error.getMessage());
-            callbackObjects.onServerCallbackObject(false, error.getMessage(),null);
+            callbackObjects.onServerCallbackObject(false, error.getMessage(), null);
         }
     };
 

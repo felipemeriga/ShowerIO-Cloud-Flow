@@ -4,21 +4,29 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CalendarView;
+import android.widget.FrameLayout;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.espressif.iot.esptouch.IEsptouchResult;
 import com.felipe.showeriocloud.Model.BathStatisticsDailyDO;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
+import com.felipe.showeriocloud.Utils.OnBackPressed;
 import com.felipe.showeriocloud.Utils.ServerCallbackObjects;
 import com.felipe.showeriocloud.Utils.StatisticsUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,18 +36,32 @@ import java.util.List;
  * Use the {@link StatisticsDetailDailyFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class StatisticsDetailDailyFragment extends Fragment {
+public class StatisticsDetailDailyFragment extends Fragment implements OnBackPressed {
 
     private StatisticsUtils statisticsUtils;
     private OnFragmentInteractionListener mListener;
     private List<BathStatisticsDailyDO> bathStatisticsDaily;
+    private List<BathStatisticsDailyDO> filteredList;
     private ProgressDialog loadingStatisProgressDialog;
     public RequestQueue requestQueue;
+
+    @BindView(R.id.calendarView)
+    public CalendarView calendarView;
+
+    @BindView(R.id.statisticsFrameLayout)
+    public FrameLayout statisticsFrameLayout;
+
 
     public StatisticsDetailDailyFragment() {
         // Required empty public constructor
         this.statisticsUtils = new StatisticsUtils();
         this.bathStatisticsDaily = new ArrayList<>();
+        this.filteredList = new ArrayList<>();
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 
     public static StatisticsDetailDailyFragment newInstance() {
@@ -59,7 +81,9 @@ public class StatisticsDetailDailyFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_statistics_detail_daily, container, false);
-        // TODO - Bind calendar and UI Elements
+        ButterKnife.bind(this, view);
+
+        this.setDateChangerListener();
         this.fetchStatistics();
 
         return view;
@@ -88,6 +112,20 @@ public class StatisticsDetailDailyFragment extends Fragment {
         mListener = null;
     }
 
+    public void setDateChangerListener() {
+        this.calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+                filteredList.clear();
+                for (BathStatisticsDailyDO statisticItem : bathStatisticsDaily) {
+                    if (statisticItem.getBathTimestamp().getMonth() == month && statisticItem.getBathTimestamp().getDate() == dayOfMonth) {
+                        filteredList.add(statisticItem);
+                    }
+                }
+            }
+        });
+
+    }
 
     public void fetchStatistics() {
         this.requestQueue = Volley.newRequestQueue(this.getContext());
@@ -98,9 +136,20 @@ public class StatisticsDetailDailyFragment extends Fragment {
         statisticsUtils.getDailyStatistics(DevicePersistance.selectedDevice, this.requestQueue, new ServerCallbackObjects() {
             @Override
             public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
-
+                List<BathStatisticsDailyDO> results = (List<BathStatisticsDailyDO>) (List<?>) objects;
+                bathStatisticsDaily = results;
+                loadingStatisProgressDialog.dismiss();
+                helpUser();
             }
         });
+    }
+
+    private void helpUser() {
+        // showing snack bar to help user to use the application
+        Snackbar snackbar = Snackbar
+                .make(statisticsFrameLayout, "Escolha uma data para verificar banhos e estatísticas", Snackbar.LENGTH_LONG)
+                .setDuration(32000);
+        snackbar.show();
     }
 
     /**

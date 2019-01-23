@@ -8,6 +8,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBRangeKey
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBTable;
 import com.google.gson.annotations.SerializedName;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,8 +26,10 @@ public class BathStatisticsDailyDO {
     private Double _bathDuration;
     @SerializedName("liters")
     private Double _liters;
-    @SerializedName("userId;")
+    @SerializedName("userId")
     private String _userId;
+
+    private Timestamp bathTimestamp;
 
     @DynamoDBHashKey(attributeName = "id")
     @DynamoDBAttribute(attributeName = "id")
@@ -84,4 +87,11 @@ public class BathStatisticsDailyDO {
         this._userId = _userId;
     }
 
+    public Timestamp getBathTimestamp() {
+        return bathTimestamp;
+    }
+
+    public void setBathTimestamp(Timestamp bathTimestamp) {
+        this.bathTimestamp = bathTimestamp;
+    }
 }

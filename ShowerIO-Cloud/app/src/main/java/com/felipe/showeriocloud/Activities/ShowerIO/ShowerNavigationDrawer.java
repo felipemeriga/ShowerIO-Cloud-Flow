@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -35,6 +36,7 @@ import com.felipe.showeriocloud.Model.DeviceDO;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
 import com.felipe.showeriocloud.Utils.FacebookInformationSeeker;
+import com.felipe.showeriocloud.Utils.OnBackPressed;
 import com.felipe.showeriocloud.Utils.ServerCallback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -198,6 +200,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
         }
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
+
         fragmentManager.beginTransaction().replace(R.id.base, fragment).commit();
 
         item.setChecked(true);
