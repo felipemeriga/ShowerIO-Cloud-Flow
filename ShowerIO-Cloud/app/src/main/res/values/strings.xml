@@ -115,6 +115,13 @@
     <string name="statsType">Tipo de Estatísticas</string>
     <string name="daily">Diária </string>
     <string name="monthly">Mensal </string>
+    <string name="emptyStatistics">Não há nenhum registro de banho para o dia selecionado</string>
+
+    <!--Statistics Daily Talbe-->
+    <string name="bathDateTime">Horário do Banho</string>
+    <string name="duration">Duração </string>
+    <string name="liters">Litros </string>
+
 
 
 </resources>

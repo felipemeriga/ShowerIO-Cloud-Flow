@@ -52,4 +52,18 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+
+    <style name="MonthPickerDialogStyle" >
+
+        <item name="monthBgSelectedColor">@color/colorPrimary</item>
+
+
+        <item name="headerBgColor">@color/colorPrimary</item>
+        <item name="headerFontColorSelected">#fff</item>
+        <item name="headerFontColorNormal">#85FFFFFF</item>
+        <item name="headerTitleColor">#fff</item>
+
+        <item name="dialogActionButtonColor">@color/colorPrimary</item>
+    </style>
+
 </resources>

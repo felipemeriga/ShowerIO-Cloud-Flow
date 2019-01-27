@@ -1,5 +1,6 @@
 package com.felipe.showeriocloud.Activities.Fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
@@ -12,9 +13,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+import com.felipe.showeriocloud.Model.BathStatisticsMonthly;
 import com.felipe.showeriocloud.Model.DeviceDO;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
+import com.felipe.showeriocloud.Utils.ServerCallbackObject;
+import com.felipe.showeriocloud.Utils.StatisticsUtils;
+import com.whiteelephant.monthpicker.MonthPickerDialog;
+
+import java.util.Date;
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,6 +43,9 @@ public class StatisticsDetailFragment extends Fragment {
     private static final String TAG = "StatisticsDetail";
     private OnFragmentInteractionListener mListener;
     private DeviceDO device;
+    private StatisticsUtils statisticsUtils;
+    public RequestQueue requestQueue;
+    private ProgressDialog loadingStatisProgressDialog;
 
     @BindView(R.id.mainGridStats)
     public GridLayout mainGridStats;
@@ -42,7 +55,6 @@ public class StatisticsDetailFragment extends Fragment {
 
     @BindView(R.id.cardViewMonthly)
     public CardView cardViewMonthly;
-
 
 
     public StatisticsDetailFragment() {
@@ -69,6 +81,8 @@ public class StatisticsDetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_statistics_detail, container, false);
         ButterKnife.bind(this, view);
         device = DevicePersistance.selectedDevice;
+        this.requestQueue = Volley.newRequestQueue(this.getContext());
+        statisticsUtils = new StatisticsUtils();
 
         cardViewDaily.setCardBackgroundColor(Color.WHITE);
         cardViewMonthly.setCardBackgroundColor(Color.WHITE);
@@ -118,12 +132,76 @@ public class StatisticsDetailFragment extends Fragment {
                             break;
                         case 1:
                             Log.i("StatisticsDetail", "case 1, opening monthly statistics");
+                            onMonthlyStatisticsSelected();
                             break;
                     }
                 }
             });
         }
     }
+
+    public void onMonthlyStatisticsSelected() {
+        Calendar cal = Calendar.getInstance();
+        final Date date = cal.getTime();
+
+        MonthPickerDialog.Builder builder = new MonthPickerDialog.Builder(this.getContext(),
+                new MonthPickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(int selectedMonth, int selectedYear) { // on date set }
+                        String sMonth;
+                        if (Integer.toString(selectedMonth).length() < 2) {
+                            selectedMonth++;
+                            sMonth = "0" + Integer.toString(selectedMonth);
+                        } else {
+                            selectedMonth++;
+                            sMonth = Integer.toString(selectedMonth);
+                        }
+
+                        loadingStatisProgressDialog = new ProgressDialog(getActivity());
+                        loadingStatisProgressDialog.setMessage("Buscando últimas estatísticas...");
+                        loadingStatisProgressDialog.setCanceledOnTouchOutside(false);
+                        loadingStatisProgressDialog.show();
+                        statisticsUtils.getMonthlyStatistics(Integer.toString(selectedYear), sMonth, DevicePersistance.selectedDevice, requestQueue, new ServerCallbackObject() {
+                            @Override
+                            public void onServerCallbackObject(Boolean status, String response, Object object) {
+                                BathStatisticsMonthly bathStatisticsMonthly = (BathStatisticsMonthly) object;
+                                loadingStatisProgressDialog.dismiss();
+
+                            }
+                        });
+                    }
+
+                }, date.getYear(), date.getMonth());
+
+        builder.setActivatedMonth(Calendar.JULY)
+                .setMinYear(1990)
+                .setActivatedYear(2019)
+                .setMaxYear(2030)
+                .setMinMonth(Calendar.JANUARY)
+                .setTitle("Selecione o mês")
+                .setMonthRange(Calendar.JANUARY, Calendar.DECEMBER)
+                // .setMaxMonth(Calendar.OCTOBER)
+                // .setYearRange(1890, 1890)
+                // .setMonthAndYearRange(Calendar.FEBRUARY, Calendar.OCTOBER, 1890, 1890)
+                //.showMonthOnly()
+                // .showYearOnly()
+                .setOnMonthChangedListener(new MonthPickerDialog.OnMonthChangedListener() {
+                    @Override
+                    public void onMonthChanged(int selectedMonth) {
+
+
+                    }
+                })
+                .setOnYearChangedListener(new MonthPickerDialog.OnYearChangedListener() {
+                    @Override
+                    public void onYearChanged(int selectedYear) {
+
+                    }
+                })
+                .build()
+                .show();
+    }
+
 
     /**
      * This interface must be implemented by activities that contain this
