@@ -2,10 +2,12 @@ package com.felipe.showeriocloud.Activities.Fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import android.widget.GridLayout;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.espressif.iot.esptouch.task.__IEsptouchTask;
 import com.felipe.showeriocloud.Model.BathStatisticsMonthly;
 import com.felipe.showeriocloud.Model.DeviceDO;
 import com.felipe.showeriocloud.Model.DevicePersistance;
@@ -46,6 +49,7 @@ public class StatisticsDetailFragment extends Fragment {
     private StatisticsUtils statisticsUtils;
     public RequestQueue requestQueue;
     private ProgressDialog loadingStatisProgressDialog;
+    private AlertDialog alertStatistics;
 
     @BindView(R.id.mainGridStats)
     public GridLayout mainGridStats;
@@ -167,6 +171,21 @@ public class StatisticsDetailFragment extends Fragment {
                                 BathStatisticsMonthly bathStatisticsMonthly = (BathStatisticsMonthly) object;
                                 loadingStatisProgressDialog.dismiss();
 
+                                if (bathStatisticsMonthly.getTotalTime() > 0) {
+                                    AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
+                                    View mView = getLayoutInflater().inflate(R.layout.dialog_monthly_statistics, null);
+                                    mBuilder.setView(mView);
+                                    final AlertDialog dialog = mBuilder.create();
+                                    dialog.setCanceledOnTouchOutside(false);
+                                    dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getActivity().getText(android.R.string.cancel),
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                    dialog.show();
+                                }
                             }
                         });
                     }

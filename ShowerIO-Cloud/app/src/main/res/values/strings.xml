@@ -117,10 +117,20 @@
     <string name="monthly">Mensal </string>
     <string name="emptyStatistics">Não há nenhum registro de banho para o dia selecionado</string>
 
-    <!--Statistics Daily Talbe-->
+    <!--Statistics Daily Table-->
     <string name="bathDateTime">Horário do Banho</string>
     <string name="duration">Duração </string>
     <string name="liters">Litros </string>
+
+    <!--Statistics Month-->
+    <string name="monthTitle">Resumo do Mês </string>
+    <string name="litersResponse">0 litros de água</string>
+    <string name="equi">O equivalente a</string>
+    <string name="hoursResponse">0 horas</string>
+    <string name="electricalTitle">Em um gasto total de energia elétrica de</string>
+    <string name="hoursTitle">Neste mês você passou</string>
+    <string name="inShower">no banho</string>
+    <string name="price">R$ 0</string>
 
 
 
