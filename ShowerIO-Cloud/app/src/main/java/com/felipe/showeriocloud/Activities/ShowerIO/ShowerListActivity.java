@@ -125,12 +125,12 @@ public class ShowerListActivity extends AppCompatActivity implements RecyclerIte
                 startActivity(loginActivity);
                 finish();
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);*/
-                // TODO - Handle the device selection
+
 
 
             } else {
 
-                // TODO - Handle when the device is OFFLINE but some reason
+
 
             }
         }

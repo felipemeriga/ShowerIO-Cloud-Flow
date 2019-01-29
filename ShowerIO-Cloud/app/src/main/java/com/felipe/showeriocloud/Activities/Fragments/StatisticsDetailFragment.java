@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
+import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -31,6 +32,7 @@ import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.codecrafters.tableview.TableView;
 
 
 /**
@@ -94,7 +96,6 @@ public class StatisticsDetailFragment extends Fragment {
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onDailyStatisticsSelected();
@@ -172,8 +173,25 @@ public class StatisticsDetailFragment extends Fragment {
                                 loadingStatisProgressDialog.dismiss();
 
                                 if (bathStatisticsMonthly.getTotalTime() > 0) {
+
+                                    String totalHoursText = String.valueOf(Math.floor(bathStatisticsMonthly.getTotalTime() / 3600)).split("\\.")[0] + " horas e "
+                                            + String.valueOf(Math.floor(Double.parseDouble("0." + Double.toString(bathStatisticsMonthly.getTotalTime() / 3600).split("\\.")[1]) * 60)).split("\\.")[0] + " minutos";
+
+                                    String totalLitersText = bathStatisticsMonthly.getTotalLiters().toString() + " litros de água";
+
+                                    String aproximateElectricalEnergyText = "R$ " + Double.toString((bathStatisticsMonthly.getTotalTime()/3600)*6800*bathStatisticsMonthly.getEnergyPrice()/1000);
+
+
                                     AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
                                     View mView = getLayoutInflater().inflate(R.layout.dialog_monthly_statistics, null);
+                                    final TextView textViewHours  = (TextView) mView.findViewById(R.id.hoursResponse);
+                                    final TextView textViewLiters  = (TextView) mView.findViewById(R.id.litersResponse);
+                                    final TextView textViewEnergyPrice  = (TextView) mView.findViewById(R.id.coastResponse);
+
+                                    textViewHours.setText(totalHoursText);
+                                    textViewLiters.setText(totalLitersText);
+                                    textViewEnergyPrice.setText(aproximateElectricalEnergyText);
+
                                     mBuilder.setView(mView);
                                     final AlertDialog dialog = mBuilder.create();
                                     dialog.setCanceledOnTouchOutside(false);
@@ -185,6 +203,8 @@ public class StatisticsDetailFragment extends Fragment {
                                                 }
                                             });
                                     dialog.show();
+
+
                                 }
                             }
                         });

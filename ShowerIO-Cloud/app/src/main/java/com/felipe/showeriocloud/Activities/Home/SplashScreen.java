@@ -60,11 +60,12 @@ public class SplashScreen extends AppCompatActivity {
          * Initializes the sync client. This must be call before you can use it.
          */
         CognitoSyncClientManager.init(this);
-
+        //TODO - TEST THE APPLICATION INITIALIZATION WITHOUT AWSMobileClient
         AWSMobileClient.getInstance().initialize(this, new AWSStartupHandler() {
             @Override
             public void onComplete(AWSStartupResult awsStartupResult) {
 
+                awsStartupResult.isIdentityIdAvailable();
                 //Start
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -93,6 +94,7 @@ public class SplashScreen extends AppCompatActivity {
                                             DevicePersistance.getAllDevicesFromUser(new ServerCallbackObjects() {
                                                 @Override
                                                 public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
+                                                    // TODO - CREATE A TRY CATCH AND RETURN != NULL IF THERE IS A CONNECTION ERROR
                                                     if (objects.size() > 0) {
                                                         Intent listOfDevices = new Intent(SplashScreen.this, ShowerNavigationDrawer.class);
                                                         startActivity(listOfDevices);

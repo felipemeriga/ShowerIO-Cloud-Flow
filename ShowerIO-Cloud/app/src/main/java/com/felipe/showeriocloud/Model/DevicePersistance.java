@@ -17,6 +17,7 @@ import com.felipe.showeriocloud.Utils.ServerCallback;
 import com.felipe.showeriocloud.Utils.ServerCallbackObject;
 import com.felipe.showeriocloud.Utils.ServerCallbackObjects;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DevicePersistance {
@@ -74,7 +75,7 @@ public class DevicePersistance {
                     serverCallbackObjects.onServerCallbackObject(true, "SUCCESS", (List<Object>) (List<?>) result);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    serverCallbackObjects.onServerCallbackObject(false, e.getMessage(), null);
+                    serverCallbackObjects.onServerCallbackObject(false, e.getMessage(), new ArrayList<Object>());
 
                 }
             }
@@ -83,7 +84,6 @@ public class DevicePersistance {
     }
 
     //Function used to get a single device
-    // TODO - TWO FUNCTIONS WITH THE SAME RESULT, USE JAVA 8 LAMBDA UTILS.FUNCTIONS TO SOLVE
     public static void fastGetAllDevicesFromUser(final ServerCallback serverCallback) {
 
         DeviceDO hashKeyObject = new DeviceDO();
