@@ -95,18 +95,10 @@ public class SplashScreen extends AppCompatActivity {
                                                 @Override
                                                 public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
                                                     // TODO - CREATE A TRY CATCH AND RETURN != NULL IF THERE IS A CONNECTION ERROR
-                                                    if (objects.size() > 0) {
                                                         Intent listOfDevices = new Intent(SplashScreen.this, ShowerNavigationDrawer.class);
                                                         startActivity(listOfDevices);
                                                         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
                                                         finish();
-
-                                                    } else {
-                                                        Intent searchForDevices = new Intent(SplashScreen.this, SearchForDevices.class);
-                                                        startActivity(searchForDevices);
-                                                        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-                                                        finish();
-                                                    }
                                                 }
                                             });
                                         }

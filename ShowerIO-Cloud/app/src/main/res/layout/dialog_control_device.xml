@@ -88,47 +88,6 @@
 
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/bathDuringTimeWaitTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="5dp"
-        android:text="@string/control_bath_wait_during_time"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        android:paddingBottom="20dp"/>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginEnd="3dp"
-        android:layout_weight=".28"
-        android:background="@drawable/spinner_border"
-        android:orientation="horizontal">
-
-        <Spinner
-            android:id="@+id/spinnerBathDuringTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center"
-            android:background="@android:color/transparent"
-            android:gravity="center"
-            android:layout_marginStart="5dp"
-            android:spinnerMode="dropdown" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_keyboard_arrow_down_black_24dp"
-            android:contentDescription="dropdown icon" />
-
-    </RelativeLayout>
-
     <Button
         android:id="@+id/btnApplyTimes"
         android:layout_width="match_parent"

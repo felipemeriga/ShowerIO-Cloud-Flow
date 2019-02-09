@@ -78,6 +78,11 @@ public class ShowerNavigationDrawer extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        if (DevicePersistance.lastUpdateUserDevices.size() == 0) {
+            fragmentChanger(navigationView.getMenu().getItem(1), SearchForDevicesFragment.class);
+            navigationView.getMenu().getItem(0).setChecked(false);
+        }
+
     }
 
 
@@ -225,12 +230,9 @@ public class ShowerNavigationDrawer extends AppCompatActivity
     }
 
 
-
-
-
     @Override
-    public void  onDailyStatisticsSelected() {
-        Fragment statisticsFragment  = new StatisticsDetailDailyFragment();
+    public void onDailyStatisticsSelected() {
+        Fragment statisticsFragment = new StatisticsDetailDailyFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().remove(fragmentManager.getFragments().get(0));
         fragmentManager.beginTransaction().replace(R.id.base, statisticsFragment).commit();
@@ -261,7 +263,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
                     });
                 }
             });
-        } else if(fragmentName.equals("StatisicsDetailFragment")) {
+        } else if (fragmentName.equals("StatisicsDetailFragment")) {
             Fragment detailFragment = new StatisticsDetailFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().remove(fragmentManager.getFragments().get(0));

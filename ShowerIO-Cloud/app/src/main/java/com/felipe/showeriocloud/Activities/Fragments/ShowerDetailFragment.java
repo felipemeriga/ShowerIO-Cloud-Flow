@@ -281,7 +281,6 @@ public class ShowerDetailFragment extends Fragment {
         View mView = getLayoutInflater().inflate(R.layout.dialog_control_device, null);
         final Spinner mSpinnerBathTime = (Spinner) mView.findViewById(R.id.spinnerBathTime);
         final Spinner mSpinnerBathPosTime = (Spinner) mView.findViewById(R.id.spinnerBathPosTime);
-        final Spinner mSpinnerBathDuringTime = (Spinner) mView.findViewById(R.id.spinnerBathDuringTime);
         Button mSetTimes = (Button) mView.findViewById(R.id.btnApplyTimes);
 
         ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(getActivity(),
@@ -290,14 +289,11 @@ public class ShowerDetailFragment extends Fragment {
 
         mSpinnerBathTime.setAdapter(mAdapter);
         mSpinnerBathPosTime.setAdapter(mAdapter);
-        mSpinnerBathDuringTime.setAdapter(mAdapter);
 
         mSpinnerBathTime.setPrompt("B1");
         mSpinnerBathPosTime.setPrompt("B2");
-        mSpinnerBathDuringTime.setPrompt("B3");
         mSpinnerBathTime.setSelection(returnHardCoddedPosition(device.getBathTime()));
-        mSpinnerBathPosTime.setSelection(returnHardCoddedPosition(device.getWaitTime()));
-        mSpinnerBathDuringTime.setSelection(returnHardCoddedPosition(device.getStoppedTime()));
+        mSpinnerBathPosTime.setSelection(returnHardCoddedPosition(device.getStoppedTime()));
 
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
@@ -313,7 +309,6 @@ public class ShowerDetailFragment extends Fragment {
 
                 awsIotCoreManager.publishBathParams(returnHardCoddedMinutes(mSpinnerBathTime.getSelectedItemPosition())
                         , returnHardCoddedMinutes(mSpinnerBathPosTime.getSelectedItemPosition())
-                        , returnHardCoddedMinutes(mSpinnerBathDuringTime.getSelectedItemPosition())
                         , device
                         , new ServerCallback() {
                             @Override

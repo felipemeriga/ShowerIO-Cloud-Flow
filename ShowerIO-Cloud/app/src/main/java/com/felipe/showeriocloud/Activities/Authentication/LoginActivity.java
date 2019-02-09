@@ -23,13 +23,17 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.felipe.showeriocloud.Activities.Home.SplashScreen;
+import com.felipe.showeriocloud.Activities.ShowerIO.ShowerNavigationDrawer;
 import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
 import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
+import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
+import com.felipe.showeriocloud.Utils.ServerCallbackObjects;
 import com.google.gson.Gson;
 
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -146,10 +150,24 @@ public class LoginActivity extends AppCompatActivity {
                         initializeAwsServices();
                         setFacebookSession(loginResult.getAccessToken());
                         progressDialog.dismiss();
-                        Intent searchForDevices = new Intent(LoginActivity.this, SearchForDevices.class);
-                        startActivity(searchForDevices);
-                        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-                        finish();
+
+                        AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
+
+                        DevicePersistance.getAllDevicesFromUser(new ServerCallbackObjects() {
+                                                                    @Override
+                                                                    public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
+                                                                        // TODO - CREATE A TRY CATCH AND RETURN != NULL IF THERE IS A CONNECTION ERROR
+                                                                        if (objects.size() > 0) {
+                                                                            Intent listOfDevices = new Intent(LoginActivity.this, ShowerNavigationDrawer.class);
+                                                                            startActivity(listOfDevices);
+                                                                            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                                                                            finish();
+
+                                                                        }
+                                                                    }
+                                                                });
+
+
 /*                        Thread thread = new Thread(new Runnable() {
                             @Override
                             public void run() {

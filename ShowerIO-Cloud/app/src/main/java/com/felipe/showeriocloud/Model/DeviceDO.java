@@ -34,8 +34,6 @@ public class DeviceDO implements Serializable {
     private String _status;
     @SerializedName("bathTime")
     private Integer _bathTime;
-    @SerializedName("waitTime")
-    private Integer _waitTime;
     @SerializedName("stoppedTime")
     private Integer _stoppedTime;
 
@@ -111,14 +109,6 @@ public class DeviceDO implements Serializable {
     }
     public void setBathTime(Integer _bathTime) {
         this._bathTime = _bathTime;
-    }
-
-    @DynamoDBAttribute(attributeName = "waitTime")
-    public Integer getWaitTime() {
-        return _waitTime;
-    }
-    public void setWaitTime(Integer _waitTime) {
-        this._waitTime = _waitTime;
     }
 
     @DynamoDBAttribute(attributeName = "stoppedTime")
