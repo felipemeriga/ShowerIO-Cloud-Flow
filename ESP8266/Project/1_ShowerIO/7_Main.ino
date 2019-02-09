@@ -66,22 +66,61 @@ void setup(void) {
   int cnt = 0;
 
   // set for STA mode
+  bool timeout = true;
   WiFi.mode(WIFI_STA);
-  // if wifi cannot connect start smartconfig
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    DBG_OUTPUT_PORT.print(".");
-    if (cnt++ >= 15) {
-      WiFi.beginSmartConfig();
-      while (1) {
-        delay(500);
-        if (WiFi.smartConfigDone()) {
-          DBG_OUTPUT_PORT.println("SmartConfig Success");
-          break;
-        }
+  if (WiFi.SSID() != NULL) {
+    DBG_OUTPUT_PORT.println("Getting last saved Wifi");
+    WiFi.begin(WiFi.SSID().c_str(), WiFi.psk().c_str());
+    unsigned long start = millis();
+    while (millis() - start < 30000) {
+      if (WiFi.status() == WL_CONNECTED) {
+        timeout = false;
+        break;
       }
+      delay(500);
     }
   }
+  if (timeout) {
+    timeout = true;
+    DBG_OUTPUT_PORT.println("Begin smart config");
+    WiFi.beginSmartConfig();
+    unsigned long start = millis();
+    unsigned long waitTime;
+    if (WiFi.SSID() != NULL) {
+      waitTime = 30000;
+    } else {
+      waitTime = 300000;
+    }
+
+    while (millis() - start < 30000) {
+      if (WiFi.status() == WL_CONNECTED) {
+        timeout = false;
+        break;
+      }
+      delay(500);
+    }
+
+  }
+  if (timeout) {
+    DBG_OUTPUT_PORT.println("Restarting ESP");
+    while (1)ESP.restart();
+    delay(500);
+  }
+  // if wifi cannot connect start smartconfig
+  //  while (WiFi.status() != WL_CONNECTED) {
+  //    delay(500);
+  //    DBG_OUTPUT_PORT.print(".");
+  //    if (cnt++ >= 15) {
+  //      WiFi.beginSmartConfig();
+  //      while (1) {
+  //        delay(500);
+  //        if (WiFi.smartConfigDone()) {
+  //          DBG_OUTPUT_PORT.println("SmartConfig Success");
+  //          break;
+  //        }
+  //      }
+  //    }
+  //  }
 
   DBG_OUTPUT_PORT.println("");
   DBG_OUTPUT_PORT.println("");
@@ -97,15 +136,29 @@ void setup(void) {
   awsWSclient.setAWSKeyID(aws_key);
   awsWSclient.setAWSSecretKey(aws_secret);
   awsWSclient.setUseSSL(true);
+  checkConnectionTime = millis();
 
   if (connect ()) {
     subscribe ();
   }
 }
 
+void verifyConnection() {
+  if (checkConnectionTime >=  300000) {
+    if (WiFi.status() != WL_CONNECTED) {
+      DBG_OUTPUT_PORT.println("Disconnected, restarting ESP!");
+      while (1)ESP.restart();
+      delay(500);
+    }
+    checkConnectionTime = millis();
+  }
+
+}
+
 void loop(void) {
   server.handleClient();
   bathProcess();
+  verifyConnection();
 
   //keep the mqtt up and running
   if (awsWSclient.connected ()) {
@@ -118,6 +171,8 @@ void loop(void) {
   }
 
 }
+
+
 
 
 

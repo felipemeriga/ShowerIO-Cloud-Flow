@@ -43,6 +43,9 @@ const char* aws_topic_times  = "times";
 const char* aws_topic_conf  = "configuration";
 int port = 443;
 
+//Check Connection Variable
+unsigned long checkConnectionTime;
+
 //MQTT config
 const int maxMQTTpackageSize = 512;
 const int maxMQTTMessageHandlers = 1;
