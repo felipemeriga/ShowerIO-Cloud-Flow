@@ -49,8 +49,8 @@ void configureGPIO(void) {
   }
 }
 
-void setup(void) {
 
+void setup(void) {
   //WiFi.disconnect();
 
   // deplay for 2 sec for smartConfig
@@ -94,6 +94,7 @@ void setup(void) {
 
     while (millis() - start < 30000) {
       if (WiFi.status() == WL_CONNECTED) {
+        DBG_OUTPUT_PORT.println("Connected to a network!");
         timeout = false;
         break;
       }
@@ -123,7 +124,7 @@ void setup(void) {
   //  }
 
   DBG_OUTPUT_PORT.println("");
-  DBG_OUTPUT_PORT.println("");
+  DBG_OUTPUT_PORT.println("Starting AWS Services and connection");
 
   WiFi.printDiag(DBG_OUTPUT_PORT);
 
@@ -136,29 +137,20 @@ void setup(void) {
   awsWSclient.setAWSKeyID(aws_key);
   awsWSclient.setAWSSecretKey(aws_secret);
   awsWSclient.setUseSSL(true);
-  checkConnectionTime = millis();
+
+  checkConnectionTimer.setInterval(30000);
+//  checkConnectionTimer.expiredHandler(verifyConnection);
+//  checkConnectionTimer.start();
 
   if (connect ()) {
     subscribe ();
   }
 }
 
-void verifyConnection() {
-  if (checkConnectionTime >=  300000) {
-    if (WiFi.status() != WL_CONNECTED) {
-      DBG_OUTPUT_PORT.println("Disconnected, restarting ESP!");
-      while (1)ESP.restart();
-      delay(500);
-    }
-    checkConnectionTime = millis();
-  }
-
-}
-
 void loop(void) {
   server.handleClient();
-  bathProcess();
-  verifyConnection();
+  //  bathProcess();
+//  checkConnectionTimer.run();
 
   //keep the mqtt up and running
   if (awsWSclient.connected ()) {

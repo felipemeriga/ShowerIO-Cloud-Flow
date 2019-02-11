@@ -1,6 +1,7 @@
 //DEFINES AND FUNCTION PROTOTYPES
 
 #include <ESP8266WiFi.h>
+#include "ESP8266HTTPClient.h"
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <FS.h>
@@ -12,6 +13,9 @@
 #include <ArduinoJson.h>
 #include <WiFiUdp.h>
 #include <Stream.h>
+#include <ArduinoJson.h>
+#include "MillisTimer.h"
+
 //AWS
 #include "sha256.h"
 #include "Utils.h"
@@ -20,6 +24,9 @@
 //WEBSockets
 #include <Hash.h>
 #include <WebSocketsClient.h>
+
+//HTTP REQUESTS
+HTTPClient http;
 
 //MQTT PUBSUBCLIENT LIB
 #include <PubSubClient.h>
@@ -37,14 +44,15 @@ extern "C" {
 #define Led_Aviso D0
 #define FLOW_SENSOR_PIN 5 // Sensor Input
 
-char aws_endpoint[]    = "agq6mvwjsctpy-ats.iot.us-east-2.amazonaws.com";
-char aws_region[]      = "us-east-2";
-const char* aws_topic_times  = "times";
-const char* aws_topic_conf  = "configuration";
+char aws_endpoint[]    = "agq6mvwjsctpy-ats.iot.us-east-1.amazonaws.com";
+char aws_region[]      = "us-east-1";
+const char* aws_topic_times  = strdup(((String)ESP.getChipId() + "/times").c_str());
+const char* aws_topic_conf  = strdup(((String)ESP.getChipId() + "/configuration").c_str());
+const char* aws_statistics_topic  = "statistics";
 int port = 443;
 
 //Check Connection Variable
-unsigned long checkConnectionTime;
+MillisTimer checkConnectionTimer = MillisTimer(1000);
 
 //MQTT config
 const int maxMQTTpackageSize = 512;
@@ -112,3 +120,5 @@ boolean waiting;
 unsigned long bathTime;
 unsigned long stoppedTime;
 unsigned long waitingTime;
+
+

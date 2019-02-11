@@ -79,7 +79,8 @@ bool connect () {
 
 
   //creating random client id
-  char* clientID = generateClientID ();
+  String clientIDString = (String)ESP.getChipId();
+  char* clientID = strdup(clientIDString.c_str());
 
   client.setServer(aws_endpoint, port);
   if (client.connect(clientID)) {
@@ -99,6 +100,7 @@ void subscribe () {
   client.setCallback(callback);
   client.subscribe(aws_topic_times);
   client.subscribe(aws_topic_conf);
+  client.subscribe(aws_statistics_topic);
   //subscript to a topic
   DBG_OUTPUT_PORT.println("MQTT subscribed");
 }
