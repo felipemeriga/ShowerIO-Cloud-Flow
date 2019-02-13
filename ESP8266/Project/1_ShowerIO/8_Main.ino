@@ -138,7 +138,7 @@ void setup(void) {
   awsWSclient.setAWSSecretKey(aws_secret);
   awsWSclient.setUseSSL(true);
 
-  checkConnectionTimer.setInterval(30000);
+//  checkConnectionTimer.setInterval(30000);
 //  checkConnectionTimer.expiredHandler(verifyConnection);
 //  checkConnectionTimer.start();
 
@@ -149,7 +149,7 @@ void setup(void) {
 
 void loop(void) {
   server.handleClient();
-  //  bathProcess();
+  bathProcess();
 //  checkConnectionTimer.run();
 
   //keep the mqtt up and running

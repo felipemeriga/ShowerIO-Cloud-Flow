@@ -54,6 +54,11 @@ int port = 443;
 //Check Connection Variable
 MillisTimer checkConnectionTimer = MillisTimer(1000);
 
+//Bath timers
+MillisTimer bathDurationTimer = MillisTimer(1000);
+MillisTimer bathStopTimer = MillisTimer(1000);
+MillisTimer bathWaitingTimer = MillisTimer(1000);
+
 //MQTT config
 const int maxMQTTpackageSize = 512;
 const int maxMQTTMessageHandlers = 1;
