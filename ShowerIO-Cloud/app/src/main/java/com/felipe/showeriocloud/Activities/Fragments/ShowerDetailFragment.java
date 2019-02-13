@@ -293,7 +293,7 @@ public class ShowerDetailFragment extends Fragment {
         mSpinnerBathTime.setPrompt("B1");
         mSpinnerBathPosTime.setPrompt("B2");
         mSpinnerBathTime.setSelection(returnHardCoddedPosition(device.getBathTime()));
-        mSpinnerBathPosTime.setSelection(returnHardCoddedPosition(device.getStoppedTime()));
+        mSpinnerBathPosTime.setSelection(returnHardCoddedPosition(device.getWaitingTime()));
 
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();

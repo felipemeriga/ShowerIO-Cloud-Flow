@@ -61,11 +61,11 @@ public class SplashScreen extends AppCompatActivity {
          */
         CognitoSyncClientManager.init(this);
         //TODO - TEST THE APPLICATION INITIALIZATION WITHOUT AWSMobileClient
-        AWSMobileClient.getInstance().initialize(this, new AWSStartupHandler() {
-            @Override
-            public void onComplete(AWSStartupResult awsStartupResult) {
+//        AWSMobileClient.getInstance().initialize(this, new AWSStartupHandler() {
+//            @Override
+//            public void onComplete(AWSStartupResult awsStartupResult) {
 
-                awsStartupResult.isIdentityIdAvailable();
+                //awsStartupResult.isIdentityIdAvailable();
                 //Start
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -89,7 +89,7 @@ public class SplashScreen extends AppCompatActivity {
                                         } else {
                                             Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
                                             initializeAwsServices();
-                                            AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
+                                            //AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
 
                                             DevicePersistance.getAllDevicesFromUser(new ServerCallbackObjects() {
                                                 @Override
@@ -116,8 +116,8 @@ public class SplashScreen extends AppCompatActivity {
                     }
                 }, SPLASH_TIME_OUT);
 
-            }
-        }).execute();
+//            }
+//        }).execute();
     }
 
     public void initializeAwsServices() {

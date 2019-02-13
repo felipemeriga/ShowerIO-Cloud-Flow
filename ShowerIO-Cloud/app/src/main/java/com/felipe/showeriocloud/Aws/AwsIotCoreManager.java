@@ -102,15 +102,15 @@ public class AwsIotCoreManager {
 
     }
 
-    public void publishBathParams(int bathTime, int stoppedTime, DeviceDO device, ServerCallback serverCallback) {
+    public void publishBathParams(int bathTime, int waitingTime, DeviceDO device, ServerCallback serverCallback) {
         final String topic = "times";
         // TODO - CHANGE IN ARDUINO CODE THE WAIT TIME
-        final String msg = bathTime + "-" + 60 + "-" + stoppedTime;
+        final String msg = bathTime + "-" + device.getStoppedTime().toString() + "-" + waitingTime;
 
         try {
             mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
             device.setBathTime(bathTime);
-            device.setStoppedTime(stoppedTime);
+            device.setStoppedTime(waitingTime);
             serverCallback.onServerCallback(true,"successful");
         } catch (Exception e) {
             Log.e(TAG, "Publish error.", e);
