@@ -75,11 +75,6 @@
             android:padding="12dp"
             android:textSize="18sp" />
 
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
         <TextView
             android:id="@+id/link_signup"
             android:layout_width="fill_parent"

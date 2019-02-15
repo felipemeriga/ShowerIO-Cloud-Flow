@@ -1,10 +1,12 @@
 package com.felipe.showeriocloud.Activities.Authentication;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -15,10 +17,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHandler;
+import com.felipe.showeriocloud.Activities.Home.SplashScreen;
+import com.felipe.showeriocloud.Activities.ShowerIO.ShowerNavigationDrawer;
+import com.felipe.showeriocloud.Aws.AuthorizationHandle;
+import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
+import com.felipe.showeriocloud.Aws.CognitoIdentityPoolManager;
+import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
+import com.felipe.showeriocloud.Utils.ServerCallbackObjects;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,12 +48,12 @@ public class SignupActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     @BindView(R.id.input_name)
     EditText _nameText;
-    @BindView(R.id.input_email)
+    @BindView(R.id.input_email_sign)
     EditText _emailText;
-    @BindView(R.id.input_password)
+    @BindView(R.id.input_password_sign)
     EditText _passwordText;
-    @BindView(R.id.input_reEnterPassword)
-    EditText _reEnterPasswordText;
+    @BindView(R.id.input_telephone)
+    EditText _telefoneText;
     @BindView(R.id.btn_signup)
     Button _signupButton;
     @BindView(R.id.link_login)
@@ -49,6 +63,7 @@ public class SignupActivity extends AppCompatActivity {
     private final String CREDENTIALS_URL = "/createCredentials?email=";
     private Boolean createCredentialsFlag = false;
     private ProgressDialog progressDialog;
+    private AlertDialog userDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,7 +73,6 @@ public class SignupActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_signup);
         ButterKnife.bind(this);
-
 
 
         _signupButton.setOnClickListener(new View.OnClickListener() {
@@ -95,32 +109,56 @@ public class SignupActivity extends AppCompatActivity {
 
         _signupButton.setEnabled(false);
 
+        onAuthorizedSignup();
+
     }
 
     public void onAuthorizedSignup() {
 
+        CognitoUserAttributes userAttributes = new CognitoUserAttributes();
+
         String name = _nameText.getText().toString();
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
-        String reEnterPassword = _reEnterPasswordText.getText().toString();
+        String phone = _telefoneText.getText().toString();
 
-        //Saving on shared preferences to further authentication
-        SharedPreferences.Editor editor = getSharedPreferences(SHOWERIO, MODE_PRIVATE).edit();
-        editor.putString("email", email);
-        editor.putString("password", password);
-        editor.apply();
+        if (name != null) {
+            if (name.length() > 0) {
+                userAttributes.addAttribute(CognitoIdentityPoolManager.getSignUpFieldsC2O().get("Given name").toString(), name);
+            }
+        }
 
-        // TODO: Implement your own signup logic here.
-        progressDialog.dismiss();
-        _signupButton.setEnabled(true);
-        onSignupSuccess();
+        userAttributes.addAttribute(CognitoIdentityPoolManager.getSignUpFieldsC2O().get("Email").toString(), email);
+
+        CognitoIdentityPoolManager.getPool().signUpInBackground(email, password, userAttributes, null, signUpHandler);
 
     }
 
+    private void showDialogMessage(String title, String body, final boolean exit) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title).setMessage(body).setNeutralButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                userDialog.dismiss();
+                AuthorizationHandle.mainAuthMethod = AuthorizationHandle.COGNITO_POOL;
+                AuthorizationHandle.setCredentialsProvider(getApplicationContext());
+                initializeAwsServices();
 
-    public void onSignupSuccess() {
+                DevicePersistance.getAllDevicesFromUser(new ServerCallbackObjects() {
+                    @Override
+                    public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
+                        // TODO - CREATE A TRY CATCH AND RETURN != NULL IF THERE IS A CONNECTION ERROR
+                        Intent listOfDevices = new Intent(SignupActivity.this, ShowerNavigationDrawer.class);
+                        startActivity(listOfDevices);
+                        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                        finish();
+                    }
+                });
 
-        finish();
+            }
+        });
+        userDialog = builder.create();
+        userDialog.show();
     }
 
     public void onSignupFailed() {
@@ -135,7 +173,7 @@ public class SignupActivity extends AppCompatActivity {
         String name = _nameText.getText().toString();
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
-        String reEnterPassword = _reEnterPasswordText.getText().toString();
+        String reEnterPassword = _telefoneText.getText().toString();
 
         if (name.isEmpty() || name.length() < 3) {
             _nameText.setError("Pelo menos 3 dígitos");
@@ -160,14 +198,29 @@ public class SignupActivity extends AppCompatActivity {
             _passwordText.setError(null);
         }
 
-        if (reEnterPassword.isEmpty() || reEnterPassword.length() < 4 || reEnterPassword.length() > 10 || !(reEnterPassword.equals(password))) {
-            _reEnterPasswordText.setError("As senhas inválida");
-            valid = false;
-        } else {
-            _reEnterPasswordText.setError(null);
+        return valid;
+    }
+
+    SignUpHandler signUpHandler = new SignUpHandler() {
+        @Override
+        public void onSuccess(CognitoUser user, boolean signUpConfirmationState,
+                              CognitoUserCodeDeliveryDetails cognitoUserCodeDeliveryDetails) {
+            // Check signUpConfirmationState to see if the user is already confirmed
+            showDialogMessage("Cadastro","Usuário salvo com sucesso!",false);
+
         }
 
-        return valid;
+        @Override
+        public void onFailure(Exception exception) {
+            // TODO - HANDLE THE DIFFERENT TYPES OF EXCEPTION
+            Toast.makeText(getBaseContext(), "Erro de Login", Toast.LENGTH_LONG).show();
+        }
+    };
+
+    public void initializeAwsServices() {
+        //Initializing DynamoDB instances
+        AwsDynamoDBManager awsDynamoDBManager = new AwsDynamoDBManager();
+        awsDynamoDBManager.initializeDynamoDb();
     }
 
 

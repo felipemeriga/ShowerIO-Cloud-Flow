@@ -24,10 +24,12 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.felipe.showeriocloud.Activities.Authentication.LoginActivity;
+import com.felipe.showeriocloud.Activities.Authentication.SignupActivity;
 import com.felipe.showeriocloud.Activities.ShowerIO.ShowerListActivity;
 import com.felipe.showeriocloud.Activities.ShowerIO.ShowerNavigationDrawer;
 import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
 import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
+import com.felipe.showeriocloud.Aws.CognitoIdentityPoolManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
@@ -59,7 +61,16 @@ public class SplashScreen extends AppCompatActivity {
         /**
          * Initializes the sync client. This must be call before you can use it.
          */
+        //Initializing CognitoSync for Federated Identities and Oauth2
         CognitoSyncClientManager.init(this);
+        //Initializing Cognito Identity Pool for direct email/password(registration) login
+        CognitoIdentityPoolManager.init(getApplicationContext());
+
+
+        Intent signuptest = new Intent(SplashScreen.this, SignupActivity.class);
+        startActivity(signuptest);
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        finish();
         //TODO - TEST THE APPLICATION INITIALIZATION WITHOUT AWSMobileClient
 //        AWSMobileClient.getInstance().initialize(this, new AWSStartupHandler() {
 //            @Override
@@ -67,7 +78,7 @@ public class SplashScreen extends AppCompatActivity {
 
                 //awsStartupResult.isIdentityIdAvailable();
                 //Start
-                new Handler().postDelayed(new Runnable() {
+            /*    new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         final AccessToken fbAccessToken = AccessToken.getCurrentAccessToken();
@@ -117,7 +128,7 @@ public class SplashScreen extends AppCompatActivity {
                 }, SPLASH_TIME_OUT);
 
 //            }
-//        }).execute();
+//        }).execute();*/
     }
 
     public void initializeAwsServices() {
