@@ -28,6 +28,7 @@ import com.felipe.showeriocloud.Activities.Authentication.SignupActivity;
 import com.felipe.showeriocloud.Activities.ShowerIO.ShowerListActivity;
 import com.felipe.showeriocloud.Activities.ShowerIO.ShowerNavigationDrawer;
 import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
+import com.felipe.showeriocloud.Aws.AuthorizationHandle;
 import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
 import com.felipe.showeriocloud.Aws.CognitoIdentityPoolManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
@@ -55,16 +56,14 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+        AuthorizationHandle.mainAuthMethod = AuthorizationHandle.NOT_SIGNED;
         setContentView(R.layout.activity_home);
 
         /**
          * Initializes the sync client. This must be call before you can use it.
          */
-        //Initializing CognitoSync for Federated Identities and Oauth2
-        CognitoSyncClientManager.init(this);
-        //Initializing Cognito Identity Pool for direct email/password(registration) login
-        CognitoIdentityPoolManager.init(getApplicationContext());
+        AuthorizationHandle.initializeAuthMethods(getApplicationContext());
+        AuthorizationHandle.verifySignedAccounts();
 
 
         Intent signuptest = new Intent(SplashScreen.this, SignupActivity.class);
@@ -77,7 +76,7 @@ public class SplashScreen extends AppCompatActivity {
 
                 //awsStartupResult.isIdentityIdAvailable();
                 //Start
-            /*    new Handler().postDelayed(new Runnable() {
+                new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         final AccessToken fbAccessToken = AccessToken.getCurrentAccessToken();
@@ -91,12 +90,16 @@ public class SplashScreen extends AppCompatActivity {
                                     try {
                                         if (CognitoSyncClientManager.credentialsProvider.getCredentials().getSessionToken().isEmpty()) {
                                             Toast.makeText(SplashScreen.this, "Error in Facebook login ", Toast.LENGTH_LONG).show();
+                                            AuthorizationHandle.mainAuthMethod = AuthorizationHandle.NOT_SIGNED;
                                             CognitoSyncClientManager.credentialsProvider.clearCredentials();
                                             CognitoSyncClientManager.credentialsProvider.clear();
                                             Intent loginActivity = new Intent(SplashScreen.this, LoginActivity.class);
                                             startActivity(loginActivity);
                                             finish();
                                         } else {
+                                            AuthorizationHandle.mainAuthMethod = AuthorizationHandle.FEDERATED_IDENTITIES;
+                                            AuthorizationHandle.setCredentialsProvider(getApplicationContext());
+
                                             Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
                                             initializeAwsServices();
                                             //AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
@@ -127,7 +130,7 @@ public class SplashScreen extends AppCompatActivity {
                 }, SPLASH_TIME_OUT);
 
 //            }
-//        }).execute();*/
+//        }).execute();
     }
 
     public void initializeAwsServices() {

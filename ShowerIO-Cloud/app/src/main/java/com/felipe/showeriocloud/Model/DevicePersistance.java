@@ -11,6 +11,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.PaginatedList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
+import com.felipe.showeriocloud.Aws.AuthorizationHandle;
 import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
 import com.felipe.showeriocloud.Utils.ServerCallback;
@@ -57,7 +58,7 @@ public class DevicePersistance {
     public static void getAllDevicesFromUser(final ServerCallbackObjects serverCallbackObjects) {
 
         DeviceDO hashKeyObject = new DeviceDO();
-        hashKeyObject.setUserId(CognitoSyncClientManager.credentialsProvider.getCachedIdentityId());
+        hashKeyObject.setUserId(AuthorizationHandle.getCurrentUserId());
 
         Condition rangeAndHashKeyCondition = new Condition()
                 .withComparisonOperator(ComparisonOperator.NOT_NULL);
@@ -87,7 +88,7 @@ public class DevicePersistance {
     public static void fastGetAllDevicesFromUser(final ServerCallback serverCallback) {
 
         DeviceDO hashKeyObject = new DeviceDO();
-        hashKeyObject.setUserId(CognitoSyncClientManager.credentialsProvider.getCachedIdentityId());
+        hashKeyObject.setUserId(AuthorizationHandle.getCurrentUserId());
 
         Condition rangeAndHashKeyCondition = new Condition()
                 .withComparisonOperator(ComparisonOperator.NOT_NULL);
@@ -115,7 +116,7 @@ public class DevicePersistance {
 
     //Function used to get a single device
     public static void insertNewDevice(final DeviceDO deviceDO, final ServerCallbackObject serverCallback) {
-        deviceDO.setUserId(CognitoSyncClientManager.credentialsProvider.getCachedIdentityId());
+        deviceDO.setUserId(AuthorizationHandle.getCurrentUserId());
         int lastPointSubnet = deviceDO.getLocalNetworkSubnet().lastIndexOf(".");
         deviceDO.setLocalNetworkSubnet(deviceDO.getLocalNetworkSubnet().substring(0, lastPointSubnet));
         deviceDO.setBathTime(0);

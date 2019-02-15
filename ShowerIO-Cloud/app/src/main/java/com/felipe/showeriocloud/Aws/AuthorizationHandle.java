@@ -55,4 +55,14 @@ public class AuthorizationHandle {
         }
 
     }
+
+    public static String getCurrentUserId() {
+        if(mainAuthMethod.equals(COGNITO_POOL)) {
+            CognitoIdentityPoolManager.getCurrUser();
+        } else if(mainAuthMethod.equals(FEDERATED_IDENTITIES)){
+            return CognitoSyncClientManager.credentialsProvider.getCachedIdentityId();
+        }
+
+        return NOT_SIGNED;
+    }
 }

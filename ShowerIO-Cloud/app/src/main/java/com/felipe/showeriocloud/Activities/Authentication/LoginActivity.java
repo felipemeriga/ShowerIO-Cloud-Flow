@@ -25,6 +25,7 @@ import com.facebook.login.LoginResult;
 import com.felipe.showeriocloud.Activities.Home.SplashScreen;
 import com.felipe.showeriocloud.Activities.ShowerIO.ShowerNavigationDrawer;
 import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
+import com.felipe.showeriocloud.Aws.AuthorizationHandle;
 import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
 import com.felipe.showeriocloud.Model.DevicePersistance;
@@ -124,12 +125,23 @@ public class LoginActivity extends AppCompatActivity {
                             CognitoSyncClientManager.credentialsProvider.clear();
 
                         } else {
+                            AuthorizationHandle.mainAuthMethod = AuthorizationHandle.FEDERATED_IDENTITIES;
+                            AuthorizationHandle.setCredentialsProvider(getApplicationContext());
+
                             Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
                             initializeAwsServices();
-                            AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
-                            Intent testActivity = new Intent(LoginActivity.this, SearchForDevices.class);
-                            startActivity(testActivity);
-                            finish();
+                            //AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
+
+                            DevicePersistance.getAllDevicesFromUser(new ServerCallbackObjects() {
+                                @Override
+                                public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
+                                    // TODO - CREATE A TRY CATCH AND RETURN != NULL IF THERE IS A CONNECTION ERROR
+                                    Intent listOfDevices = new Intent(LoginActivity.this, ShowerNavigationDrawer.class);
+                                    startActivity(listOfDevices);
+                                    overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                                    finish();
+                                }
+                            });
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
