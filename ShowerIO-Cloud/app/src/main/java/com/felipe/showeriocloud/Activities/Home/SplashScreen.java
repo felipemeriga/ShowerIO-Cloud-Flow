@@ -71,7 +71,6 @@ public class SplashScreen extends AppCompatActivity {
         startActivity(signuptest);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
         finish();
-        //TODO - TEST THE APPLICATION INITIALIZATION WITHOUT AWSMobileClient
 //        AWSMobileClient.getInstance().initialize(this, new AWSStartupHandler() {
 //            @Override
 //            public void onComplete(AWSStartupResult awsStartupResult) {

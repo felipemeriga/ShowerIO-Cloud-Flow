@@ -104,7 +104,6 @@ public class AwsIotCoreManager {
 
     public void publishBathParams(int bathTime, int waitingTime, DeviceDO device, ServerCallback serverCallback) {
         final String topic = "times";
-        // TODO - CHANGE IN ARDUINO CODE THE WAIT TIME
         final String msg = bathTime + "-" + device.getStoppedTime().toString() + "-" + waitingTime;
 
         try {

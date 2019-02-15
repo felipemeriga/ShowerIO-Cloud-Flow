@@ -456,7 +456,7 @@ public class ShowerDetailFragment extends Fragment {
         });
     }
 
-    // TODO - That is a hard codded array of values in slider, change this for dynamic values from database
+    // FUTURE - That is a hard codded array of values in slider, change this for dynamic values from database
     int returnHardCoddedPosition(int minutes) {
         if (minutes == 25) {
             return 21;
@@ -467,7 +467,7 @@ public class ShowerDetailFragment extends Fragment {
         }
     }
 
-    // TODO - That is a hard codded array of values in slider, change this for dynamic values from database
+    // FUTURE - That is a hard codded array of values in slider, change this for dynamic values from database
     int returnHardCoddedMinutes(int position) {
         if (position == 21) {
             return 25;
