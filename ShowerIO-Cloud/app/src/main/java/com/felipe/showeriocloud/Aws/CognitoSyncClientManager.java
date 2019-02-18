@@ -39,6 +39,8 @@ public class CognitoSyncClientManager {
     private static final String IDENTITY_POOL_ID = "us-east-1:22260d49-5c66-4995-9a58-f77ebbb0a037";
     private static final Regions REGION = Regions.US_EAST_1;
 
+    public static final String COGNITO_POOL_PROVIDER_IDENTIFIER ="cognito-idp.us-east-1.amazonaws.com/us-east-1_O9axAeYhm";
+
     private static CognitoSyncManager syncClient;
     public static CognitoCachingCredentialsProvider credentialsProvider = null;
     protected static AWSAbstractCognitoIdentityProvider developerIdentityProvider;

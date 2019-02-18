@@ -19,6 +19,14 @@ import android.widget.Toast;
 import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.AWSStartupHandler;
 import com.amazonaws.mobile.client.AWSStartupResult;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationDetails;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -50,14 +58,17 @@ public class SplashScreen extends AppCompatActivity {
     private static int SPLASH_TIME_OUT = 0;
     private static final String TAG = "SplashScreen";
     private ImageView imageView;
+    private SharedPreferences sharedPreferences;
+    private static final String SHOWERLITE = "ShowerLite";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        AuthorizationHandle.mainAuthMethod = AuthorizationHandle.NOT_SIGNED;
+        //AuthorizationHandle.mainAuthMethod = AuthorizationHandle.NOT_SIGNED;
         setContentView(R.layout.activity_home);
+        sharedPreferences = getSharedPreferences(SHOWERLITE, MODE_PRIVATE);
 
         /**
          * Initializes the sync client. This must be call before you can use it.
@@ -65,11 +76,6 @@ public class SplashScreen extends AppCompatActivity {
         AuthorizationHandle.initializeAuthMethods(getApplicationContext());
         AuthorizationHandle.verifySignedAccounts();
 
-
-        Intent signuptest = new Intent(SplashScreen.this, SignupActivity.class);
-        startActivity(signuptest);
-        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-        finish();
 //        AWSMobileClient.getInstance().initialize(this, new AWSStartupHandler() {
 //            @Override
 //            public void onComplete(AWSStartupResult awsStartupResult) {
@@ -79,56 +85,81 @@ public class SplashScreen extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        final AccessToken fbAccessToken = AccessToken.getCurrentAccessToken();
-                        new FacebookInformationSeeker.GetFbInformation(fbAccessToken).execute();
+                       if(AuthorizationHandle.mainAuthMethod.equals(AuthorizationHandle.COGNITO_POOL)){
+                            String email = sharedPreferences.getString("email", null);
+                            String password = sharedPreferences.getString("password", null);
+                            if(email == null || password == null){
+                                Log.d(TAG, "There isn't a saved email and password in shared preferences, going to LoginActivity");
+                                Intent loginActivity = new Intent(SplashScreen.this, LoginActivity.class);
+                                startActivity(loginActivity);
+                                CognitoSyncClientManager.credentialsProvider.clearCredentials();
+                                CognitoSyncClientManager.credentialsProvider.clear();
+                                finish();
+                            } else {
+                                CognitoUser user = CognitoIdentityPoolManager.getPool().getCurrentUser();
+                                user.getSessionInBackground(authenticationHandler);
 
-                        if (fbAccessToken != null) {
-                            setFacebookSession(fbAccessToken);
-                            Thread thread = new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        if (CognitoSyncClientManager.credentialsProvider.getCredentials().getSessionToken().isEmpty()) {
-                                            Toast.makeText(SplashScreen.this, "Error in Facebook login ", Toast.LENGTH_LONG).show();
-                                            AuthorizationHandle.mainAuthMethod = AuthorizationHandle.NOT_SIGNED;
-                                            CognitoSyncClientManager.credentialsProvider.clearCredentials();
-                                            CognitoSyncClientManager.credentialsProvider.clear();
-                                            Intent loginActivity = new Intent(SplashScreen.this, LoginActivity.class);
-                                            startActivity(loginActivity);
-                                            finish();
-                                        } else {
-                                            AuthorizationHandle.mainAuthMethod = AuthorizationHandle.FEDERATED_IDENTITIES;
-                                            AuthorizationHandle.setCredentialsProvider(getApplicationContext());
 
-                                            Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
-                                            initializeAwsServices();
-                                            //AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
+                            }
 
-                                            DevicePersistance.getAllDevicesFromUser(new ServerCallbackObjects() {
-                                                @Override
-                                                public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
-                                                    // TODO - CREATE A TRY CATCH AND RETURN != NULL IF THERE IS A CONNECTION ERROR
-                                                        Intent listOfDevices = new Intent(SplashScreen.this, ShowerNavigationDrawer.class);
-                                                        startActivity(listOfDevices);
-                                                        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-                                                        finish();
-                                                }
-                                            });
-                                        }
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-                            thread.start();
-                        } else {
-                            Intent loginActivity = new Intent(SplashScreen.this, LoginActivity.class);
-                            startActivity(loginActivity);
-                            finish();
-                        }
+                       } else if(AuthorizationHandle.mainAuthMethod.equals(AuthorizationHandle.FEDERATED_IDENTITIES)){
+                           final AccessToken fbAccessToken = AccessToken.getCurrentAccessToken();
+                           new FacebookInformationSeeker.GetFbInformation(fbAccessToken).execute();
+
+                           if (fbAccessToken != null) {
+                               AuthorizationHandle.setSession();
+                               Thread thread = new Thread(new Runnable() {
+                                   @Override
+                                   public void run() {
+                                       try {
+                                           if (CognitoSyncClientManager.credentialsProvider.getCredentials().getSessionToken().isEmpty()) {
+                                               Toast.makeText(SplashScreen.this, "Error in Facebook login ", Toast.LENGTH_LONG).show();
+                                               AuthorizationHandle.mainAuthMethod = AuthorizationHandle.NOT_SIGNED;
+                                               CognitoSyncClientManager.credentialsProvider.clearCredentials();
+                                               CognitoSyncClientManager.credentialsProvider.clear();
+                                               Intent loginActivity = new Intent(SplashScreen.this, LoginActivity.class);
+                                               startActivity(loginActivity);
+                                               finish();
+                                           } else {
+                                               AuthorizationHandle.mainAuthMethod = AuthorizationHandle.FEDERATED_IDENTITIES;
+                                               AuthorizationHandle.setCredentialsProvider(getApplicationContext());
+
+                                               Log.d(TAG, "CognitoSyncClientManger returned a valid token, user is authenticated, changing activity");
+                                               initializeAwsServices();
+                                               //AWSMobileClient.getInstance().setCredentialsProvider(CognitoSyncClientManager.credentialsProvider);
+
+                                               DevicePersistance.getAllDevicesFromUser(new ServerCallbackObjects() {
+                                                   @Override
+                                                   public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
+                                                       // TODO - CREATE A TRY CATCH AND RETURN != NULL IF THERE IS A CONNECTION ERROR
+                                                       Intent listOfDevices = new Intent(SplashScreen.this, ShowerNavigationDrawer.class);
+                                                       startActivity(listOfDevices);
+                                                       overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                                                       finish();
+                                                   }
+                                               });
+                                           }
+                                       } catch (Exception e) {
+                                           e.printStackTrace();
+                                       }
+                                   }
+                               });
+                               thread.start();
+
+                           } else {
+                               Intent loginActivity = new Intent(SplashScreen.this, LoginActivity.class);
+                               startActivity(loginActivity);
+                               finish();
+                           }
+
+                       } else {
+                           Intent loginActivity = new Intent(SplashScreen.this, LoginActivity.class);
+                           startActivity(loginActivity);
+                           finish();
+                       }
+
                     }
                 }, SPLASH_TIME_OUT);
-
 //            }
 //        }).execute();
     }
@@ -139,10 +170,62 @@ public class SplashScreen extends AppCompatActivity {
         awsDynamoDBManager.initializeDynamoDb();
     }
 
-    private void setFacebookSession(AccessToken accessToken) {
-        Log.i(TAG, "facebook token: " + accessToken.getToken());
-        CognitoSyncClientManager.addLogins("graph.facebook.com",
-                accessToken.getToken());
+    AuthenticationHandler authenticationHandler = new AuthenticationHandler() {
+        @Override
+        public void onSuccess(CognitoUserSession cognitoUserSession, CognitoDevice device) {
+            Log.d(TAG, " -- Auth Success");
+            CognitoIdentityPoolManager.setCurrSession(cognitoUserSession);
+            CognitoIdentityPoolManager.newDevice(device);
+            AuthorizationHandle.setCredentialsProvider(getApplicationContext());
+            AuthorizationHandle.setSession();
+            initializeAwsServices();
+
+            DevicePersistance.getAllDevicesFromUser(new ServerCallbackObjects() {
+                @Override
+                public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
+                    // TODO - CREATE A TRY CATCH AND RETURN != NULL IF THERE IS A CONNECTION ERROR
+                    Intent listOfDevices = new Intent(SplashScreen.this, ShowerNavigationDrawer.class);
+                    startActivity(listOfDevices);
+                    overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                    finish();
+                }
+            });
+        }
+
+        @Override
+        public void getAuthenticationDetails(AuthenticationContinuation authenticationContinuation, String username) {
+            getUserAuthentication(authenticationContinuation, username);
+        }
+
+        @Override
+        public void getMFACode(MultiFactorAuthenticationContinuation continuation) {
+
+        }
+
+        @Override
+        public void authenticationChallenge(ChallengeContinuation continuation) {
+
+        }
+
+        @Override
+        public void onFailure(Exception e) {
+
+        }
+
+
+    };
+
+    private void getUserAuthentication(AuthenticationContinuation continuation, String username) {
+        if(username != null) {
+            CognitoIdentityPoolManager.setUser(username);
+        }
+        String email = sharedPreferences.getString("email", null);
+        String password = sharedPreferences.getString("password", null);
+        AuthenticationDetails authenticationDetails = new AuthenticationDetails(email,password, null);
+        continuation.setAuthenticationDetails(authenticationDetails);
+        continuation.continueTask();
     }
+
+
 
 }

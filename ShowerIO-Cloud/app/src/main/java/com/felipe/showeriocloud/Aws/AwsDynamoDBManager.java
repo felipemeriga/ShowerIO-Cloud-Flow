@@ -24,7 +24,7 @@ public class AwsDynamoDBManager {
         AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient(cognitoCachingCredentialsProvider);
 
 
-        this.dynamoDBMapper = DynamoDBMapper.builder()
+         this.dynamoDBMapper = DynamoDBMapper.builder()
                 .dynamoDBClient(dynamoDBClient)
                 .build();
     }

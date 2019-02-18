@@ -35,7 +35,8 @@ public class CognitoIdentityPoolManager {
     private static CognitoUserAttributes attributesChanged;
     private static List<AttributeType> attributesToDelete;
 
-    private static int itemCount;
+    private static  int itemCount;
+
     private static int trustedDevicesCount;
     private static List<CognitoDevice> deviceDetails;
     private static CognitoDevice thisDevice;
@@ -54,25 +55,27 @@ public class CognitoIdentityPoolManager {
     /**
      * Add your pool id here
      */
-    private static final String userPoolId = "us-east-2_HdqKAo4qe";
+    private static final String userPoolId = "us-east-1_O9axAeYhm";
 
     /**
      * Add you app id
      */
-    private static final String clientId = "6p16dsgvrh08sd69eoaeqesrlv";
+    private static final String clientId = "3to8div1ae3lglqtc145q9qgff";
 
     /**
      * App secret associated with your app id - if the App id does not have an associated App secret,
      * set the App secret to null.
      * e.g. clientSecret = null;
      */
-    private static final String clientSecret = "1bo2cbuicn2kqkanhtodv541km1vvlgr56s536fnnvd8ji8doc6v";
+    private static final String clientSecret = "hnsn3svuhb0eb2eqhnhkr4hqdv2p2vvopbn124v0l6p3n6qeqnf";
 
     /**
      * Set Your User Pools region.
      * e.g. if your user pools are in US East (N Virginia) then set cognitoRegion = Regions.US_EAST_1.
      */
-    private static final Regions cognitoRegion = Regions.US_EAST_2;
+
+
+    private static final Regions cognitoRegion = Regions.US_EAST_1;
 
     // User details from the service
     private static CognitoUserSession currSession;
@@ -86,6 +89,15 @@ public class CognitoIdentityPoolManager {
     private static boolean emailAvailable;
 
     private static Set<String> currUserAttributes;
+
+    public static String getUserPoolId() {
+        return userPoolId;
+    }
+
+    public static Regions getCognitoRegion() {
+
+        return cognitoRegion;
+    }
 
     public static void init(Context context) {
         setData();
@@ -120,14 +132,14 @@ public class CognitoIdentityPoolManager {
         emailAvailable = false;
 
         currUserAttributes = new HashSet<String>();
-        firstTimeLogInUpDatedAttributes = new HashMap<String, String>();
+        firstTimeLogInUpDatedAttributes= new HashMap<String, String>();
 
         newDevice = null;
         thisDevice = null;
         thisDeviceTrustState = false;
+
+
     }
-
-
 
     public static CognitoUserPool getPool() {
         return userPool;
@@ -137,7 +149,7 @@ public class CognitoIdentityPoolManager {
         return signUpFieldsC2O;
     }
 
-    public static Map<String, String> getSignUpFieldsO2C() {
+    public static  Map<String, String> getSignUpFieldsO2C() {
         return signUpFieldsO2C;
     }
 
@@ -149,12 +161,16 @@ public class CognitoIdentityPoolManager {
         currSession = session;
     }
 
-    public static CognitoUserSession getCurrSession() {
+    public static  CognitoUserSession getCurrSession() {
         return currSession;
     }
 
+    public static void setUserDetails(CognitoUserDetails details) {
+        userDetails = details;
+        refreshWithSync();
+    }
 
-    public static CognitoUserDetails getUserDetails() {
+    public static  CognitoUserDetails getUserDetails() {
         return userDetails;
     }
 
@@ -208,32 +224,32 @@ public class CognitoIdentityPoolManager {
 
     public static List<String> getNewAvailableOptions() {
         List<String> newOption = new ArrayList<String>();
-        for (String attribute : attributeDisplaySeq) {
-            if (!(currUserAttributes.contains(attribute))) {
+        for(String attribute : attributeDisplaySeq) {
+            if(!(currUserAttributes.contains(attribute))) {
                 newOption.add(attribute);
             }
         }
-        return newOption;
+        return  newOption;
     }
 
     public static String formatException(Exception exception) {
         String formattedString = "Internal Error";
-        Log.e(TAG, " -- Error: " + exception.toString());
+        Log.e(TAG, " -- Error: "+exception.toString());
         Log.getStackTraceString(exception);
 
         String temp = exception.getMessage();
 
-        if (temp != null && temp.length() > 0) {
+        if(temp != null && temp.length() > 0) {
             formattedString = temp.split("\\(")[0];
-            if (temp != null && temp.length() > 0) {
+            if(temp != null && temp.length() > 0) {
                 return formattedString;
             }
         }
 
-        return formattedString;
+        return  formattedString;
     }
 
-    public static int getItemCount() {
+    public  static  int getItemCount() {
         return itemCount;
     }
 
@@ -242,24 +258,13 @@ public class CognitoIdentityPoolManager {
     }
 
     public static int getFirstTimeLogInItemsCount() {
-        return firstTimeLogInItemsCount;
+        return  firstTimeLogInItemsCount;
     }
 
-    public static void setUserAttributeForDisplayFirstLogIn(Map<String, String> currAttributes, List<String> requiredAttributes) {
-        firstTimeLogInUserAttributes = currAttributes;
-        firstTimeLogInRequiredAttributes = requiredAttributes;
-        firstTimeLogInUpDatedAttributes = new HashMap<String, String>();
-        refreshDisplayItemsForFirstTimeLogin();
-    }
 
-    public static void setUserAttributeForFirstTimeLogin(String attributeName, String attributeValue) {
-        if (firstTimeLogInUserAttributes == null) {
-            firstTimeLogInUserAttributes = new HashMap<String, String>();
-        }
-        firstTimeLogInUserAttributes.put(attributeName, attributeValue);
-        firstTimeLogInUpDatedAttributes.put(attributeName, attributeValue);
-        refreshDisplayItemsForFirstTimeLogin();
-    }
+
+
+
 
     public static Map<String, String> getUserAttributesForFirstTimeLogin() {
         return firstTimeLogInUpDatedAttributes;
@@ -273,32 +278,13 @@ public class CognitoIdentityPoolManager {
         return firstTimeLoginNewPassword;
     }
 
-    private static void refreshDisplayItemsForFirstTimeLogin() {
-        firstTimeLogInItemsCount = 0;
 
-        for (Map.Entry<String, String> attr : firstTimeLogInUserAttributes.entrySet()) {
-            if ("phone_number_verified".equals(attr.getKey()) || "email_verified".equals(attr.getKey())) {
-                continue;
-            }
-            String message = "";
-            if ((firstTimeLogInRequiredAttributes != null) && (firstTimeLogInRequiredAttributes.contains(attr.getKey()))) {
-                message = "Required";
-            }
-
-            firstTimeLogInRequiredAttributes.size();
-            firstTimeLogInItemsCount++;
-        }
-
-        for (String attr : firstTimeLogInRequiredAttributes) {
-            if (!firstTimeLogInUserAttributes.containsKey(attr)) {
-                firstTimeLogInItemsCount++;
-            }
-        }
-    }
 
     public static void newDevice(CognitoDevice device) {
         newDevice = device;
     }
+
+
 
     public static CognitoDevice getDeviceDetail(int position) {
         if (position <= trustedDevicesCount) {
@@ -308,6 +294,8 @@ public class CognitoIdentityPoolManager {
         }
     }
 
+
+
     public static List<String> getAllMfaOptions() {
         return mfaAllOptionsCode;
     }
@@ -315,6 +303,10 @@ public class CognitoIdentityPoolManager {
     public static String getMfaOptionCode(int position) {
         return mfaAllOptionsCode.get(position);
     }
+
+
+
+
 
     //public static
 
@@ -351,8 +343,8 @@ public class CognitoIdentityPoolManager {
         signUpFieldsC2O.put("Phone number", "phone_number");
         signUpFieldsC2O.put("Phone number verified", "phone_number_verified");
         signUpFieldsC2O.put("Email verified", "email_verified");
-        signUpFieldsC2O.put("Email", "email");
-        signUpFieldsC2O.put("Middle name", "middle_name");
+        signUpFieldsC2O.put("Email","email");
+        signUpFieldsC2O.put("Middle name","middle_name");
 
         signUpFieldsO2C = new HashMap<String, String>();
         signUpFieldsO2C.put("given_name", "Given name");
@@ -366,6 +358,58 @@ public class CognitoIdentityPoolManager {
 
     }
 
+    private static void refreshWithSync() {
+        // This will refresh the current items to display list with the attributes fetched from service
+        List<String> tempKeys = new ArrayList<>();
+        List<String> tempValues = new ArrayList<>();
+
+        emailVerified = false;
+        phoneVerified = false;
+
+        emailAvailable = false;
+        phoneAvailable = false;
+
+
+        currUserAttributes.clear();
+        itemCount = 0;
+
+        for(Map.Entry<String, String> attr: userDetails.getAttributes().getAttributes().entrySet()) {
+
+            tempKeys.add(attr.getKey());
+            tempValues.add(attr.getValue());
+
+            if(attr.getKey().contains("email_verified")) {
+                emailVerified = attr.getValue().contains("true");
+            }
+            else if(attr.getKey().contains("phone_number_verified")) {
+                phoneVerified = attr.getValue().contains("true");
+            }
+
+            if(attr.getKey().equals("email")) {
+                emailAvailable = true;
+            }
+            else if(attr.getKey().equals("phone_number")) {
+                phoneAvailable = true;
+            }
+        }
+
+        // Arrange the input attributes per the display sequence
+        Set<String> keySet = new HashSet<>(tempKeys);
+        for(String det: attributeDisplaySeq) {
+            if(keySet.contains(det)) {
+                // Adding items to display list in the required sequence
+
+
+
+
+
+
+
+                currUserAttributes.add(det);
+                itemCount++;
+            }
+        }
+    }
 
     private static void modifyAttribute(String attributeName, String newValue) {
         //
@@ -374,14 +418,6 @@ public class CognitoIdentityPoolManager {
 
     private static void deleteAttribute(String attributeName) {
 
-    }
-
-    public static Regions getCognitoRegion() {
-        return cognitoRegion;
-    }
-
-    public static String getUserPoolId() {
-        return userPoolId;
     }
 
 }

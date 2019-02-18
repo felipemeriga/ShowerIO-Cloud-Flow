@@ -17,9 +17,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationDetails;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChooseMfaContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.NewPasswordContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHandler;
 import com.felipe.showeriocloud.Activities.Home.SplashScreen;
 import com.felipe.showeriocloud.Activities.ShowerIO.ShowerNavigationDrawer;
@@ -31,8 +40,10 @@ import com.felipe.showeriocloud.R;
 import com.felipe.showeriocloud.Utils.ServerCallbackObjects;
 import com.google.gson.Gson;
 
+
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,7 +70,7 @@ public class SignupActivity extends AppCompatActivity {
     @BindView(R.id.link_login)
     TextView _loginLink;
     String espIpAddress;
-    private final String SHOWERIO = "ShowerIO";
+    private final String SHOWERLITE = "ShowerLite";
     private final String CREDENTIALS_URL = "/createCredentials?email=";
     private Boolean createCredentialsFlag = false;
     private ProgressDialog progressDialog;
@@ -92,6 +103,8 @@ public class SignupActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
+        sharedPreferences = getSharedPreferences(SHOWERLITE, MODE_PRIVATE);
+
         progressDialog = new ProgressDialog(SignupActivity.this, R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Criando uma conta...");
@@ -130,6 +143,7 @@ public class SignupActivity extends AppCompatActivity {
 
         userAttributes.addAttribute(CognitoIdentityPoolManager.getSignUpFieldsC2O().get("Email").toString(), email);
 
+
         CognitoIdentityPoolManager.getPool().signUpInBackground(email, password, userAttributes, null, signUpHandler);
 
     }
@@ -142,6 +156,7 @@ public class SignupActivity extends AppCompatActivity {
                 userDialog.dismiss();
                 AuthorizationHandle.mainAuthMethod = AuthorizationHandle.COGNITO_POOL;
                 AuthorizationHandle.setCredentialsProvider(getApplicationContext());
+                AuthorizationHandle.setSession();
                 initializeAwsServices();
 
                 DevicePersistance.getAllDevicesFromUser(new ServerCallbackObjects() {
@@ -206,15 +221,53 @@ public class SignupActivity extends AppCompatActivity {
         public void onSuccess(CognitoUser user, boolean signUpConfirmationState,
                               CognitoUserCodeDeliveryDetails cognitoUserCodeDeliveryDetails) {
             // Check signUpConfirmationState to see if the user is already confirmed
-            showDialogMessage("Cadastro","Usuário salvo com sucesso!",false);
-
+            //CognitoIdentityPoolManager.getPool().getUser(userName).confirmSignUpInBackground(confirmCode, true, confHandler);
+            Boolean regState = signUpConfirmationState;
+            CognitoIdentityPoolManager.getPool().getUser(_emailText.getText().toString()).getSessionInBackground(authenticationHandler);
         }
 
         @Override
         public void onFailure(Exception exception) {
             // TODO - HANDLE THE DIFFERENT TYPES OF EXCEPTION
-            Toast.makeText(getBaseContext(), "Erro de Login", Toast.LENGTH_LONG).show();
+            onSignupFailed();
         }
+    };
+
+    AuthenticationHandler authenticationHandler = new AuthenticationHandler() {
+        @Override
+        public void onSuccess(CognitoUserSession cognitoUserSession, CognitoDevice device) {
+            Log.d(TAG, " -- Auth Success");
+            CognitoIdentityPoolManager.setCurrSession(cognitoUserSession);
+            CognitoIdentityPoolManager.newDevice(device);
+            progressDialog.dismiss();
+            showDialogMessage("Cadastro","Usuário salvo com sucesso!",false);
+            sharedPreferences.edit().putString("email",_emailText.getText().toString());
+            sharedPreferences.edit().putString("password",_passwordText.getText().toString());
+            sharedPreferences.edit().commit();
+
+        }
+
+        @Override
+        public void getAuthenticationDetails(AuthenticationContinuation authenticationContinuation, String username) {
+            getUserAuthentication(authenticationContinuation, username);
+        }
+
+        @Override
+        public void getMFACode(MultiFactorAuthenticationContinuation continuation) {
+
+        }
+
+        @Override
+        public void authenticationChallenge(ChallengeContinuation continuation) {
+
+        }
+
+        @Override
+        public void onFailure(Exception e) {
+            onSignupFailed();
+        }
+
+
     };
 
     public void initializeAwsServices() {
@@ -222,6 +275,18 @@ public class SignupActivity extends AppCompatActivity {
         AwsDynamoDBManager awsDynamoDBManager = new AwsDynamoDBManager();
         awsDynamoDBManager.initializeDynamoDb();
     }
+
+
+    private void getUserAuthentication(AuthenticationContinuation continuation, String username) {
+        if(username != null) {
+            CognitoIdentityPoolManager.setUser(username);
+        }
+        AuthenticationDetails authenticationDetails = new AuthenticationDetails(_emailText.getText().toString(), _passwordText.getText().toString(), null);
+        continuation.setAuthenticationDetails(authenticationDetails);
+        continuation.continueTask();
+    }
+
+
 
 
 }

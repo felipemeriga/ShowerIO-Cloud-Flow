@@ -15,6 +15,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationDetails;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -27,6 +34,7 @@ import com.felipe.showeriocloud.Activities.ShowerIO.ShowerNavigationDrawer;
 import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
 import com.felipe.showeriocloud.Aws.AuthorizationHandle;
 import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
+import com.felipe.showeriocloud.Aws.CognitoIdentityPoolManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
@@ -42,7 +50,9 @@ import butterknife.ButterKnife;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
+    private final String SHOWERLITE = "ShowerLite";
     private static final int REQUEST_SIGNUP = 0;
+    private SharedPreferences sharedPreferences;
 
     private Button btnLoginFacebook;
 
@@ -97,7 +107,10 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Autenticando...");
         progressDialog.setCanceledOnTouchOutside(false);
-        _signupLink.setEnabled(false);
+        _signupLink.setEnabled(true);
+        sharedPreferences = getSharedPreferences(SHOWERLITE, MODE_PRIVATE);
+
+
         this.initializeFacebookAuth();
     }
 
@@ -112,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
 
         //If access token is already here, set fb session
         final AccessToken fbAccessToken = AccessToken.getCurrentAccessToken();
-        if (fbAccessToken != null) {
+/*        if (fbAccessToken != null) {
             setFacebookSession(fbAccessToken);
             btnLoginFacebook.setVisibility(View.GONE);
             Thread thread = new Thread(new Runnable() {
@@ -149,7 +162,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
             thread.start();
-        }
+        }*/
 
         btnLoginFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -229,6 +242,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         progressDialog.show();
         _loginButton.setEnabled(false);
+        CognitoIdentityPoolManager.getPool().getUser(_emailText.getText().toString()).getSessionInBackground(authenticationHandler);
 
     }
 
@@ -319,6 +333,65 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             _signupLink.setEnabled(true);
         }
+    }
+
+    AuthenticationHandler authenticationHandler = new AuthenticationHandler() {
+        @Override
+        public void onSuccess(CognitoUserSession cognitoUserSession, CognitoDevice device) {
+            Log.d(TAG, " -- Auth Success");
+            CognitoIdentityPoolManager.setCurrSession(cognitoUserSession);
+            CognitoIdentityPoolManager.newDevice(device);
+            sharedPreferences.edit().putString("email",_emailText.getText().toString());
+            sharedPreferences.edit().putString("password",_passwordText.getText().toString());
+            sharedPreferences.edit().commit();
+            AuthorizationHandle.mainAuthMethod = AuthorizationHandle.COGNITO_POOL;
+            AuthorizationHandle.setCredentialsProvider(getApplicationContext());
+            AuthorizationHandle.setSession();
+            initializeAwsServices();
+
+            DevicePersistance.getAllDevicesFromUser(new ServerCallbackObjects() {
+                @Override
+                public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
+                    // TODO - CREATE A TRY CATCH AND RETURN != NULL IF THERE IS A CONNECTION ERROR
+                    Intent listOfDevices = new Intent(LoginActivity.this, ShowerNavigationDrawer.class);
+                    startActivity(listOfDevices);
+                    overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                    finish();
+                }
+            });
+            progressDialog.dismiss();
+        }
+
+        @Override
+        public void getAuthenticationDetails(AuthenticationContinuation authenticationContinuation, String username) {
+            getUserAuthentication(authenticationContinuation, username);
+        }
+
+        @Override
+        public void getMFACode(MultiFactorAuthenticationContinuation continuation) {
+
+        }
+
+        @Override
+        public void authenticationChallenge(ChallengeContinuation continuation) {
+
+        }
+
+        @Override
+        public void onFailure(Exception e) {
+            onLoginFailed();
+        }
+
+
+    };
+
+    private void getUserAuthentication(AuthenticationContinuation continuation, String username) {
+        if(username != null) {
+            CognitoIdentityPoolManager.setUser(username);
+        }
+        AuthenticationDetails authenticationDetails = new AuthenticationDetails(_emailText.getText().toString(), _passwordText.getText().toString(), null);
+        continuation.setAuthenticationDetails(authenticationDetails);
+        continuation.continueTask();
     }
 
 

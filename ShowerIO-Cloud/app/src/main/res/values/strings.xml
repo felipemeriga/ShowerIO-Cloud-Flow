@@ -1,4 +1,5 @@
 <resources>
+    <string name="Menu">Menu</string>
     <string name="app_name">ShowerIO</string>
     <string name="title_activity_search_for_devices">searchForDevices</string>
     <string name="dummy_button">Dummy Button</string>
