@@ -42,7 +42,8 @@ extern "C" {
 
 #define rele D1      // the number of the LED pin
 #define Led_Aviso D0
-#define FLOW_SENSOR_PIN 5 // Sensor Input
+
+const int  FLOW_SENSOR_PIN = D2;// Sensor Input
 
 char aws_endpoint[]    = "agq6mvwjsctpy-ats.iot.us-east-1.amazonaws.com";
 char aws_region[]      = "us-east-1";
@@ -58,6 +59,8 @@ MillisTimer checkConnectionTimer = MillisTimer(1000);
 MillisTimer bathDurationTimer = MillisTimer(1000);
 MillisTimer bathStopTimer = MillisTimer(1000);
 MillisTimer bathWaitingTimer = MillisTimer(1000);
+MillisTimer bathScanTimmer = MillisTimer(1000);
+unsigned long flowLastValue;
 
 //MQTT config
 const int maxMQTTpackageSize = 512;

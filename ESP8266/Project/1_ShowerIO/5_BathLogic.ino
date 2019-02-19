@@ -2,6 +2,22 @@
 void flow () // Interrupt function
 {
   flow_frequency++;
+   DBG_OUTPUT_PORT.println(flow_frequency);
+  
+}
+
+void bathScanTimerReached(MillisTimer &mt){
+   if(flowLastValue == flow_frequency){
+    // Check if the flow is increasing, otherwise set shower state to stopped
+    DBG_OUTPUT_PORT.println("flow frequency reseted");
+     flow_frequency = 0;
+   } else if(flow_frequency > 1000){
+      // Adding this validation to prevent overflow of the flow frequency
+      flow_frequency = 1;
+   }
+  flowLastValue = flow_frequency;
+  bathScanTimmer.reset();
+  bathScanTimmer.start();
 }
 
 void bathWaitTimerReached(MillisTimer &mt) {
@@ -9,7 +25,7 @@ void bathWaitTimerReached(MillisTimer &mt) {
   waiting = false;
   waitingTime = 0;
   digitalWrite(rele, LOW);
-  
+
   // TODO - Compute the bath statistics
   DBG_OUTPUT_PORT.println("Bath waiting time reached! Now shower is enabled!");
   waitingTime = waitingTime + stoppedTime;
@@ -52,7 +68,8 @@ void bathStoppedTimerReached(MillisTimer &mt) {
 void initBathConfiguration() {
   pinMode(FLOW_SENSOR_PIN, INPUT);
   //digitalWrite(FLOW_SENSOR_PIN, HIGH); // Optional Internal Pull-Up
-  attachInterrupt(FLOW_SENSOR_PIN, flow, RISING); // Setup Interrupt
+  //attachInterrupt(FLOW_SENSOR_PIN, flow, RISING); // Setup Interrupt
+  attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), flow, RISING);
   sei(); // Enable interrupts
   currentTime = millis();
   cloopTime = currentTime;
@@ -64,6 +81,7 @@ void initBathConfiguration() {
   stoppedTime = 0;
   waitingTime = 0;
   l_hour = 0;
+  flowLastValue = 0;
 }
 
 void computeBathWorking() {
@@ -76,12 +94,16 @@ void computeBathWorking() {
   }
 }
 void bathProcess ()
-{ 
+{
   // TEST - Test if the variable currentTime will be good for all bathTime/waitingTime/stoppedTime
   currentTime = millis();
   if (waiting != true) {
     // We might have to modify it because of the pipe drain
     if (flow_frequency > 0) {
+      if(!showerIsOn){
+        DBG_OUTPUT_PORT.println("bath is running");
+        DBG_OUTPUT_PORT.println(aws_topic_times);
+      }
       showerIsOn = true;
       bathDurationTimer.run();
       // Indicates that a new bath has started
@@ -90,18 +112,29 @@ void bathProcess ()
         bathDurationTimer.setInterval(EEPROM.read(address_tempo) * 1000);
         bathDurationTimer.expiredHandler(bathTimeReached);
         bathDurationTimer.start();
-        bathRunning = true;
+        
+        bathScanTimmer.setInterval(2000);
+        bathScanTimmer.expiredHandler(bathScanTimerReached);
+        bathScanTimmer.start();
 
         DBG_OUTPUT_PORT.println("The bath stopped time is default set as 1 minutes");
         // TODO - CHANGE TO 60 * 1000
         bathStopTimer.setInterval(10 * 1000);
         bathStopTimer.expiredHandler(bathStoppedTimerReached);
         bathStopTimer.start();
+
+        bathRunning = true;
       }
 
     } else if (bathRunning == true) {
+      if(showerIsOn){
+        DBG_OUTPUT_PORT.println("bath is stopped");
+      }
       showerIsOn = false;
       bathStopTimer.run();
+    }
+    if(bathRunning == true){
+      bathScanTimmer.run();
     }
     // TODO - Implement the alert LED that the bath is finishing
   } else {
