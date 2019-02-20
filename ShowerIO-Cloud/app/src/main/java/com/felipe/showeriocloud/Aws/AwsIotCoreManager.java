@@ -45,11 +45,9 @@ public class AwsIotCoreManager {
             @Override
             public void run() {
                 try {
-
-                    final AWSCredentialsProvider awsCredentialsProvider = AWSMobileClient.getInstance().getCredentialsProvider();
                     final AWSConfiguration awsConfiguration = AWSMobileClient.getInstance().getConfiguration();
 
-                    final CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider = CognitoSyncClientManager.credentialsProvider;
+                    final CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider = AuthorizationHandle.cognitoCachingCredentialsProvider;
 
                     mqttManager = new AWSIotMqttManager(clientId, endpoint);
 

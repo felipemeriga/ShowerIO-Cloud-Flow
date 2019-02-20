@@ -241,9 +241,10 @@ public class SignupActivity extends AppCompatActivity {
             CognitoIdentityPoolManager.newDevice(device);
             progressDialog.dismiss();
             showDialogMessage("Cadastro","Usuário salvo com sucesso!",false);
-            sharedPreferences.edit().putString("email",_emailText.getText().toString());
-            sharedPreferences.edit().putString("password",_passwordText.getText().toString());
-            sharedPreferences.edit().commit();
+            SharedPreferences.Editor editor = getSharedPreferences(SHOWERLITE, MODE_PRIVATE).edit();
+            editor.putString("email",_emailText.getText().toString());
+            editor.putString("password",_passwordText.getText().toString());
+            editor.apply();
 
         }
 
@@ -287,6 +288,11 @@ public class SignupActivity extends AppCompatActivity {
     }
 
 
-
-
+    @Override
+    public void onBackPressed() {
+        Intent loginActivity = new Intent(SignupActivity.this, LoginActivity.class);
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        startActivity(loginActivity);
+        finish();
+    }
 }

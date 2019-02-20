@@ -24,6 +24,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GetDetailsHandler;
 import com.felipe.showeriocloud.Activities.Fragments.HelpFragment;
 import com.felipe.showeriocloud.Activities.Fragments.SearchForDevicesFragment;
 import com.felipe.showeriocloud.Activities.Fragments.ShowerDetailFragment;
@@ -32,6 +35,8 @@ import com.felipe.showeriocloud.Activities.Fragments.StatisticsDetailDailyFragme
 import com.felipe.showeriocloud.Activities.Fragments.StatisticsDetailFragment;
 import com.felipe.showeriocloud.Activities.Home.SplashScreen;
 import com.felipe.showeriocloud.Activities.SmartConfig.SearchForDevices;
+import com.felipe.showeriocloud.Aws.AuthorizationHandle;
+import com.felipe.showeriocloud.Aws.CognitoIdentityPoolManager;
 import com.felipe.showeriocloud.Model.DeviceDO;
 import com.felipe.showeriocloud.Model.DevicePersistance;
 import com.felipe.showeriocloud.R;
@@ -40,6 +45,9 @@ import com.felipe.showeriocloud.Utils.OnBackPressed;
 import com.felipe.showeriocloud.Utils.ServerCallback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ShowerNavigationDrawer extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, HelpFragment.OnFragmentInteractionListener, ShowerListFragment.OnFragmentInteractionListener, ShowerDetailFragment.OnFragmentInteractionListener, SearchForDevicesFragment.OnFragmentInteractionListener, StatisticsDetailFragment.OnFragmentInteractionListener, StatisticsDetailDailyFragment.OnFragmentInteractionListener {
@@ -65,8 +73,12 @@ public class ShowerNavigationDrawer extends AppCompatActivity
         linearLayout = (LinearLayout) hView.findViewById(R.id.nav_header_linear);
         imageView = (ImageView) hView.findViewById(R.id.imageView);
         usernameTitle = (TextView) hView.findViewById(R.id.username);
+        if(AuthorizationHandle.mainAuthMethod.equals(AuthorizationHandle.FEDERATED_IDENTITIES)){
+            usernameTitle.setText(FacebookInformationSeeker.facebookName);
 
-        usernameTitle.setText(FacebookInformationSeeker.facebookName);
+        } else {
+            CognitoIdentityPoolManager.getPool().getUser(CognitoIdentityPoolManager.getPool().getCurrentUser().getUserId()).getDetailsInBackground(detailsHandler);
+        }
 //        Picasso.get().load(FacebookInformationSeeker.facebookProfilePhotoUrl).into(imageView);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -281,4 +293,19 @@ public class ShowerNavigationDrawer extends AppCompatActivity
     public void onFragmentInteraction(Uri uri) {
 
     }
+
+    GetDetailsHandler detailsHandler = new GetDetailsHandler() {
+        @Override
+        public void onSuccess(CognitoUserDetails cognitoUserDetails) {
+            Map<String,String> stringStringHashMap=new HashMap<>();
+            CognitoUserAttributes cognitoUserAttributes=cognitoUserDetails.getAttributes();
+            stringStringHashMap = cognitoUserAttributes.getAttributes();
+            usernameTitle.setText(stringStringHashMap.get("given_name"));
+        }
+
+        @Override
+        public void onFailure(Exception exception) {
+            usernameTitle.setText("");
+        }
+    };
 }

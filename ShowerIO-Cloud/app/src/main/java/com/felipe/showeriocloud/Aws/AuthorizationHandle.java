@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
 import com.facebook.AccessToken;
 import com.felipe.showeriocloud.Utils.FacebookInformationSeeker;
 
@@ -16,6 +17,7 @@ public class AuthorizationHandle {
     public static String FEDERATED_IDENTITIES = "FEDERATED_IDENTITIES";
     public static String NOT_SIGNED = "NOT_SIGNED";
     public static CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider;
+    public static CognitoUserAttributes cognitoUserAttributes;
 
     public static String mainAuthMethod;
 
@@ -29,7 +31,7 @@ public class AuthorizationHandle {
 
     public static void verifySignedAccounts() {
 
-/*        CognitoUser user = CognitoIdentityPoolManager.getPool().getCurrentUser();
+        CognitoUser user = CognitoIdentityPoolManager.getPool().getCurrentUser();
         String username = user.getUserId();
         if (username != null) {
             mainAuthMethod = COGNITO_POOL;
@@ -41,7 +43,7 @@ public class AuthorizationHandle {
         if (fbAccessToken != null) {
             mainAuthMethod = FEDERATED_IDENTITIES;
             return;
-        }*/
+        }
 
         mainAuthMethod = NOT_SIGNED;
     }
