@@ -9,6 +9,8 @@ void configureServer() {
 
 void configureGPIO(void) {
 
+  pinMode(buttonResetPin, INPUT);
+
   pinMode(rele, OUTPUT);
   pinMode(Led_Aviso, OUTPUT);
 
@@ -18,34 +20,34 @@ void configureGPIO(void) {
   //EEPROM Start Function
   EEPROM.begin(512);
 
-  armazenado = EEPROM.read(address_tempo);
+  armazenado = EEPROM.read(address_time);
   if (armazenado > 45 || armazenado < 1 ) {
-    minutos = 7;
-    EEPROM.write(address_tempo, minutos);
+    bathTime = 7;
+    EEPROM.write(address_time, bathTime);
     EEPROM.commit();
   }
   else {
-    minutos = armazenado;
+    bathTime = armazenado;
   }
 
-  armazenado = EEPROM.read(address_espera);
+  armazenado = EEPROM.read(address_wait);
   if (armazenado > 45 || armazenado < 1 ) {
-    minutos_espera = 5;
-    EEPROM.write(address_espera, minutos_espera);
+    bathWaitTime = 5;
+    EEPROM.write(address_wait, bathWaitTime);
     EEPROM.commit();
   }
   else {
-    minutos_espera = armazenado;
+    bathWaitTime = armazenado;
   }
 
-  armazenado = EEPROM.read(address_pausa);
+  armazenado = EEPROM.read(address_stopped);
   if (armazenado > 45 || armazenado < 1 ) {
-    minutos_pausa = 3;
-    EEPROM.write(address_pausa, minutos_pausa);
+    bathStoppedTime = 1;
+    EEPROM.write(address_stopped, bathStoppedTime);
     EEPROM.commit();
   }
   else {
-    minutos_pausa = armazenado;
+    bathStoppedTime = armazenado;
   }
 }
 
@@ -92,7 +94,7 @@ void setup(void) {
       waitTime = 300000;
     }
 
-    while (millis() - start < 30000) {
+    while (millis() - start < waitTime) {
       if (WiFi.status() == WL_CONNECTED) {
         DBG_OUTPUT_PORT.println("Connected to a network!");
         timeout = false;
@@ -138,10 +140,6 @@ void setup(void) {
   awsWSclient.setAWSSecretKey(aws_secret);
   awsWSclient.setUseSSL(true);
 
-//  checkConnectionTimer.setInterval(30000);
-//  checkConnectionTimer.expiredHandler(verifyConnection);
-//  checkConnectionTimer.start();
-
   if (connect ()) {
     subscribe ();
   }
@@ -150,17 +148,23 @@ void setup(void) {
 void loop(void) {
   server.handleClient();
   bathProcess();
-//  checkConnectionTimer.run();
 
-  //keep the mqtt up and running
-  if (awsWSclient.connected ()) {
-    client.loop ();
+  if (awsWSclient.connected ()) {    
+      client.loop ();
   } else {
     //handle reconnection
-    if (connect ()) {
-      subscribe ();
+    if (connect ()){
+      subscribe ();      
     }
   }
+  //Reset Wifi button
+//  buttonResetState = digitalRead(buttonResetPin);
+//   if (buttonResetState == HIGH) {
+//    // Reset Wifi
+//    WiFi.disconnect();
+//     while (1)ESP.restart();
+//    delay(500);
+//  }
 
 }
 

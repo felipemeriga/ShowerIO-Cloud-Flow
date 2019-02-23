@@ -25,6 +25,13 @@
 #include <Hash.h>
 #include <WebSocketsClient.h>
 
+//Paho MQTT
+#include <SPI.h>
+#include <IPStack.h>
+#include <Countdown.h>
+#include <MQTTClient.h>
+
+
 //HTTP REQUESTS
 HTTPClient http;
 
@@ -43,6 +50,9 @@ extern "C" {
 #define rele D1      // the number of the LED pin
 #define Led_Aviso D0
 
+const int buttonResetPin = 4; //Button reset wifi
+int buttonResetState = 0;
+
 const int  FLOW_SENSOR_PIN = D2;// Sensor Input
 
 char aws_endpoint[]    = "agq6mvwjsctpy-ats.iot.us-east-1.amazonaws.com";
@@ -60,6 +70,7 @@ MillisTimer bathDurationTimer = MillisTimer(1000);
 MillisTimer bathStopTimer = MillisTimer(1000);
 MillisTimer bathWaitingTimer = MillisTimer(1000);
 MillisTimer bathScanTimmer = MillisTimer(1000);
+MillisTimer bathFalseAlarmTimmer = MillisTimer(1000);
 unsigned long flowLastValue;
 
 //MQTT config
@@ -69,6 +80,8 @@ const int maxMQTTMessageHandlers = 1;
 AWSWebSocketClient awsWSclient(1000);
 
 PubSubClient client(awsWSclient);
+//IPStack ipstack(awsWSclient);
+//MQTT::Client<IPStack, Countdown, maxMQTTpackageSize, maxMQTTMessageHandlers> client(ipstack);
 
 //# of connections
 long connection = 0;
@@ -82,22 +95,25 @@ unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
 unsigned long debounceDelay = 25;    // the debounce time; increase if the output flickers
 
 //positions to save variables on the EEPROM
-int address_tempo = 0;
-int address_espera = 1;
-int address_pausa = 2;
+int address_time = 0;
+int address_wait = 1;
+int address_stopped = 2;
 int address_password = 3;
 int address_email = 4;
+int test_timer = 2;
+boolean showerFalseAlarmTesting = false;
+boolean falseAlarmRunning = false;
 
 byte armazenado;
-byte minutos = EEPROM.read(address_tempo); //tempo de banho
-byte minutos_espera = EEPROM.read(address_espera); //tempo de espera atÃ© o banho ser habilitado novamente
-byte minutos_pausa = EEPROM.read(address_pausa); // tempo que o banho pode ficar pausado
+byte bathTime = EEPROM.read(address_time); //tempo de banho
+byte bathWaitTime = EEPROM.read(address_wait); //tempo de espera atÃ© o banho ser habilitado novamente
+byte bathStoppedTime = EEPROM.read(address_stopped); // tempo que o banho pode ficar pausado
 byte password = EEPROM.read(address_password);
 byte email = EEPROM.read(address_email);
 
-int tempo = (int)minutos * 60;
-int tempo_espera = (int)minutos_espera * 60;
-int tempo_de_pausa = (int)minutos_pausa * 60;
+//int tempo = (int)minutos * 60;
+//int tempo_espera = (int)minutos_espera * 60;
+//int tempo_de_pausa = (int)minutos_pausa * 60;
 
 #define DBG_OUTPUT_PORT Serial
 
@@ -125,8 +141,5 @@ unsigned long cloopTime;
 boolean bathRunning;
 boolean showerIsOn;
 boolean waiting;
-unsigned long bathTime;
-unsigned long stoppedTime;
-unsigned long waitingTime;
 
 
