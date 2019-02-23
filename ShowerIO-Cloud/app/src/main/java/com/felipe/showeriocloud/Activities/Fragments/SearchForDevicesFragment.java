@@ -12,6 +12,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
@@ -32,6 +33,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.espressif.iot.esptouch.IEsptouchListener;
 import com.espressif.iot.esptouch.IEsptouchResult;
 import com.espressif.iot.esptouch.util.ByteUtil;
@@ -56,7 +58,7 @@ import butterknife.ButterKnife;
 public class SearchForDevicesFragment extends Fragment implements View.OnClickListener {
 
     public static int RETRY = 0;
-    private static int SPLASH_TIME_OUT = 4000;
+    private static int SPLASH_TIME_OUT = 60000;
     private Gson gson;
     public RequestQueue requestQueue;
     private static final String TAG = "SearchForDevices";
@@ -190,6 +192,9 @@ public class SearchForDevicesFragment extends Fragment implements View.OnClickLi
         } else {
             registerBroadcastReceiver();
         }
+
+        requestQueue = Volley.newRequestQueue(getContext());
+        registerNewDevices = new RegisterNewDevices();
 
         // Inflate the layout for this fragment
         return view;
@@ -368,45 +373,51 @@ public class SearchForDevicesFragment extends Fragment implements View.OnClickLi
 
     public void onSearchSuccessfull(final List<IEsptouchResult> results) {
         final int countDevices = results.size();
-        DevicePersistance.getAllDevicesFromUser(new ServerCallbackObjects() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
-                if (!status) {
-                    Snackbar snackbar = Snackbar
-                            .make(relativeLayout, "Erro ao contatar o servidor, tente novamente!", Snackbar.LENGTH_LONG)
-                            .setDuration(32000);
-                    snackbar.show();
-                    onServerError();
-                } else {
-                    for (final IEsptouchResult item : results) {
-                        registerNewDevices.createNewDevice(item, requestQueue, new ServerCallback() {
-                            @Override
-                            public void onServerCallback(final boolean status, String response) {
-                                if (!status) {
-                                    Snackbar snackbar = Snackbar
-                                            .make(relativeLayout, "Erro ao contatar o servidor, tente novamente!", Snackbar.LENGTH_LONG)
-                                            .setDuration(32000);
-                                    snackbar.show();
-                                    if (results.indexOf(item) == countDevices - 1) {
-                                        onServerError();
-                                    }
-                                } else {
-                                    Log.i(TAG, "onSearchSuccessfull() successfully saved the device!");
-                                    if (results.indexOf(item) == countDevices - 1) {
-                                        Intent listOfDevices = new Intent(getContext(), ShowerNavigationDrawer.class);
-                                        startActivity(listOfDevices);
-                                        getActivity().overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-                                        getActivity().finish();
-                                    }
-                                }
+            public void run() {
+                DevicePersistance.getAllDevicesFromUser(new ServerCallbackObjects() {
+                    @Override
+                    public void onServerCallbackObject(Boolean status, String response, List<Object> objects) {
+                        if (!status) {
+                            Snackbar snackbar = Snackbar
+                                    .make(relativeLayout, "Erro ao contatar o servidor, tente novamente!", Snackbar.LENGTH_LONG)
+                                    .setDuration(32000);
+                            snackbar.show();
+                            onServerError();
+                        } else {
+                            for (final IEsptouchResult item : results) {
+                                registerNewDevices.createNewDevice(item, requestQueue, new ServerCallback() {
+                                    @Override
+                                    public void onServerCallback(final boolean status, String response) {
+                                        if (!status) {
+                                            Snackbar snackbar = Snackbar
+                                                    .make(relativeLayout, "Erro ao contatar o servidor, tente novamente!", Snackbar.LENGTH_LONG)
+                                                    .setDuration(32000);
+                                            snackbar.show();
+                                            if (results.indexOf(item) == countDevices - 1) {
+                                                onServerError();
+                                            }
+                                        } else {
+                                            Log.i(TAG, "onSearchSuccessfull() successfully saved the device!");
+                                            if (results.indexOf(item) == countDevices - 1) {
+                                                Intent listOfDevices = new Intent(getContext(), ShowerNavigationDrawer.class);
+                                                startActivity(listOfDevices);
+                                                getActivity().overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                                                getActivity().finish();
+                                            }
+                                        }
 
+                                    }
+                                });
                             }
-                        });
-                    }
-                }
+                        }
 
+                    }
+                });
             }
-        });
+        }, SPLASH_TIME_OUT);
+
 
     }
 

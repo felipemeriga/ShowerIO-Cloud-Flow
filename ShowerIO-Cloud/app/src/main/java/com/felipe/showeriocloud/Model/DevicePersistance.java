@@ -120,7 +120,8 @@ public class DevicePersistance {
         int lastPointSubnet = deviceDO.getLocalNetworkSubnet().lastIndexOf(".");
         deviceDO.setLocalNetworkSubnet(deviceDO.getLocalNetworkSubnet().substring(0, lastPointSubnet));
         deviceDO.setBathTime(0);
-        deviceDO.setStoppedTime(0);
+        deviceDO.setStoppedTime(1);
+        deviceDO.setWaitingTime(0);
 
 
         Thread thread = new Thread(new Runnable() {

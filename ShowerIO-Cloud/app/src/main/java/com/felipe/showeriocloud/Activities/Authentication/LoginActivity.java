@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
     public Boolean existingAccount = false;
 
     @BindView(R.id.facebook_login_button)
-    private Button btnLoginFacebook;
+    public Button btnLoginFacebook;
 
     @BindView(R.id.input_email)
     public EditText _emailText;

@@ -23,7 +23,7 @@ public class AwsIotCoreManager {
 
     CognitoCachingCredentialsProvider credentialsProvider;
 
-    private static final String CUSTOMER_SPECIFIC_ENDPOINT = "agq6mvwjsctpy-ats.iot.us-east-2.amazonaws.com";
+    private static final String CUSTOMER_SPECIFIC_ENDPOINT = "agq6mvwjsctpy-ats.iot.us-east-1.amazonaws.com";
 
     // Cognito pool ID. For this app, pool needs to be unauthenticated pool with
     // AWS IoT permissions.
@@ -101,13 +101,13 @@ public class AwsIotCoreManager {
     }
 
     public void publishBathParams(int bathTime, int waitingTime, DeviceDO device, ServerCallback serverCallback) {
-        final String topic = "times";
+        final String topic = device.getMicroprocessorId() + "/times";
         final String msg = bathTime + "-" + device.getStoppedTime().toString() + "-" + waitingTime;
 
         try {
             mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
             device.setBathTime(bathTime);
-            device.setStoppedTime(waitingTime);
+            device.setWaitingTime(waitingTime);
             serverCallback.onServerCallback(true,"successful");
         } catch (Exception e) {
             Log.e(TAG, "Publish error.", e);
@@ -116,7 +116,7 @@ public class AwsIotCoreManager {
     }
 
     public void publishReset(DeviceDO device, ServerCallback serverCallback){
-        final String topic = "configuration";
+        final String topic = device.getMicroprocessorId() + "/configuration";
         final String msg = "reset";
         try {
             mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);

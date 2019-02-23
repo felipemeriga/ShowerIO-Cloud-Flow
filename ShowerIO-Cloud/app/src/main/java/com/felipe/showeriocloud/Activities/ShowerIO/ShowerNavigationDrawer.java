@@ -90,10 +90,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        if (DevicePersistance.lastUpdateUserDevices.size() == 0) {
-            fragmentChanger(navigationView.getMenu().getItem(1), SearchForDevicesFragment.class);
-            navigationView.getMenu().getItem(0).setChecked(false);
-        }
+
 
     }
 
@@ -110,6 +107,11 @@ public class ShowerNavigationDrawer extends AppCompatActivity
             public void onServerCallback(boolean status, String response) {
                 runOnUiThread(new Runnable() {
                     public void run() {
+                        listDevicesProgressDialog.dismiss();
+                        if (DevicePersistance.lastUpdateUserDevices.size() == 0) {
+                            fragmentChanger(navigationView.getMenu().getItem(1), SearchForDevicesFragment.class);
+                            navigationView.getMenu().getItem(0).setChecked(false);
+                        }
                         listDevicesProgressDialog.dismiss();
                         Class showerListFragment = ShowerListFragment.class;
                         fragmentChanger(navigationView.getMenu().getItem(0), ShowerListFragment.class);
