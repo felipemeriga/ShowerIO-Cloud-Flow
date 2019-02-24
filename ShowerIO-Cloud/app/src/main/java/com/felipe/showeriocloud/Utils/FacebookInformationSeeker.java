@@ -19,6 +19,7 @@ public class FacebookInformationSeeker {
     private static AccessToken accessToken;
     public static String facebookProfilePhotoUrl;
     public static String facebookName;
+    public static String facebookEmail;
 
 
     public static class GetFbInformation extends AsyncTask<Void, Void, JSONObject> {
@@ -65,6 +66,7 @@ public class FacebookInformationSeeker {
                 String profilePicUrl = response.getJSONObject("picture").getJSONObject("data").getString("url");
                 facebookProfilePhotoUrl = profilePicUrl;
                 facebookName = response.get("name").toString();
+                facebookEmail = response.get("email").toString();
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.d(TAG, "GetFbInformation returned with error " + e.getMessage());

@@ -126,8 +126,8 @@ public class LoginActivity extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
 
         //If access token is already here, set fb session
-        final AccessToken fbAccessToken = AccessToken.getCurrentAccessToken();
-/*        if (fbAccessToken != null) {
+ /*       final AccessToken fbAccessToken = AccessToken.getCurrentAccessToken();
+          if (fbAccessToken != null) {
             setFacebookSession(fbAccessToken);
             btnLoginFacebook.setVisibility(View.GONE);
             Thread thread = new Thread(new Runnable() {
@@ -171,7 +171,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 progressDialog.show();
                 // start Facebook Login
-                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile"));
+                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile","email"));
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {

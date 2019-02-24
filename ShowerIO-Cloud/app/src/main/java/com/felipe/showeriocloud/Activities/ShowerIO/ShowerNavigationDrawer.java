@@ -28,6 +28,7 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttribu
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GetDetailsHandler;
 import com.felipe.showeriocloud.Activities.Fragments.HelpFragment;
+import com.felipe.showeriocloud.Activities.Fragments.ProfileFragment;
 import com.felipe.showeriocloud.Activities.Fragments.SearchForDevicesFragment;
 import com.felipe.showeriocloud.Activities.Fragments.ShowerDetailFragment;
 import com.felipe.showeriocloud.Activities.Fragments.ShowerListFragment;
@@ -50,11 +51,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ShowerNavigationDrawer extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, HelpFragment.OnFragmentInteractionListener, ShowerListFragment.OnFragmentInteractionListener, ShowerDetailFragment.OnFragmentInteractionListener, SearchForDevicesFragment.OnFragmentInteractionListener, StatisticsDetailFragment.OnFragmentInteractionListener, StatisticsDetailDailyFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, HelpFragment.OnFragmentInteractionListener, ShowerListFragment.OnFragmentInteractionListener, ShowerDetailFragment.OnFragmentInteractionListener, SearchForDevicesFragment.OnFragmentInteractionListener, StatisticsDetailFragment.OnFragmentInteractionListener, StatisticsDetailDailyFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
 
     protected NavigationView navigationView;
     private ImageView imageView;
     private TextView usernameTitle;
+    private TextView textViewEmail;
     private LinearLayout linearLayout;
     private ProgressDialog listDevicesProgressDialog;
 
@@ -73,9 +75,11 @@ public class ShowerNavigationDrawer extends AppCompatActivity
         linearLayout = (LinearLayout) hView.findViewById(R.id.nav_header_linear);
         imageView = (ImageView) hView.findViewById(R.id.imageView);
         usernameTitle = (TextView) hView.findViewById(R.id.username);
-        if(AuthorizationHandle.mainAuthMethod.equals(AuthorizationHandle.FEDERATED_IDENTITIES)){
-            usernameTitle.setText(FacebookInformationSeeker.facebookName);
+        textViewEmail = (TextView) hView.findViewById(R.id.textViewEmail);
 
+        if (AuthorizationHandle.mainAuthMethod.equals(AuthorizationHandle.FEDERATED_IDENTITIES)) {
+            usernameTitle.setText(FacebookInformationSeeker.facebookName);
+            textViewEmail.setText(FacebookInformationSeeker.facebookEmail);
         } else {
             CognitoIdentityPoolManager.getPool().getUser(CognitoIdentityPoolManager.getPool().getCurrentUser().getUserId()).getDetailsInBackground(detailsHandler);
         }
@@ -89,7 +93,6 @@ public class ShowerNavigationDrawer extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
 
 
     }
@@ -111,10 +114,10 @@ public class ShowerNavigationDrawer extends AppCompatActivity
                         if (DevicePersistance.lastUpdateUserDevices.size() == 0) {
                             fragmentChanger(navigationView.getMenu().getItem(1), SearchForDevicesFragment.class);
                             navigationView.getMenu().getItem(0).setChecked(false);
+                        } else {
+                            Class showerListFragment = ShowerListFragment.class;
+                            fragmentChanger(navigationView.getMenu().getItem(0), ShowerListFragment.class);
                         }
-                        listDevicesProgressDialog.dismiss();
-                        Class showerListFragment = ShowerListFragment.class;
-                        fragmentChanger(navigationView.getMenu().getItem(0), ShowerListFragment.class);
                     }
                 });
             }
@@ -174,7 +177,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
                 fragmentClass = HelpFragment.class;
                 break;
             case R.id.nav_account:
-//                fragmentClass = ThirdFragment.class;
+                fragmentClass = ProfileFragment.class;
                 break;
             case R.id.nav_list_of_devices:
                 loadDevices = true;
@@ -196,7 +199,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
                     }
                 });
                 break;
-            case R.id.nav_share:
+            case R.id.nav_signout:
 //                fragmentClass = ThirdFragment.class;
                 break;
             default:
@@ -299,10 +302,11 @@ public class ShowerNavigationDrawer extends AppCompatActivity
     GetDetailsHandler detailsHandler = new GetDetailsHandler() {
         @Override
         public void onSuccess(CognitoUserDetails cognitoUserDetails) {
-            Map<String,String> stringStringHashMap=new HashMap<>();
-            CognitoUserAttributes cognitoUserAttributes=cognitoUserDetails.getAttributes();
+            Map<String, String> stringStringHashMap = new HashMap<>();
+            CognitoUserAttributes cognitoUserAttributes = cognitoUserDetails.getAttributes();
             stringStringHashMap = cognitoUserAttributes.getAttributes();
             usernameTitle.setText(stringStringHashMap.get("given_name"));
+            textViewEmail.setText(stringStringHashMap.get("email"));
         }
 
         @Override

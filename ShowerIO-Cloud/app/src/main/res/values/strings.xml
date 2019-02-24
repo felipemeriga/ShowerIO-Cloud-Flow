@@ -52,7 +52,6 @@
     <string name="nav_header_desc">Navigation header</string>
 
 
-
     <!--Menu item strings-->
     <string name="nav_list_of_devices">Lista de Dispositivos</string>
     <string name="nav_find_devices">Descobrir dispositivos</string>
@@ -60,7 +59,7 @@
     <string name="nav_help">Ajuda</string>
     <string name="nav_network">Network</string>
     <string name="nav_account">Minha Conta</string>
-    <string name="nav_share">Compartilhar</string>
+    <string name="nav_signout">Desconectar</string>
 
     <!--Shower is offline-->
     <string name="offline_title">Dispositivo Offline</string>
@@ -131,6 +130,8 @@
     <string name="inShower">no banho</string>
     <string name="price">R$ 0</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

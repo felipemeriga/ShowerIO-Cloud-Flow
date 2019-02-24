@@ -20,23 +20,16 @@
             android:id="@+id/nav_help"
             android:icon="@drawable/ic_help_black_24dp"
             android:title="@string/nav_help" />
+        <item
+            android:id="@+id/nav_account"
+            android:icon="@drawable/ic_person_outline_black_24dp"
+            android:title="@string/nav_account" />
+
+        <item
+            android:id="@+id/nav_signout"
+            android:icon="@drawable/ic_exit_to_app_black_24dp"
+            android:title="@string/nav_signout" />
     </group>
 
-    <item android:title="@string/nav_network"
-        >
-        <menu>
-            <item
-                android:id="@+id/nav_account"
-                android:icon="@drawable/ic_person_outline_black_24dp"
-                android:title="@string/nav_account" />
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="@string/nav_share" />
-        </menu>
-
-
-
-    </item>
 
 </menu>

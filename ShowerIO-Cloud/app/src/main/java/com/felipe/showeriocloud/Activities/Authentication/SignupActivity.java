@@ -141,6 +141,7 @@ public class SignupActivity extends AppCompatActivity {
             }
         }
 
+        userAttributes.addAttribute(CognitoIdentityPoolManager.getSignUpFieldsC2O().get("Phone number").toString(), "+55" + phone);
         userAttributes.addAttribute(CognitoIdentityPoolManager.getSignUpFieldsC2O().get("Email").toString(), email);
 
 
@@ -154,6 +155,7 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 userDialog.dismiss();
+                progressDialog.show();
                 AuthorizationHandle.mainAuthMethod = AuthorizationHandle.COGNITO_POOL;
                 AuthorizationHandle.setCredentialsProvider(getApplicationContext());
                 AuthorizationHandle.setSession();

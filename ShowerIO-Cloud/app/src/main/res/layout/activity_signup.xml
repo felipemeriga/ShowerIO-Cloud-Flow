@@ -84,15 +84,15 @@
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
             android:padding="12dp"
-            android:text="Create Account"/>
+            android:text="Criar Conta"/>
 
         <TextView android:id="@+id/link_login"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:text="Already a member? Login"
+            android:text="Já possui conta? Faça o login"
             android:gravity="center"
-            android:textSize="16dip"/>
+            android:textSize="20dip"/>
 
     </LinearLayout>
 </ScrollView>
