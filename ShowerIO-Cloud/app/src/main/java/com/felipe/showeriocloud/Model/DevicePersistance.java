@@ -7,6 +7,7 @@ import android.view.View;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBQueryExpression;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBScanExpression;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.PaginatedList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
@@ -14,12 +15,15 @@ import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.felipe.showeriocloud.Aws.AuthorizationHandle;
 import com.felipe.showeriocloud.Aws.AwsDynamoDBManager;
 import com.felipe.showeriocloud.Aws.CognitoSyncClientManager;
+import com.felipe.showeriocloud.Utils.FacebookInformationSeeker;
 import com.felipe.showeriocloud.Utils.ServerCallback;
 import com.felipe.showeriocloud.Utils.ServerCallbackObject;
 import com.felipe.showeriocloud.Utils.ServerCallbackObjects;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DevicePersistance {
 
@@ -60,20 +64,20 @@ public class DevicePersistance {
         DeviceDO hashKeyObject = new DeviceDO();
         hashKeyObject.setUserId(AuthorizationHandle.getCurrentUserId());
 
-        Condition rangeAndHashKeyCondition = new Condition()
-                .withComparisonOperator(ComparisonOperator.NOT_NULL);
-
-        final DynamoDBQueryExpression queryExpression = new DynamoDBQueryExpression()
-                .withHashKeyValues(hashKeyObject)
-                .withConsistentRead(false);
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":val1", new AttributeValue().withS(AuthorizationHandle.getCurrentUserId()));
+        final DynamoDBScanExpression dynamoDBScanExpression = new DynamoDBScanExpression();
+        dynamoDBScanExpression.withFilterExpression("userId = :val1").withExpressionAttributeValues(eav);
 
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    List<DeviceDO> result = AwsDynamoDBManager.dynamoDBMapper.query(DeviceDO.class, queryExpression);
-                    lastUpdateUserDevices = result;
-                    serverCallbackObjects.onServerCallbackObject(true, "SUCCESS", (List<Object>) (List<?>) result);
+                    List<DeviceDO> scanResult = AwsDynamoDBManager.dynamoDBMapper.scan(DeviceDO.class, dynamoDBScanExpression);
+
+                    //List<DeviceDO> result = AwsDynamoDBManager.dynamoDBMapper.query(DeviceDO.class, queryExpression);
+                    lastUpdateUserDevices = scanResult;
+                    serverCallbackObjects.onServerCallbackObject(true, "SUCCESS", (List<Object>) (List<?>) scanResult);
                 } catch (Exception e) {
                     e.printStackTrace();
                     serverCallbackObjects.onServerCallbackObject(false, e.getMessage(), new ArrayList<Object>());

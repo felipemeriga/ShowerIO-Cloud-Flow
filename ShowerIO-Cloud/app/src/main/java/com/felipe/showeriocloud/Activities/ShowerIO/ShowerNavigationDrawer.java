@@ -32,6 +32,7 @@ import com.felipe.showeriocloud.Activities.Fragments.ProfileFragment;
 import com.felipe.showeriocloud.Activities.Fragments.SearchForDevicesFragment;
 import com.felipe.showeriocloud.Activities.Fragments.ShowerDetailFragment;
 import com.felipe.showeriocloud.Activities.Fragments.ShowerListFragment;
+import com.felipe.showeriocloud.Activities.Fragments.SignOutFragment;
 import com.felipe.showeriocloud.Activities.Fragments.StatisticsDetailDailyFragment;
 import com.felipe.showeriocloud.Activities.Fragments.StatisticsDetailFragment;
 import com.felipe.showeriocloud.Activities.Home.SplashScreen;
@@ -51,7 +52,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ShowerNavigationDrawer extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, HelpFragment.OnFragmentInteractionListener, ShowerListFragment.OnFragmentInteractionListener, ShowerDetailFragment.OnFragmentInteractionListener, SearchForDevicesFragment.OnFragmentInteractionListener, StatisticsDetailFragment.OnFragmentInteractionListener, StatisticsDetailDailyFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, HelpFragment.OnFragmentInteractionListener, ShowerListFragment.OnFragmentInteractionListener, ShowerDetailFragment.OnFragmentInteractionListener, SearchForDevicesFragment.OnFragmentInteractionListener, StatisticsDetailFragment.OnFragmentInteractionListener, StatisticsDetailDailyFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener, SignOutFragment.OnFragmentInteractionListener {
 
     protected NavigationView navigationView;
     private ImageView imageView;
@@ -200,7 +201,7 @@ public class ShowerNavigationDrawer extends AppCompatActivity
                 });
                 break;
             case R.id.nav_signout:
-//                fragmentClass = ThirdFragment.class;
+                fragmentClass = SignOutFragment.class;
                 break;
             default:
                 fragmentClass = HelpFragment.class;

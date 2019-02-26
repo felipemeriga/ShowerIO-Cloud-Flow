@@ -56,7 +56,7 @@ public class AuthorizationHandle {
         if (mainAuthMethod.equals(COGNITO_POOL)) {
             CognitoIdentityPoolManager.getCurrUser();
         } else if (mainAuthMethod.equals(FEDERATED_IDENTITIES)) {
-            return CognitoSyncClientManager.credentialsProvider.getCachedIdentityId();
+            return FacebookInformationSeeker.facebookEmail;
         }
 
         return NOT_SIGNED;

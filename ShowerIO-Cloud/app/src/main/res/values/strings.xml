@@ -82,6 +82,11 @@
     <string name="delete_text">Deletar faz com que o dispositivo seja excluido de sua lista, e apaga todos os registros existentes, deseja mesmo deletar?</string>
     <string name="delete_fail">Não foi possível deletar o dispositivo</string>
 
+    <!-- SignOut-->
+    <string name="logout_title">Sair da conta</string>
+    <string name="logout_text">Esta ação irá desconectar o aplicativo de sua conta, deseja continuar?</string>
+
+
     <string-array name="times">
         <item>Selecionar tempo</item>
         <item>1 min</item>
