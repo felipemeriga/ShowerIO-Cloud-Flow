@@ -105,11 +105,11 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-
             android:layout_marginTop="5dp"
             android:gravity="center"
             android:text="Esqueci minha senha"
             android:textSize="22dip"
+            android:onClick="onForgotPasswordPressed"
             android:textStyle="bold" />
 
     </LinearLayout>

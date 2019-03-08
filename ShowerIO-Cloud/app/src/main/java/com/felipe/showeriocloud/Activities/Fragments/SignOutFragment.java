@@ -3,8 +3,10 @@ package com.felipe.showeriocloud.Activities.Fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.facebook.share.Share;
 import com.felipe.showeriocloud.Activities.Authentication.LoginActivity;
 import com.felipe.showeriocloud.Activities.Home.SplashScreen;
 import com.felipe.showeriocloud.Activities.ShowerIO.ShowerNavigationDrawer;
@@ -81,11 +84,15 @@ public class SignOutFragment extends Fragment {
         builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                PreferenceManager.getDefaultSharedPreferences(getContext()).
+                        edit().clear().apply();
                 if(AuthorizationHandle.mainAuthMethod.equals(AuthorizationHandle.FEDERATED_IDENTITIES)){
                     CognitoSyncClientManager.credentialsProvider.clearCredentials();
                     CognitoSyncClientManager.credentialsProvider.clear();
+
                 } else if ( AuthorizationHandle.mainAuthMethod.equals(AuthorizationHandle.COGNITO_POOL)) {
                     CognitoIdentityPoolManager.getPool().getCurrentUser().signOut();
+                    // TODO - CLEAR CACHE
                 }
 
                 Intent loginActivity = new Intent(getActivity(), LoginActivity.class);

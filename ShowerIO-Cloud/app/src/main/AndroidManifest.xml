@@ -33,7 +33,7 @@
         <activity android:name=".Activities.SmartConfig.SearchForDevices" />
         <activity
             android:name=".Activities.Authentication.LoginActivity"
-            android:theme="@style/AppTheme.Dark"></activity>
+            android:theme="@style/AppTheme.Dark" />
         <activity
             android:name=".Activities.Authentication.SignupActivity"
             android:theme="@style/AppTheme.Dark" />
@@ -47,7 +47,11 @@
         <activity
             android:name=".Activities.ShowerIO.ShowerNavigationDrawer"
             android:label="@string/title_activity_shower_base"
-            android:theme="@style/AppTheme.Dark"></activity>
+            android:theme="@style/AppTheme.Dark" />
+        <activity
+            android:name=".Activities.Authentication.ForgotPasswordActivity"
+            android:label="@string/title_activity_forgot_password"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

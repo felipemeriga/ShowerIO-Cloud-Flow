@@ -14,7 +14,6 @@
     <dimen name="activity_intra_group_separation">10dp</dimen>
 
 
-
     <dimen name="activity_button_height">45dp</dimen>
     <dimen name="activity_button_border">1dp</dimen>
     <dimen name="activity_button_radius">2dp</dimen>

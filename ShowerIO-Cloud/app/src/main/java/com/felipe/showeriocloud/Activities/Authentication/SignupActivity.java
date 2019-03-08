@@ -74,6 +74,7 @@ public class SignupActivity extends AppCompatActivity {
     private final String CREDENTIALS_URL = "/createCredentials?email=";
     private Boolean createCredentialsFlag = false;
     private ProgressDialog progressDialog;
+    private ProgressDialog loadingDialog;
     private AlertDialog userDialog;
 
     @Override
@@ -108,6 +109,10 @@ public class SignupActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(SignupActivity.this, R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Criando uma conta...");
+
+        loadingDialog = new ProgressDialog(SignupActivity.this, R.style.AppTheme_Dark_Dialog);
+        loadingDialog.setIndeterminate(true);
+        loadingDialog.setMessage("Carregando...");
     }
 
     public void signup() {
@@ -155,7 +160,7 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 userDialog.dismiss();
-                progressDialog.show();
+                loadingDialog.show();
                 AuthorizationHandle.mainAuthMethod = AuthorizationHandle.COGNITO_POOL;
                 AuthorizationHandle.setCredentialsProvider(getApplicationContext());
                 AuthorizationHandle.setSession();
@@ -225,7 +230,10 @@ public class SignupActivity extends AppCompatActivity {
             // Check signUpConfirmationState to see if the user is already confirmed
             //CognitoIdentityPoolManager.getPool().getUser(userName).confirmSignUpInBackground(confirmCode, true, confHandler);
             Boolean regState = signUpConfirmationState;
+            CognitoIdentityPoolManager.setUser(user.getUserId());
             CognitoIdentityPoolManager.getPool().getUser(_emailText.getText().toString()).getSessionInBackground(authenticationHandler);
+
+
         }
 
         @Override
@@ -239,14 +247,16 @@ public class SignupActivity extends AppCompatActivity {
         @Override
         public void onSuccess(CognitoUserSession cognitoUserSession, CognitoDevice device) {
             Log.d(TAG, " -- Auth Success");
+            AuthorizationHandle.mainAuthMethod = AuthorizationHandle.COGNITO_POOL;
             CognitoIdentityPoolManager.setCurrSession(cognitoUserSession);
             CognitoIdentityPoolManager.newDevice(device);
             progressDialog.dismiss();
-            showDialogMessage("Cadastro","Usuário salvo com sucesso!",false);
             SharedPreferences.Editor editor = getSharedPreferences(SHOWERLITE, MODE_PRIVATE).edit();
             editor.putString("email",_emailText.getText().toString());
             editor.putString("password",_passwordText.getText().toString());
             editor.apply();
+            showDialogMessage("Cadastro","Usuário salvo com sucesso!",false);
+
 
         }
 

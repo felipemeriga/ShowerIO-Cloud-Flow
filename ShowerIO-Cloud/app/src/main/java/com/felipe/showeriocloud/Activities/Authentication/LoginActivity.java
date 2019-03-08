@@ -20,8 +20,10 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ForgotPasswordContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.ForgotPasswordHandler;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -55,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final int REQUEST_SIGNUP = 0;
     private SharedPreferences sharedPreferences;
     private ProgressDialog loginDialog;
+    private ForgotPasswordContinuation forgotPasswordContinuation;
 
     private CallbackManager callbackManager;
 
@@ -72,7 +75,10 @@ public class LoginActivity extends AppCompatActivity {
     Button _loginButton;
     @BindView(R.id.link_signup)
     TextView _signupLink;
+    @BindView(R.id.forgot_pass)
+    TextView forgot_pass;
     ProgressDialog progressDialog;
+    ProgressDialog forgotPassDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -333,6 +339,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, " -- Auth Success");
             CognitoIdentityPoolManager.setCurrSession(cognitoUserSession);
             CognitoIdentityPoolManager.newDevice(device);
+            CognitoIdentityPoolManager.setUser(_emailText.getText().toString());
             SharedPreferences.Editor editor = getSharedPreferences(SHOWERLITE, MODE_PRIVATE).edit();
             editor.putString("email",_emailText.getText().toString());
             editor.putString("password",_passwordText.getText().toString());
@@ -386,6 +393,62 @@ public class LoginActivity extends AppCompatActivity {
         continuation.setAuthenticationDetails(authenticationDetails);
         continuation.continueTask();
     }
+
+    private void getForgotPasswordCode(ForgotPasswordContinuation forgotPasswordContinuation) {
+        this.forgotPasswordContinuation = forgotPasswordContinuation;
+        Intent intent = new Intent(this, ForgotPasswordActivity.class);
+        intent.putExtra("destination",forgotPasswordContinuation.getParameters().getDestination());
+        intent.putExtra("deliveryMed", forgotPasswordContinuation.getParameters().getDeliveryMedium());
+        startActivityForResult(intent, 3);
+    }
+
+    public void onForgotPasswordPressed(View view) {
+       String email = _emailText.getText().toString();
+
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            _emailText.setError("Entre um endereço de email válido");
+            return;
+        }
+
+        forgotPassDialog = new ProgressDialog(LoginActivity.this,
+                R.style.AppTheme_Dark_Dialog);
+        forgotPassDialog.setIndeterminate(true);
+        forgotPassDialog.setMessage("Alterando...");
+        forgotPassDialog.setCanceledOnTouchOutside(false);
+        forgotPassDialog.show();
+
+        CognitoIdentityPoolManager.getPool().getUser(email).forgotPasswordInBackground(forgotPasswordHandler);
+
+
+    }
+
+    // Callbacks
+    ForgotPasswordHandler forgotPasswordHandler = new ForgotPasswordHandler() {
+        @Override
+        public void onSuccess() {
+            forgotPassDialog.dismiss();
+            Toast.makeText(LoginActivity.this, "Senha alterada!",
+                    Toast.LENGTH_LONG).show();
+            _passwordText.setText("");
+            _passwordText.requestFocus();
+        }
+
+        @Override
+        public void getResetCode(ForgotPasswordContinuation forgotPasswordContinuation) {
+            forgotPassDialog.dismiss();
+            getForgotPasswordCode(forgotPasswordContinuation);
+        }
+
+        @Override
+        public void onFailure(Exception e) {
+            forgotPassDialog.dismiss();
+            Toast.makeText(LoginActivity.this, "Não foi possível alterar a senha",
+                    Toast.LENGTH_LONG).show();
+        }
+    };
+
+
+
 
 
 }
