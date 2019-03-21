@@ -10,11 +10,9 @@
 #include <Ticker.h>
 #include <WiFiManager.h>
 #include <ESP8266mDNS.h>
-#include <ArduinoJson.h>
 #include <WiFiUdp.h>
 #include <Stream.h>
-#include <ArduinoJson.h>
-#include "MillisTimer.h"
+#include <MillisTimer.h>
 
 //AWS
 #include "sha256.h"
@@ -40,7 +38,7 @@ HTTPClient http;
 
 //AWS MQTT Websocket
 #include "Client.h"
-#include "AWSWebSocketClient.h"
+#include <AWSWebSocketClient.h>
 #include "CircularByteBuffer.h"
 
 extern "C" {
@@ -72,13 +70,15 @@ MillisTimer bathWaitingTimer = MillisTimer(1000);
 MillisTimer bathScanTimmer = MillisTimer(1000);
 MillisTimer bathFalseAlarmTimmer = MillisTimer(1000);
 unsigned long flowLastValue;
+int bathRemainingTime;
+int stopRemainingTime;
 
 //MQTT config
 const int maxMQTTpackageSize = 512;
 const int maxMQTTMessageHandlers = 1;
-
+//
 AWSWebSocketClient awsWSclient(1000);
-
+//
 PubSubClient client(awsWSclient);
 //IPStack ipstack(awsWSclient);
 //MQTT::Client<IPStack, Countdown, maxMQTTpackageSize, maxMQTTMessageHandlers> client(ipstack);
@@ -135,11 +135,10 @@ void setActualPausedTimeLess();
 // Shower logic variables
 
 volatile int flow_frequency; // Measures flow sensor pulses
+unsigned long totalFlowFrequency;
 unsigned int l_hour; // Calculated litres/hour
 unsigned long currentTime;
 unsigned long cloopTime;
 boolean bathRunning;
 boolean showerIsOn;
 boolean waiting;
-
-

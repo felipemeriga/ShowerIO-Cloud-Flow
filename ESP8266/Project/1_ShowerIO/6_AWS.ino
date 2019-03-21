@@ -182,4 +182,3 @@ DBG_OUTPUT_PORT.println(aws_topic_conf);
   DBG_OUTPUT_PORT.println("MQTT subscribed");
 }
 
-

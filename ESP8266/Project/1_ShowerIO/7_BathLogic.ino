@@ -2,8 +2,25 @@
 void flow () // Interrupt function
 {
   flow_frequency++;
+  totalFlowFrequency++;
 
 }
+
+void computeBathStatistics(boolean bathReached) {
+  double duration = 0;
+  double litters = 0;
+
+  if (bathReached) {
+    duration = bathTime;
+  } else {
+    duration = ceil(((bathTime * 1000 * 60) - bathRemainingTime) / 60000);
+  }
+
+  litters = (duration / 60) * l_hour;
+  updateBathStatistics(duration, litters);
+  l_hour = 0;
+}
+
 
 
 void bathScanTimerReached(MillisTimer &mt) {
@@ -16,8 +33,11 @@ void bathScanTimerReached(MillisTimer &mt) {
     flow_frequency = 1;
   }
   flowLastValue = flow_frequency;
+
+  l_hour = (totalFlowFrequency * 60 / 7.5); // (Pulse frequency x 60 min) / 7.5Q = flowrate in L/hour
   bathScanTimmer.reset();
   bathScanTimmer.start();
+  totalFlowFrequency = 0;
 }
 
 void bathWaitTimerReached(MillisTimer &mt) {
@@ -33,9 +53,15 @@ void bathWaitTimerReached(MillisTimer &mt) {
   bathDurationTimer.reset();
   bathStopTimer.reset();
   bathWaitingTimer.reset();
+
+  // Setting the interval again to ensure that it will be available for a new bath with the correct time
+  bathDurationTimer.setInterval((bathTime * 1000 * 60));
+  bathWaitingTimer.setInterval(bathWaitTime * 1000 * 60);
+  bathStopTimer.setInterval(bathStoppedTime * 1000 * 60);
 }
 
 void bathTimeReached(MillisTimer &mt) {
+  //computeBathStatistics(true);
   //The bathTime was reached, turnoff the shower
   bathRunning = false;
   waiting = true;
@@ -50,6 +76,7 @@ void bathTimeReached(MillisTimer &mt) {
 }
 
 void bathStoppedTimerReached(MillisTimer &mt) {
+  //computeBathStatistics(false);
   bathRunning = false;
   waiting = true;
   digitalWrite(rele, HIGH);
@@ -72,16 +99,18 @@ void bathFalseAlarmReached(MillisTimer &mt) {
       bathDurationTimer.setInterval((bathTime * 1000 * 60));
       bathDurationTimer.expiredHandler(bathTimeReached);
       bathDurationTimer.start();
+      showerIsOn = true;
 
-      bathScanTimmer.setInterval(2000);
+      bathScanTimmer.setInterval(1000);
       bathScanTimmer.expiredHandler(bathScanTimerReached);
       bathScanTimmer.start();
 
       DBG_OUTPUT_PORT.println("The bath stopped time is default set as 1 minutes");
       // TODO - CHANGE TO 60 * 1000 and to variable address_espera
-      bathStopTimer.setInterval(10 * 1000 * 60);
+      bathStopTimer.setInterval(bathStoppedTime * 1000 * 60);
       bathStopTimer.expiredHandler(bathStoppedTimerReached);
-      bathStopTimer.start();
+      // commented, because the time will go out even if the bath is running
+      //bathStopTimer.start();
       bathRunning = true;
 
       showerFalseAlarmTesting = false;
@@ -89,6 +118,7 @@ void bathFalseAlarmReached(MillisTimer &mt) {
       falseAlarmRunning = false;
       flowLastValue = 0;
       flow_frequency = 0;
+      totalFlowFrequency = 0;
     } else {
       DBG_OUTPUT_PORT.println("It may be a pipe leaking, triggering bath off");
       //It may be a pipe leaking, triggering bath off
@@ -97,6 +127,7 @@ void bathFalseAlarmReached(MillisTimer &mt) {
       falseAlarmRunning = false;
       flow_frequency = 0;
       flowLastValue = 0;
+      totalFlowFrequency = 0;
     }
   }
 
@@ -120,6 +151,7 @@ void initBathConfiguration() {
   flow_frequency = 0;
   l_hour = 0;
   flowLastValue = 0;
+  totalFlowFrequency = 0;
 }
 
 //void computeBathWorking() {
@@ -150,7 +182,11 @@ void bathProcess ()
 
         if (!showerFalseAlarmTesting) {
           if (!showerIsOn) {
+            bathDurationTimer.start();
             DBG_OUTPUT_PORT.println("bath is running");
+            stopRemainingTime = bathStopTimer.getRemainingTime();
+            bathStopTimer.reset();
+            bathStopTimer.setInterval(stopRemainingTime);
           }
           showerIsOn = true;
           bathDurationTimer.run();
@@ -158,7 +194,11 @@ void bathProcess ()
 
       } else if (bathRunning == true) {
         if (showerIsOn) {
+          bathStopTimer.start();
           DBG_OUTPUT_PORT.println("bath is stopped");
+          bathRemainingTime = bathDurationTimer.getRemainingTime();
+          bathDurationTimer.reset();
+          bathDurationTimer.setInterval(bathRemainingTime);
         }
         showerIsOn = false;
         bathStopTimer.run();
@@ -175,4 +215,3 @@ void bathProcess ()
   }
 
 }
-

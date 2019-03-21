@@ -23,8 +23,8 @@ boolean updateBathStatistics(int bathDuration, int liters) {
   message = "{\"microprocessorId\": \"" + microprocessorId + "\", " ;
   message = message + "\"liters\": \"" + liters + "\", " ;
   message = message + "\"bathDuration\": \"" + bathDuration + "\"}" ;
-  strcpy(buf, message.c_str());
-  int rc = client.publish(aws_statistics_topic, buf);
+//  strcpy(buf, message.c_str());
+//  int rc = client.publish(aws_statistics_topic, buf);
 
 }
 
@@ -68,31 +68,28 @@ boolean updateBathStatistics(int bathDuration, int liters) {
 //
 //}
 //
-void verifyConnection(MillisTimer &mt) {
- /* boolean updateStatusResult;
-  String status;
-
-  if (WiFi.status() != WL_CONNECTED) {
-    DBG_OUTPUT_PORT.println("Disconnected, restarting ESP!");
-    status = "OFFLINE";
-  } else {
-    DBG_OUTPUT_PORT.println("ESP8266 is still connected");
-    status = "ONLINE";
-  }
-
-  sendmessage("AOOO");
-  if (updateStatusResult) {
-    DBG_OUTPUT_PORT.println("Status updated!");
-  } else {
-    DBG_OUTPUT_PORT.println("Error updating the device status!");
-  }
-
-  if (status.equals("OFFLINE")) {
-    while (1)ESP.restart();
-    delay(500);
-  }*/
-
-}
-
-
-
+//void verifyConnection(MillisTimer &mt) {
+// /* boolean updateStatusResult;
+//  String status;
+//
+//  if (WiFi.status() != WL_CONNECTED) {
+//    DBG_OUTPUT_PORT.println("Disconnected, restarting ESP!");
+//    status = "OFFLINE";
+//  } else {
+//    DBG_OUTPUT_PORT.println("ESP8266 is still connected");
+//    status = "ONLINE";
+//  }
+//
+//  sendmessage("AOOO");
+//  if (updateStatusResult) {
+//    DBG_OUTPUT_PORT.println("Status updated!");
+//  } else {
+//    DBG_OUTPUT_PORT.println("Error updating the device status!");
+//  }
+//
+//  if (status.equals("OFFLINE")) {
+//    while (1)ESP.restart();
+//    delay(500);
+//  }*/
+//
+//}

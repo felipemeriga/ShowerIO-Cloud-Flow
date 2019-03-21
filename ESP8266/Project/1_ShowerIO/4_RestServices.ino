@@ -1,8 +1,7 @@
 //REST FUNCTIONS .INO FILE
-#include <ArduinoJson.h>
 
 
-void check() {
+void check() { 
   
   DBG_OUTPUT_PORT.println("Accessed the checkpoint");
   DBG_OUTPUT_PORT.println("The ESP8266 server was discovered by an app");
@@ -50,5 +49,3 @@ void setStoppedTime(int stoppedTime) {
   EEPROM.commit();
   bathStoppedTime = EEPROM.read(address_stopped);
 }
-
-

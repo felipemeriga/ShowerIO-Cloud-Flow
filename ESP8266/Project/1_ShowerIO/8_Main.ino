@@ -64,7 +64,7 @@ void setup(void) {
   DBG_OUTPUT_PORT.setDebugOutput(true);
   configureGPIO();
   configureServer();
-  initBathConfiguration();
+  //initBathConfiguration();
   int cnt = 0;
 
   // set for STA mode
@@ -157,18 +157,13 @@ void loop(void) {
       subscribe ();      
     }
   }
-  //Reset Wifi button
-//  buttonResetState = digitalRead(buttonResetPin);
-//   if (buttonResetState == HIGH) {
-//    // Reset Wifi
-//    WiFi.disconnect();
-//     while (1)ESP.restart();
-//    delay(500);
-//  }
+ // Reset Wifi button
+  buttonResetState = digitalRead(buttonResetPin);
+   if (buttonResetState == HIGH) {
+    // Reset Wifi
+    WiFi.disconnect();
+     while (1)ESP.restart();
+    delay(500);
+  }
 
 }
-
-
-
-
-
